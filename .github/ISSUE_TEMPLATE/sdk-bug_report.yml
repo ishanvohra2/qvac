@@ -1,7 +1,7 @@
-name: "🐛 Bug Report"
+name: "🐛 SDK Bug Report"
 description: "Report a bug or unexpected behavior in the SDK"
 title: "[Bug]: "
-labels: ["bug", "triage"]
+labels: ["bug", "triage", "SDK"]
 body:
   - type: markdown
     attributes:

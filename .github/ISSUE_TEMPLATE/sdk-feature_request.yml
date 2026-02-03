@@ -1,7 +1,7 @@
-name: "🚀 Feature Request"
+name: "🚀 SDK Feature Request"
 description: "Propose a new feature or enhancement for the SDK"
 title: "[Feature]: "
-labels: ["enhancement", "triage"]
+labels: ["enhancement", "triage", "SDK"]
 body:
   - type: markdown
     attributes:
