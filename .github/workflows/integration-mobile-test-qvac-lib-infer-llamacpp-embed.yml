@@ -8,7 +8,7 @@ on:
         type: string
         required: false
       repository:
-        description: "Repository to checkout (ignored in monorepo; kept for compatibility)"
+        description: "Repository to checkout"
         type: string
         required: false
       package:
@@ -151,9 +151,6 @@ jobs:
           echo "Installing global dependencies..."
           npm install -g @expo/cli@latest
 
-      # NOTE:
-      # - In monorepo, artifacts downloaded via actions/download-artifact@v4 exist ONLY if a prebuild job in THIS SAME workflow run uploaded them.
-      # - This preserves your original behavior but expects upstream prebuilds to have already run in the same run.
       - name: Download Android prebuilds (from artifacts)
         if: matrix.platform == 'Android' && !inputs.package
         uses: actions/download-artifact@v4
