@@ -56,9 +56,6 @@ permissions:
   packages: write
   checks: write
 
-env:
-  PKG_DIR: packages/qvac-lib-infer-whispercpp
-
 jobs:
   release-pr-guard:
     name: Release PR Guard
@@ -138,6 +135,7 @@ jobs:
     with:
       repository: ${{ needs.context.outputs.repository }}
       ref: ${{ needs.context.outputs.ref }}
+      workdir: ${{ needs.context.outputs.workdir }}
 
   cpp-lint:
     needs: context
@@ -152,7 +150,7 @@ jobs:
   cpp-tests-coverage:
     needs: context
     if: needs.context.outputs.run_verify == 'true' || github.event_name == 'workflow_dispatch'
-    uses: ./.github/workflows/cpp-tests-whispercpp.yml
+    uses: ./.github/workflows/cpp-test-coverage-qvac-lib-infer-whispercpp.yml
     secrets: inherit
     with:
       repository: ${{ needs.context.outputs.repository }}
@@ -177,6 +175,7 @@ jobs:
     with:
       repository: ${{ needs.context.outputs.repository }}
       ref: ${{ needs.context.outputs.ref }}
+      workdir: ${{ needs.context.outputs.workdir }}
 
   run-mobile-integration-tests:
     needs: [context, prebuild]
