@@ -1,12 +1,17 @@
 import { z } from "zod";
 import { modelSrcInputSchema } from "./model-src-utils";
 
-// TTS supported languages based on available models
+// TTS UI language codes: union of engine support in @qvac/tts-onnx —
+// Chatterbox: en, es, fr, de, it, pt, ru — Supertonic: en, ko, es, pt, fr
 export const TTS_LANGUAGES = [
-  "en", // English
-  "es", // Spanish
-  "de", // German
-  "it", // Italian
+  "de",
+  "en",
+  "es",
+  "fr",
+  "it",
+  "ko",
+  "pt",
+  "ru",
 ] as const;
 
 const ttsLanguageSchema = z.enum(TTS_LANGUAGES);
