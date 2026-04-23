@@ -1,11 +1,21 @@
 ---
 title: "completion( )"
 titleStyle: code
-description: "Generates completion from a language model based on conversation history."
+description: "Generates completion from a language model based on conversation history.
+
+Returns a `CompletionRun` whose canonical surfaces are:
+
+ - `events`  — `AsyncIterable<CompletionEvent>` of ordered, typed events.
+ - `final`   — `Promise<CompletionFinal>` with aggregated results once the
+               stream ends (content, thinking, tool calls, stats, raw text).
+
+Legacy convenience fields (`tokenStream`, `text`, `toolCallStream`,
+`toolCalls`, `stats`) are still available but deprecated — they derive
+from `events` / `final` internally."
 ---
 
 ```typescript
-function completion(params: CompletionParams): { stats: Promise<{ backendDevice?: "cpu" | "gpu"; cacheTokens?: number; timeToFirstToken?: number; tokensPerSecond?: number } | —>; text: Promise<string>; tokenStream: AsyncGenerator<string>; toolCalls: Promise<ToolCallWithCall[]>; toolCallStream: AsyncGenerator<{ call: { arguments: Record<string, unknown>; id: string; name: string; raw?: string }; type: "toolCall" } | { error: { code: "PARSE_ERROR" | "VALIDATION_ERROR" | "UNKNOWN_TOOL"; message: string; raw?: string }; type: "toolCallError" }> }
+function completion(params: CompletionParams): CompletionRun
 ```
 
 ## Parameters
@@ -17,13 +27,15 @@ function completion(params: CompletionParams): { stats: Promise<{ backendDevice?
 ## Returns
 
 ```typescript
-{ stats: Promise<{ backendDevice?: "cpu" | "gpu"; cacheTokens?: number; timeToFirstToken?: number; tokensPerSecond?: number } | —>; text: Promise<string>; tokenStream: AsyncGenerator<string>; toolCalls: Promise<ToolCallWithCall[]>; toolCallStream: AsyncGenerator<{ call: { arguments: Record<string, unknown>; id: string; name: string; raw?: string }; type: "toolCall" } | { error: { code: "PARSE_ERROR" | "VALIDATION_ERROR" | "UNKNOWN_TOOL"; message: string; raw?: string }; type: "toolCallError" }> }
+CompletionRun
 ```
 
 
 
 | Field | Type | Description |
 | --- | --- | --- |
+| `events` | `AsyncIterable` | Ordered stream of typed completion events — the canonical consumption API. |
+| `final` | `Promise` | Resolves when the stream ends with aggregated content, thinking, tool calls, stats, and raw output. |
 | `stats` | `Promise` | — |
 | `text` | `Promise` | — |
 | `tokenStream` | `AsyncGenerator` | — |
@@ -37,12 +49,13 @@ function completion(params: CompletionParams): { stats: Promise<{ backendDevice?
 ```typescript
 import { z } from "zod";
 
-const result = completion({
+const run = completion({
   modelId: "llama-2",
   history: [
     { role: "user", content: "What's the weather in Tokyo?" }
   ],
   stream: true,
+  captureThinking: true,
   tools: [{
     name: "get_weather",
     description: "Get current weather",
@@ -55,10 +68,12 @@ const result = completion({
   }]
 });
 
-for await (const token of result.tokenStream) {
-  process.stdout.write(token);
+for await (const event of run.events) {
+  if (event.type === "contentDelta") process.stdout.write(event.text);
+  if (event.type === "toolCall") console.log(event.call.name, event.call.arguments);
 }
 
+const result = await run.final;
 for (const toolCall of await result.toolCalls) {
   if (toolCall.invoke) {
     const toolResult = await toolCall.invoke();
