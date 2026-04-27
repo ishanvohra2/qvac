@@ -1,0 +1,23 @@
+---
+title: "transcribe( )"
+titleStyle: code
+description: "Transcribe audio and return the complete text. Accepts either a file
+path or an audio buffer."
+---
+
+```typescript
+function transcribe(params: TranscribeClientParams, options?: { forceNewConnection?: boolean; healthCheckTimeout?: number; profiling?: { enabled?: boolean; includeServerBreakdown?: boolean; mode?: "summary" | "verbose" }; timeout?: number }): Promise
+```
+
+## Parameters
+
+| Name | Type | Required? | Description |
+| --- | --- | :---: | --- |
+| `params` | `TranscribeClientParams` | ✓ | No description |
+| `options` | `\{ forceNewConnection?: boolean; healthCheckTimeout?: number; profiling?: \{ enabled?: boolean; includeServerBreakdown?: boolean; mode?: "summary" | "verbose" \}; timeout?: number \}` | ✗ | Optional RPC options including per-call profiling |
+
+## Returns
+
+```typescript
+Promise
+```

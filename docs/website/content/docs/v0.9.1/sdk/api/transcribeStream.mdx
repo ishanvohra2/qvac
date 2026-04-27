@@ -1,0 +1,30 @@
+---
+title: "transcribeStream( )"
+titleStyle: code
+description: "No description available"
+---
+
+<Callout type="warn" title="Deprecated">
+Pass audio via `transcribe()` instead. This overload will be
+removed in the next major version.
+
+Streaming transcription with upfront audio: sends full audio, yields text
+chunks as they arrive.
+</Callout>
+
+```typescript
+function transcribeStream(params: TranscribeClientParams, options?: { forceNewConnection?: boolean; healthCheckTimeout?: number; profiling?: { enabled?: boolean; includeServerBreakdown?: boolean; mode?: "summary" | "verbose" }; timeout?: number }): AsyncGenerator
+```
+
+## Parameters
+
+| Name | Type | Required? | Description |
+| --- | --- | :---: | --- |
+| `params` | `TranscribeClientParams` | ✓ | No description |
+| `options` | `\{ forceNewConnection?: boolean; healthCheckTimeout?: number; profiling?: \{ enabled?: boolean; includeServerBreakdown?: boolean; mode?: "summary" | "verbose" \}; timeout?: number \}` | ✗ | No description |
+
+## Returns
+
+```typescript
+AsyncGenerator
+```

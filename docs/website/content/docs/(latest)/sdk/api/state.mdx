@@ -1,0 +1,38 @@
+---
+title: "state( )"
+titleStyle: code
+description: "Returns the current runtime lifecycle state.
+
+Safe to call from any lifecycle state — `state()` is never blocked by the
+lifecycle gate (along with `suspend()` and `resume()`)."
+---
+
+```typescript
+function state(): Promise
+```
+
+
+
+## Returns
+
+```typescript
+Promise
+```
+
+
+
+## Throws
+
+| Error | When |
+| --- | --- |
+| `When the response envelope does not match the request type.` |  |
+
+## Example
+
+```typescript
+// Branch on lifecycle state before issuing work
+const current = await state();
+if (current !== "active") {
+  await resume();
+}
+```
