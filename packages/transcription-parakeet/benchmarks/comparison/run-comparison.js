@@ -15,8 +15,10 @@
  *     agreement otherwise)
  *
  * Fairness notes (surfaced in the report):
- *   - qvac time is the full JS run() wall time (product-level, small Bare/JS
- *     tax); mudler time is engine-only transcribe_pcm from `bench`.
+ *   - Both timings are engine-only C++ inference (mel + encoder + decoder),
+ *     excluding model load + wav read: qvac = parakeet-cpp `--bench`
+ *     inference_ms; mudler = parakeet-cli `bench` transcribe_pcm. No JS/Bare
+ *     tax on either side.
  *   - Same clips, same threads, same quant LEVEL (q8_0). The two q8_0
  *     converters keep slightly different tensor sets in F32 (file sizes differ).
  *
@@ -34,6 +36,16 @@ const MUDLER_DIR = path.resolve(PKG_DIR, '../parakeet.cpp')
 const MUDLER_CLI = path.join(MUDLER_DIR, 'build/examples/cli/parakeet-cli')
 const MUDLER_MODELS = path.join(MUDLER_DIR, 'models-gguf')
 const QVAC_MODELS = path.join(PKG_DIR, 'models')
+
+// qvac's own parakeet-cpp C++ engine CLI (binary name `parakeet`), built from
+// tetherto/qvac-ext-lib-whisper.cpp/parakeet-cpp. We benchmark this directly
+// (engine-only `--bench` inference_ms) instead of the Bare/Node addon, so the
+// timing is apples-to-apples with mudler's engine-only `bench`.
+const QVAC_ENGINE_DIR = process.env.QVAC_ENGINE_DIR || path.resolve(PKG_DIR, '../qvac-ext-lib-whisper.cpp/parakeet-cpp')
+const QVAC_CLI = process.env.QVAC_PARAKEET_CLI ||
+  ['build/parakeet', 'build-metal/parakeet', 'build-vk/parakeet', 'build-cl/parakeet']
+    .map(p => path.join(QVAC_ENGINE_DIR, p)).find(p => fs.existsSync(p)) ||
+  path.join(QVAC_ENGINE_DIR, 'build/parakeet')
 const SAMPLES = path.join(PKG_DIR, 'examples/samples')
 const OUT_DIR = path.join(__dirname, 'out')
 const CLIP_DIR = path.join(OUT_DIR, 'clips')
@@ -182,24 +194,31 @@ function wer (refText, hypText) {
 // ---------------------------------------------------------------------------
 // engine runners
 // ---------------------------------------------------------------------------
+// qvac's parakeet-cpp engine, one `--bench` invocation per clip. We read the
+// engine-only `inference_ms.samples` (mel + encoder + decoder; excludes model
+// load + wav read) so it matches mudler's engine-only `bench`.
 function runQvac (modelType, useGPU) {
   const backend = useGPU ? 'gpu' : 'cpu'
-  console.log(`[qvac] ${modelType} ${backend}`)
-  const out = path.join(OUT_DIR, `qvac-${modelType}-${backend}.json`)
-  const args = ['benchmarks/comparison/qvac-bench.js',
-    '--model', path.join(QVAC_MODELS, MODEL_MAP[modelType].qvac),
-    '--gpu', useGPU ? 'true' : 'false', '--threads', String(THREADS),
-    '--runs', String(RUNS), '--warmup', String(WARMUP),
-    '--out', out, '--clips', CLIPS.map(c => c.wav).join(',')]
-  const res = spawnSync('bare', args, { cwd: PKG_DIR, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env: process.env })
-  if (res.status !== 0 || !fs.existsSync(out)) {
-    console.error((res.stderr || '').slice(-2000))
-    throw new Error(`qvac driver failed for ${modelType} ${backend}`)
-  }
-  const j = JSON.parse(fs.readFileSync(out, 'utf8'))
+  console.log(`[qvac] ${modelType} ${backend} (parakeet-cpp engine --bench)`)
+  const cfg = MODEL_MAP[modelType]
   const byClip = {}
-  for (const c of j.clips) byClip[path.basename(c.path)] = { proc: stats(c.procMs), text: c.text, audioSec: c.audioSec }
-  return { backendId: j.backendId, byClip }
+  let backendId = null
+  for (const c of CLIPS) {
+    const out = path.join(OUT_DIR, `qvac-${modelType}-${backend}-${c.id}.json`)
+    const args = ['--model', path.join(QVAC_MODELS, cfg.qvac), '--wav', c.wav,
+      '--bench', '--bench-runs', String(RUNS), '--bench-warmup', String(WARMUP),
+      '--bench-json', out, '--threads', String(THREADS),
+      '--n-gpu-layers', useGPU ? '1' : '0']
+    const res = spawnSync(QVAC_CLI, args, { cwd: PKG_DIR, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env: process.env })
+    if (res.status !== 0 || !fs.existsSync(out)) {
+      console.error((res.stderr || '').slice(-2000))
+      throw new Error(`qvac engine bench failed for ${modelType} ${backend} ${c.id}`)
+    }
+    const j = JSON.parse(fs.readFileSync(out, 'utf8'))
+    backendId = j.backend
+    byClip[`${c.id}.wav`] = { proc: stats(j.inference_ms.samples), text: j.transcript, audioSec: j.audio_seconds }
+  }
+  return { backendId, byClip }
 }
 
 function runMudler (modelType, useGPU) {
@@ -246,15 +265,20 @@ function runFleurs () {
   const backend = useGPU ? 'gpu' : 'cpu'
   console.log(`[fleurs] TDT ${backend} over ${manifest.length} utterances`)
 
-  // qvac (one process, deterministic single pass)
-  const qOut = path.join(OUT_DIR, `fleurs-qvac-${backend}.json`)
-  const qArgs = ['benchmarks/comparison/qvac-bench.js', '--model', path.join(QVAC_MODELS, MODEL_MAP.tdt.qvac),
-    '--gpu', useGPU ? 'true' : 'false', '--threads', String(THREADS), '--runs', '1', '--warmup', '0',
-    '--out', qOut, '--clips', wavs.join(',')]
-  const qr = spawnSync('bare', qArgs, { cwd: PKG_DIR, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env: process.env })
-  if (qr.status !== 0 || !fs.existsSync(qOut)) { console.error((qr.stderr || '').slice(-2000)); throw new Error('fleurs qvac run failed') }
+  // qvac parakeet-cpp engine: one bench (1 run) per utterance, transcript only.
+  const qDir = path.join(OUT_DIR, `fleurs-qvac-${backend}`)
+  if (!fs.existsSync(qDir)) fs.mkdirSync(qDir, { recursive: true })
   const qText = {}
-  for (const c of JSON.parse(fs.readFileSync(qOut, 'utf8')).clips) qText[path.basename(c.path)] = c.text
+  for (const w of wavs) {
+    const key = path.basename(w)
+    const out = path.join(qDir, key + '.json')
+    const qArgs = ['--model', path.join(QVAC_MODELS, MODEL_MAP.tdt.qvac), '--wav', w,
+      '--bench', '--bench-runs', '1', '--bench-warmup', '0', '--bench-json', out,
+      '--threads', String(THREADS), '--n-gpu-layers', useGPU ? '1' : '0']
+    const qr = spawnSync(QVAC_CLI, qArgs, { cwd: PKG_DIR, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env: process.env })
+    if (qr.status !== 0 || !fs.existsSync(out)) { console.error((qr.stderr || '').slice(-2000)); throw new Error(`fleurs qvac run failed for ${key}`) }
+    qText[key] = JSON.parse(fs.readFileSync(out, 'utf8')).transcript
+  }
 
   // mudler (one bench pass, each clip once)
   const manPath = path.join(OUT_DIR, `fleurs-manifest-${backend}.txt`)
@@ -346,7 +370,7 @@ function renderMd (meta, rows, fleurs) {
   L.push('')
   L.push('**RTF** = proc/audio (lower is faster) · **WER** lower is better.')
   L.push('')
-  L.push('> qvac time = full JS `run()` wall (product-level, includes Bare/JS tax); mudler time = engine-only `transcribe_pcm`. Same canonical clips, same threads, same quant level. Each engine loads its own native q8_0 GGUF (the two schemas are not interchangeable).')
+  L.push('> Both timings are **engine-only C++ inference** (mel + encoder + decoder), excluding model load and wav read — qvac = `parakeet-cpp --bench` (`inference_ms`), mudler = `parakeet-cli bench` (`transcribe_pcm`). Same canonical clips, same threads, same quant level. Each engine loads its own native q8_0 GGUF (the two schemas are not interchangeable).')
   L.push('')
   L.push('## Model types in this benchmark')
   L.push('')
@@ -529,7 +553,7 @@ qvac <code>transcription-parakeet</code> (ggml addon) vs <code>mudler/parakeet.c
 Generated ${esc(meta.generatedAt)} · Platform <code>${esc(meta.platform)}</code> (${esc(PLATFORM_NOTE)})<br/>
 Quant <code>${esc(meta.quant)}</code> · Threads ${meta.threads} · Warmup ${meta.warmup} · Timed reps ${meta.runs}<br/>
 <strong>RTF</strong> = proc/audio (lower is faster) · <strong>WER</strong> lower is better<br/>
-qvac time = full JS <code>run()</code> wall (incl. Bare/JS tax); mudler = engine-only <code>transcribe_pcm</code>.
+Both timings are <strong>engine-only C++ inference</strong> (mel + encoder + decoder), excluding model load + wav read — qvac = <code>parakeet-cpp --bench</code> (inference_ms), mudler = <code>parakeet-cli bench</code> (transcribe_pcm).
 </div>
 <h2>Model types in this benchmark</h2>
 <div class="meta">All three share the same FastConformer audio encoder; they differ in how they turn encoder output into text. Sortformer (speaker diarization) is qvac-only and not benchmarked here.</div>
@@ -634,9 +658,12 @@ function main () {
     console.log(`Re-rendered report-${PLATFORM_SLUG}.{md,html} from ${path.basename(renderFrom)}`)
     return
   }
-  console.log('Parakeet comparison harness (multi-clip + WER)')
+  console.log('Parakeet comparison harness (engine-only, multi-clip + WER)')
   console.log(`  models: ${MODELS.join(', ')} · gpu: ${GPU_MODES.join(', ')} · runs ${RUNS} (warmup ${WARMUP}) · threads ${THREADS}`)
-  if (!fs.existsSync(MUDLER_CLI)) throw new Error(`parakeet-cli not found at ${MUDLER_CLI}`)
+  console.log(`  qvac engine: ${QVAC_CLI}`)
+  console.log(`  mudler engine: ${MUDLER_CLI}`)
+  if (!fs.existsSync(QVAC_CLI)) throw new Error(`qvac parakeet-cpp CLI not found at ${QVAC_CLI} (set QVAC_PARAKEET_CLI or build it — see README)`)
+  if (!fs.existsSync(MUDLER_CLI)) throw new Error(`mudler parakeet-cli not found at ${MUDLER_CLI}`)
   if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true })
   buildClips()
   console.log('  clips: ' + CLIPS.map(c => `${c.id}(${c.audioSec.toFixed(1)}s/${c.lang})`).join(', '))

@@ -1,12 +1,12 @@
 # Parakeet Engine Comparison: qvac vs mudler/parakeet.cpp
 
-Generated: 2026-06-17T08:14:54.856Z  
+Generated: 2026-06-17T12:50:04.605Z  
 Platform: `darwin-arm64` (Apple Silicon, Metal)  
 Quant: `q8_0` · Threads: 4 · Warmup: 1 · Timed reps: 5
 
 **RTF** = proc/audio (lower is faster) · **WER** lower is better.
 
-> qvac time = full JS `run()` wall (product-level, includes Bare/JS tax); mudler time = engine-only `transcribe_pcm`. Same canonical clips, same threads, same quant level. Each engine loads its own native q8_0 GGUF (the two schemas are not interchangeable).
+> Both timings are **engine-only C++ inference** (mel + encoder + decoder), excluding model load and wav read — qvac = `parakeet-cpp --bench` (`inference_ms`), mudler = `parakeet-cli bench` (`transcribe_pcm`). Same canonical clips, same threads, same quant level. Each engine loads its own native q8_0 GGUF (the two schemas are not interchangeable).
 
 ## Model types in this benchmark
 
@@ -41,18 +41,18 @@ What each project supports out of the box (CPU is available everywhere; **bold**
 
 | Model | Backend | Engine | Proc ms | RTF | Faster |
 |-------|---------|--------|--------:|----:|--------|
-| TDT | CPU | qvac | 1547.8 | 0.0769 | **qvac** 1.37x |
-| TDT | CPU | mudler | 2121.2 | 0.1054 |  |
-| TDT | Metal | qvac | 521.3 | 0.0259 |  |
-| TDT | Metal | mudler | 515.5 | 0.0256 | **mudler** 1.01x |
-| CTC | CPU | qvac | 1546.2 | 0.0768 | **qvac** 1.41x |
-| CTC | CPU | mudler | 2181.9 | 0.1084 |  |
-| CTC | Metal | qvac | 450.0 | 0.0224 |  |
-| CTC | Metal | mudler | 427.2 | 0.0212 | **mudler** 1.05x |
-| EOU | CPU | qvac | 721.2 | 0.0358 |  |
-| EOU | CPU | mudler | 696.6 | 0.0346 | **mudler** 1.04x |
-| EOU | Metal | qvac | 397.3 | 0.0197 |  |
-| EOU | Metal | mudler | 347.0 | 0.0172 | **mudler** 1.14x |
+| TDT | CPU | qvac | 1719.0 | 0.0854 | **qvac** 1.24x |
+| TDT | CPU | mudler | 2132.5 | 0.1059 |  |
+| TDT | Metal | qvac | 626.9 | 0.0311 | **qvac** 1.12x |
+| TDT | Metal | mudler | 701.7 | 0.0348 |  |
+| CTC | CPU | qvac | 2469.4 | 0.1227 | **qvac** 1.18x |
+| CTC | CPU | mudler | 2903.5 | 0.1442 |  |
+| CTC | Metal | qvac | 570.4 | 0.0283 |  |
+| CTC | Metal | mudler | 496.8 | 0.0247 | **mudler** 1.15x |
+| EOU | CPU | qvac | 928.8 | 0.0461 |  |
+| EOU | CPU | mudler | 859.9 | 0.0427 | **mudler** 1.08x |
+| EOU | Metal | qvac | 408.8 | 0.0203 |  |
+| EOU | Metal | mudler | 393.4 | 0.0195 | **mudler** 1.04x |
 
 ## 2. RTF vs clip duration (speed stability across lengths)
 
@@ -60,61 +60,61 @@ What each project supports out of the box (CPU is available everywhere; **bold**
 
 | Clip | Lang | Duration s | qvac RTF | mudler RTF | Faster |
 |------|------|-----------:|---------:|-----------:|--------|
-| jfk | en | 11.0 | 0.0751 | 0.0986 | qvac 1.31x |
-| alice | en | 20.1 | 0.0769 | 0.1054 | qvac 1.37x |
-| croatian | hr | 27.4 | 0.0841 | 0.1048 | qvac 1.25x |
-| french | fr | 29.4 | 0.0872 | 0.1169 | qvac 1.34x |
-| spanish60 | es | 60.0 | 0.1008 | 0.1273 | qvac 1.26x |
+| jfk | en | 11.0 | 0.0843 | 0.1021 | qvac 1.21x |
+| alice | en | 20.1 | 0.0854 | 0.1059 | qvac 1.24x |
+| croatian | hr | 27.4 | 0.0832 | 0.1065 | qvac 1.28x |
+| french | fr | 29.4 | 0.0915 | 0.1201 | qvac 1.31x |
+| spanish60 | es | 60.0 | 0.1012 | 0.1564 | qvac 1.55x |
 
 ### TDT — Metal
 
 | Clip | Lang | Duration s | qvac RTF | mudler RTF | Faster |
 |------|------|-----------:|---------:|-----------:|--------|
-| jfk | en | 11.0 | 0.0250 | 0.0235 | mudler 1.06x |
-| alice | en | 20.1 | 0.0259 | 0.0256 | mudler 1.01x |
-| croatian | hr | 27.4 | 0.0273 | 0.0255 | mudler 1.07x |
-| french | fr | 29.4 | 0.0283 | 0.0273 | mudler 1.04x |
-| spanish60 | es | 60.0 | 0.0340 | 0.0316 | mudler 1.08x |
+| jfk | en | 11.0 | 0.0275 | 0.0266 | mudler 1.03x |
+| alice | en | 20.1 | 0.0311 | 0.0348 | qvac 1.12x |
+| croatian | hr | 27.4 | 0.0355 | 0.0384 | qvac 1.08x |
+| french | fr | 29.4 | 0.0399 | 0.0380 | mudler 1.05x |
+| spanish60 | es | 60.0 | 0.0483 | 0.0448 | mudler 1.08x |
 
 ### CTC — CPU
 
 | Clip | Lang | Duration s | qvac RTF | mudler RTF | Faster |
 |------|------|-----------:|---------:|-----------:|--------|
-| jfk | en | 11.0 | 0.0824 | 0.0979 | qvac 1.19x |
-| alice | en | 20.1 | 0.0768 | 0.1084 | qvac 1.41x |
-| croatian | hr | 27.4 | 0.0831 | 0.1044 | qvac 1.26x |
-| french | fr | 29.4 | 0.0830 | 0.1121 | qvac 1.35x |
-| spanish60 | es | 60.0 | 0.1016 | 0.1293 | qvac 1.27x |
+| jfk | en | 11.0 | 0.1475 | 0.1411 | mudler 1.04x |
+| alice | en | 20.1 | 0.1227 | 0.1442 | qvac 1.18x |
+| croatian | hr | 27.4 | 0.1225 | 0.1524 | qvac 1.24x |
+| french | fr | 29.4 | 0.1257 | 0.1690 | qvac 1.34x |
+| spanish60 | es | 60.0 | 0.1427 | 0.1880 | qvac 1.32x |
 
 ### CTC — Metal
 
 | Clip | Lang | Duration s | qvac RTF | mudler RTF | Faster |
 |------|------|-----------:|---------:|-----------:|--------|
-| jfk | en | 11.0 | 0.0222 | 0.0208 | mudler 1.07x |
-| alice | en | 20.1 | 0.0224 | 0.0212 | mudler 1.05x |
-| croatian | hr | 27.4 | 0.0236 | 0.0229 | mudler 1.03x |
-| french | fr | 29.4 | 0.0239 | 0.0230 | mudler 1.04x |
-| spanish60 | es | 60.0 | 0.0306 | 0.0279 | mudler 1.09x |
+| jfk | en | 11.0 | 0.0220 | 0.0199 | mudler 1.10x |
+| alice | en | 20.1 | 0.0283 | 0.0247 | mudler 1.15x |
+| croatian | hr | 27.4 | 0.0332 | 0.0275 | mudler 1.21x |
+| french | fr | 29.4 | 0.0307 | 0.0282 | mudler 1.09x |
+| spanish60 | es | 60.0 | 0.0396 | 0.0331 | mudler 1.20x |
 
 ### EOU — CPU
 
 | Clip | Lang | Duration s | qvac RTF | mudler RTF | Faster |
 |------|------|-----------:|---------:|-----------:|--------|
-| jfk | en | 11.0 | 0.0366 | 0.0306 | mudler 1.20x |
-| alice | en | 20.1 | 0.0358 | 0.0346 | mudler 1.04x |
-| croatian | hr | 27.4 | 0.0370 | 0.0343 | mudler 1.08x |
-| french | fr | 29.4 | 0.0370 | 0.0351 | mudler 1.06x |
-| spanish60 | es | 60.0 | 0.0404 | 0.0409 | qvac 1.01x |
+| jfk | en | 11.0 | 0.0471 | 0.0387 | mudler 1.22x |
+| alice | en | 20.1 | 0.0461 | 0.0427 | mudler 1.08x |
+| croatian | hr | 27.4 | 0.0419 | 0.0449 | qvac 1.07x |
+| french | fr | 29.4 | 0.0459 | 0.0483 | qvac 1.05x |
+| spanish60 | es | 60.0 | 0.0488 | 0.0568 | qvac 1.16x |
 
 ### EOU — Metal
 
 | Clip | Lang | Duration s | qvac RTF | mudler RTF | Faster |
 |------|------|-----------:|---------:|-----------:|--------|
-| jfk | en | 11.0 | 0.0183 | 0.0151 | mudler 1.22x |
-| alice | en | 20.1 | 0.0197 | 0.0172 | mudler 1.14x |
-| croatian | hr | 27.4 | 0.0191 | 0.0156 | mudler 1.22x |
-| french | fr | 29.4 | 0.0196 | 0.0157 | mudler 1.25x |
-| spanish60 | es | 60.0 | 0.0225 | 0.0202 | mudler 1.11x |
+| jfk | en | 11.0 | 0.0189 | 0.0168 | mudler 1.12x |
+| alice | en | 20.1 | 0.0203 | 0.0195 | mudler 1.04x |
+| croatian | hr | 27.4 | 0.0200 | 0.0193 | mudler 1.04x |
+| french | fr | 29.4 | 0.0209 | 0.0201 | mudler 1.04x |
+| spanish60 | es | 60.0 | 0.0268 | 0.0242 | mudler 1.11x |
 
 ## 3. Accuracy (WER)
 
@@ -125,7 +125,7 @@ Reference WER uses ground-truth transcripts (English clips). Agreement = WER bet
 | TDT | CPU | jfk | en | 0.0% | 0.0% | 0.0% |
 | TDT | CPU | alice | en | 0.0% | 0.0% | 0.0% |
 | TDT | CPU | croatian | hr | n/a | n/a | 9.8% |
-| TDT | CPU | french | fr | n/a | n/a | 1.4% |
+| TDT | CPU | french | fr | n/a | n/a | 0.0% |
 | TDT | CPU | spanish60 | es | n/a | n/a | 54.5% |
 | TDT | Metal | jfk | en | 0.0% | 0.0% | 0.0% |
 | TDT | Metal | alice | en | 0.0% | 0.0% | 0.0% |

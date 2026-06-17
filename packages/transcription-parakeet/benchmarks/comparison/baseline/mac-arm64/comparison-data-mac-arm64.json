@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-06-17T08:14:54.856Z",
+    "generatedAt": "2026-06-17T12:50:04.605Z",
     "platform": "darwin-arm64",
     "runs": 5,
     "warmup": 1,
@@ -44,8 +44,8 @@
       "modelType": "tdt",
       "label": "TDT 0.6B v3 (multilingual)",
       "useGPU": false,
-      "backendId": 0,
-      "mudlerLoadMs": 538.031,
+      "backendId": "ggml-cpu",
+      "mudlerLoadMs": 543.213,
       "clips": [
         {
           "id": "jfk",
@@ -53,28 +53,28 @@
           "audioSec": 11,
           "qvac": {
             "procMs": {
-              "mean": 826.3571666002274,
-              "min": 787.4447499997914,
-              "max": 967.4366250000894,
-              "stddev": 70.57486280553833,
-              "p50": 791.5528340004385,
-              "p95": 932.8382332000881,
+              "mean": 927.6850000000001,
+              "min": 925.613,
+              "max": 933.246,
+              "stddev": 2.8884724682779788,
+              "p50": 925.969,
+              "p95": 932.1555999999999,
               "count": 5
             },
-            "rtf": 0.07512337878183885,
+            "rtf": 0.08433500000000001,
             "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country."
           },
           "mudler": {
             "procMs": {
-              "mean": 1084.56,
-              "min": 1080.593,
-              "max": 1089.165,
-              "stddev": 2.942649418466274,
-              "p50": 1084.077,
-              "p95": 1088.578,
+              "mean": 1123.2294,
+              "min": 1066.204,
+              "max": 1203.169,
+              "stddev": 46.376251131802405,
+              "p50": 1108.515,
+              "p95": 1190.5118,
               "count": 5
             },
-            "rtf": 0.09859636363636363,
+            "rtf": 0.10211176363636364,
             "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country."
           },
           "werRefQvac": 0,
@@ -87,28 +87,28 @@
           "audioSec": 20.1335,
           "qvac": {
             "procMs": {
-              "mean": 1547.8334832001478,
-              "min": 1519.471250001341,
-              "max": 1617.9201250001788,
-              "stddev": 36.08752249886991,
-              "p50": 1534.3576250001788,
-              "p95": 1603.1487082000822,
+              "mean": 1719.0258000000001,
+              "min": 1704.105,
+              "max": 1757.325,
+              "stddev": 19.383780471311585,
+              "p50": 1712.085,
+              "p95": 1748.3656,
               "count": 5
             },
-            "rtf": 0.07687851010505614,
+            "rtf": 0.08538136935952517,
             "text": "Alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it. And what is the use of a book? thought Alice, without pictures or conversations."
           },
           "mudler": {
             "procMs": {
-              "mean": 2121.2322000000004,
-              "min": 2088.253,
-              "max": 2200.315,
-              "stddev": 43.56762905828136,
-              "p50": 2090.455,
-              "p95": 2187.6226,
+              "mean": 2132.523,
+              "min": 2114.189,
+              "max": 2155.952,
+              "stddev": 15.917551934892664,
+              "p50": 2129.657,
+              "p95": 2153.7676,
               "count": 5
             },
-            "rtf": 0.10535834306007402,
+            "rtf": 0.10591913974222067,
             "text": "Alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it. And what is the use of a book? thought Alice, without pictures or conversations."
           },
           "werRefQvac": 0,
@@ -121,28 +121,28 @@
           "audioSec": 27.3706875,
           "qvac": {
             "procMs": {
-              "mean": 2302.0122664000837,
-              "min": 2197.9589579999447,
-              "max": 2369.98987499997,
-              "stddev": 56.68931762640276,
-              "p50": 2315.885790999979,
-              "p95": 2360.5193250000475,
+              "mean": 2277.4378,
+              "min": 2188.666,
+              "max": 2357.497,
+              "stddev": 58.358242541735194,
+              "p50": 2283.767,
+              "p95": 2349.066,
               "count": 5
             },
-            "rtf": 0.08410502170981579,
+            "rtf": 0.0832071843867127,
             "text": "Dobrad, ja se zavam Nikola Počiša, ja živim u Kipu pre skoro 11 mjeseci. Imam doktoratu u matematiku i bio sam profesoran na univerzitetu u Torontu. Moja koncentracija u matematika je u mesta na više inteligenciju i to je i sam."
           },
           "mudler": {
             "procMs": {
-              "mean": 2867.9809999999998,
-              "min": 2764.752,
-              "max": 2990.586,
-              "stddev": 89.65638990724531,
-              "p50": 2812.574,
-              "p95": 2984.3541999999998,
+              "mean": 2914.4542,
+              "min": 2876.993,
+              "max": 2977.895,
+              "stddev": 37.431263224208735,
+              "p50": 2910.389,
+              "p95": 2968.155,
               "count": 5
             },
-            "rtf": 0.1047829380387858,
+            "rtf": 0.10648085669168626,
             "text": "Dobrodan, ja se zavam Nikola Počiša, ja živim u Kipu pre skoro 11 mjeseci. Imam doktoratu u matematiku i bio sam profesoran na univerzitetu u Torontu. Moja koncentracija u matematika je u mjestu na više inteligenciju i tejed, i sam."
           },
           "werRefQvac": null,
@@ -155,33 +155,33 @@
           "audioSec": 29.376,
           "qvac": {
             "procMs": {
-              "mean": 2561.114842199534,
-              "min": 2496.3190839998424,
-              "max": 2707.6527089998126,
-              "stddev": 78.83118342548354,
-              "p50": 2528.757291998714,
-              "p95": 2681.3231339998542,
+              "mean": 2687.917,
+              "min": 2646.958,
+              "max": 2716.491,
+              "stddev": 26.02990720690334,
+              "p50": 2699.495,
+              "p95": 2714.7538,
               "count": 5
             },
-            "rtf": 0.08718392028184688,
-            "text": "Bonjour, est-ce que vous pouvez me dire se trouve la tradition de ma trelle proche, s'il vous plaît? Je suis désolé, je n'ai pas trop bien passé, mais je voudrais réserver un tableau pour 12 personnes ce soir. Excuse-moi, je cherchais un bon endroit pour acheter des souvenirs typiques de la région avec vous des suggestions. Je vais assurer Montréal pendant trois mois pour travailler."
+            "rtf": 0.09150044253812636,
+            "text": "Bonjour, est-ce que vous pouvez me dire se trouve la tradition de ma trelle proche, s'il vous plaît? Je suis désolé, je n'ai pas trop bien passé, mais je voudrais réserver un tableau pour 12 personnes ce soir. Excusez-moi, je cherchais un bon endroit pour acheter des souvenirs typiques de la région avec vous des suggestions. Je vais assurer Montréal pendant trois mois pour travailler."
           },
           "mudler": {
             "procMs": {
-              "mean": 3435.415,
-              "min": 3317.381,
-              "max": 3635.994,
-              "stddev": 109.87206176640184,
-              "p50": 3432.924,
-              "p95": 3595.5992,
+              "mean": 3527.4898000000003,
+              "min": 3336.387,
+              "max": 3967.387,
+              "stddev": 233.74404606012965,
+              "p50": 3386.15,
+              "p95": 3887.3176000000003,
               "count": 5
             },
-            "rtf": 0.11694631672113288,
+            "rtf": 0.12008067129629629,
             "text": "Bonjour, est-ce que vous pouvez me dire se trouve la tradition de ma trelle proche, s'il vous plaît? Je suis désolé, je n'ai pas trop bien passé, mais je voudrais réserver un tableau pour 12 personnes ce soir. Excusez-moi, je cherchais un bon endroit pour acheter des souvenirs typiques de la région avec vous des suggestions. Je vais assurer Montréal pendant trois mois pour travailler."
           },
           "werRefQvac": null,
           "werRefMudler": null,
-          "werAgreement": 0.014492753623188406
+          "werAgreement": 0
         },
         {
           "id": "spanish60",
@@ -189,28 +189,28 @@
           "audioSec": 60,
           "qvac": {
             "procMs": {
-              "mean": 6046.647341600061,
-              "min": 5947.963458999991,
-              "max": 6229.018791999668,
-              "stddev": 103.06870837641614,
-              "p50": 6013.968541000038,
-              "p95": 6199.892791799828,
+              "mean": 6073.6942,
+              "min": 5937.583,
+              "max": 6233.174,
+              "stddev": 97.91248447547446,
+              "p50": 6080.772,
+              "p95": 6206.5528,
               "count": 5
             },
-            "rtf": 0.10077745569333435,
+            "rtf": 0.10122823666666667,
             "text": "But lent, Multivack appeared the sufficient more complex in formula, and the 14th of May of 2061 in reality. The energy of the Sol was almacenated, modificated and utilized directly in the planet. Seven years had been to improve the glory of the game, and Adelopov finally escaped the celebration public to refuge where nobody."
           },
           "mudler": {
             "procMs": {
-              "mean": 7637.6628,
-              "min": 7432.423,
-              "max": 7962.836,
-              "stddev": 227.0732384746386,
-              "p50": 7480.989,
-              "p95": 7942.640600000001,
+              "mean": 9385.140600000002,
+              "min": 8304.158,
+              "max": 10805.984,
+              "stddev": 883.6414000644381,
+              "p50": 9219.556,
+              "p95": 10620.5072,
               "count": 5
             },
-            "rtf": 0.12729438,
+            "rtf": 0.15641901000000005,
             "text": "But lent, Multivack appeared the sufficient more complex in formula, and the 14th of May of 2061, the energy of the Sol was almacenated, modificated and utilized directly in the planet. Seven years had to impegn the glory of the game, and Adelopov finally escaped the celebration public to refuge where nobody in the desert cameras subterranean where they were parties of the work of Multivack. With assistance, ociosa, classification with clicks satisfied and Multivack had its vacuum."
           },
           "werRefQvac": null,
@@ -223,8 +223,8 @@
       "modelType": "tdt",
       "label": "TDT 0.6B v3 (multilingual)",
       "useGPU": true,
-      "backendId": 1,
-      "mudlerLoadMs": 697.489,
+      "backendId": "ggml-mtl0",
+      "mudlerLoadMs": 845.518,
       "clips": [
         {
           "id": "jfk",
@@ -232,28 +232,28 @@
           "audioSec": 11,
           "qvac": {
             "procMs": {
-              "mean": 274.58146659992633,
-              "min": 272.9110000003129,
-              "max": 278.3190000001341,
-              "stddev": 2.0162232688717,
-              "p50": 273.54320799931884,
-              "p95": 277.6665500000119,
+              "mean": 301.9792,
+              "min": 284.669,
+              "max": 312.407,
+              "stddev": 9.798508608966984,
+              "p50": 306.802,
+              "p95": 311.4896,
               "count": 5
             },
-            "rtf": 0.024961951509084212,
+            "rtf": 0.027452654545454546,
             "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country."
           },
           "mudler": {
             "procMs": {
-              "mean": 258.3172,
-              "min": 257.94,
-              "max": 259.258,
-              "stddev": 0.4761913060945054,
-              "p50": 258.121,
-              "p95": 259.036,
+              "mean": 292.2022,
+              "min": 269.295,
+              "max": 315.81,
+              "stddev": 16.79076114296192,
+              "p50": 291.606,
+              "p95": 313.6362,
               "count": 5
             },
-            "rtf": 0.023483381818181822,
+            "rtf": 0.026563836363636364,
             "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country."
           },
           "werRefQvac": 0,
@@ -266,28 +266,28 @@
           "audioSec": 20.1335,
           "qvac": {
             "procMs": {
-              "mean": 521.271008399874,
-              "min": 518.5335419997573,
-              "max": 523.5437079984695,
-              "stddev": 1.7122592811303585,
-              "p50": 521.7014160007238,
-              "p95": 523.2830997988582,
+              "mean": 626.9331999999999,
+              "min": 571.595,
+              "max": 675.256,
+              "stddev": 35.32445169793863,
+              "p50": 635.582,
+              "p95": 669.341,
               "count": 5
             },
-            "rtf": 0.02589072979858812,
+            "rtf": 0.0311388084535724,
             "text": "Alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it. And what is the use of a book? thought Alice, without pictures or conversations."
           },
           "mudler": {
             "procMs": {
-              "mean": 515.4523999999999,
-              "min": 501.598,
-              "max": 550.877,
-              "stddev": 18.842648567544828,
-              "p50": 503.164,
-              "p95": 544.5028,
+              "mean": 701.6514,
+              "min": 652.245,
+              "max": 750.279,
+              "stddev": 36.96016174531709,
+              "p50": 705.302,
+              "p95": 746.6022,
               "count": 5
             },
-            "rtf": 0.025601728462512723,
+            "rtf": 0.03484994660640226,
             "text": "Alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it. And what is the use of a book? thought Alice, without pictures or conversations."
           },
           "werRefQvac": 0,
@@ -300,28 +300,28 @@
           "audioSec": 27.3706875,
           "qvac": {
             "procMs": {
-              "mean": 747.6619580008089,
-              "min": 720.049458000809,
-              "max": 780.5221250001341,
-              "stddev": 24.484318118463435,
-              "p50": 746.6061660014093,
-              "p95": 778.3168582003564,
+              "mean": 971.3848,
+              "min": 901.702,
+              "max": 1007.646,
+              "stddev": 41.89372729848706,
+              "p50": 998.925,
+              "p95": 1007.0301999999999,
               "count": 5
             },
-            "rtf": 0.02731615557704968,
+            "rtf": 0.03548996778926302,
             "text": "Dobrad, ja se zivam Nikolo Počiša, ja živim u Kipu pre skoro 11 mjeseci. Imam doktoratu matematiku i bio sam profesoran na universitetu u Torontu. Moja koncentracija u matematika je u miestu na vesničkuje inteligencije i to tejeder i sam."
           },
           "mudler": {
             "procMs": {
-              "mean": 697.6372,
-              "min": 682.453,
-              "max": 718.783,
-              "stddev": 15.193620534948234,
-              "p50": 691.267,
-              "p95": 717.5472,
+              "mean": 1051.3906,
+              "min": 1042.114,
+              "max": 1069.716,
+              "stddev": 10.661772940744823,
+              "p50": 1045.596,
+              "p95": 1067.1925999999999,
               "count": 5
             },
-            "rtf": 0.025488479700929684,
+            "rtf": 0.03841301462400268,
             "text": "Dobrad, ja se zavam Nikola Počiša, ja živim u Kipu pre skoro 11 mjeseci. Imam doktoratu u matematiku i bio sam profesoran na univerzitetu u Torontu. Moja koncentracija u matematika je u mjestu na više inteligenciju i tejed, i sam."
           },
           "werRefQvac": null,
@@ -334,28 +334,28 @@
           "audioSec": 29.376,
           "qvac": {
             "procMs": {
-              "mean": 829.9626832000911,
-              "min": 806.9451250005513,
-              "max": 852.2807080000639,
-              "stddev": 20.074497201199346,
-              "p50": 832.016249999404,
-              "p95": 852.113157999888,
+              "mean": 1172.5896,
+              "min": 1127.538,
+              "max": 1208.919,
+              "stddev": 30.379722767661974,
+              "p50": 1179.596,
+              "p95": 1206.7534,
               "count": 5
             },
-            "rtf": 0.028253086982573904,
+            "rtf": 0.039916584967320264,
             "text": "Bonjour, est-vous que vous pouvez me direct se trouve l'atraction de maître, s'il plaît. Je suis désolé, je n's pas tropien passé mais je voudra réserver un table pour 12 personnes ce soir. Excusez moi, je cherchai un bon endroit pour acheter des souvenirs typiques de la région avec vous des suggestions. Je va sure Montreal pendant trois pour travail."
           },
           "mudler": {
             "procMs": {
-              "mean": 800.6872,
-              "min": 784.794,
-              "max": 831.6,
-              "stddev": 18.348220506632238,
-              "p50": 788.052,
-              "p95": 827.6794,
+              "mean": 1116.6218000000001,
+              "min": 1063.227,
+              "max": 1182.615,
+              "stddev": 45.59489458875848,
+              "p50": 1134.61,
+              "p95": 1173.2816,
               "count": 5
             },
-            "rtf": 0.027256508714596946,
+            "rtf": 0.038011363017429196,
             "text": "Bonjour, est-ce que vous pouvez me dire se trouve la tradition de ma trelle proche, s'il vous plaît? Je suis désolé, je n'ai pas trop bien passé, mais je voudrais réserver un tableau pour 12 personnes ce soir. Excuse-moi, je cherche un bon endroit pour acheter des souvenirs typiques de la région avec vous des suggestions. Je vais assurer Montréal pendant trois mois pour travailler."
           },
           "werRefQvac": null,
@@ -368,28 +368,28 @@
           "audioSec": 60,
           "qvac": {
             "procMs": {
-              "mean": 2041.1013336002827,
-              "min": 2039.192250000313,
-              "max": 2042.3246250003576,
-              "stddev": 1.065190939559839,
-              "p50": 2041.569958999753,
-              "p95": 2042.1777000002562,
+              "mean": 2896.1817999999994,
+              "min": 2806.845,
+              "max": 3010.899,
+              "stddev": 72.41835936666892,
+              "p50": 2885.536,
+              "p95": 2996.3402,
               "count": 5
             },
-            "rtf": 0.034018355560004716,
+            "rtf": 0.04826969666666666,
             "text": "But lentemente approted the sufficient to responds more complex in formation, and the 14610000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000. The energy of the Sol was almacenated, modificated and utilizated directom in the planet. Seven years had to impegat the glory of the accom, and Adel Lupov finally escappen of the celebration public to refugi. In the desertes subterranears where they were parties of the enter of Multiv. With assists ociosa, classificated data on clicks satis and Multiv had"
           },
           "mudler": {
             "procMs": {
-              "mean": 1894.5078,
-              "min": 1885.398,
-              "max": 1905.133,
-              "stddev": 6.497436614542733,
-              "p50": 1892.512,
-              "p95": 1903.5272,
+              "mean": 2686.3424,
+              "min": 2595.25,
+              "max": 2744.113,
+              "stddev": 57.22415976700745,
+              "p50": 2720.765,
+              "p95": 2740.8776,
               "count": 5
             },
-            "rtf": 0.03157513,
+            "rtf": 0.04477237333333333,
             "text": "But lent, Multivack appeared the sufficient more complex in formula, and the 14th of May of 2061, the energy of the Sol was almacenated, modificated and utilized directly in the planet. Seven years had been to improve the glory of the game, and Adelopov finally escaped the celebration public to refuge where nobody in the desert cameras subterranean where they were parties of the work of Multivack. With assistance, ociosa, classification with clicks satisfied and Multivack had its vacuum."
           },
           "werRefQvac": null,
@@ -402,8 +402,8 @@
       "modelType": "ctc",
       "label": "CTC 0.6B (English)",
       "useGPU": false,
-      "backendId": 0,
-      "mudlerLoadMs": 506.675,
+      "backendId": "ggml-cpu",
+      "mudlerLoadMs": 510.119,
       "clips": [
         {
           "id": "jfk",
@@ -411,28 +411,28 @@
           "audioSec": 11,
           "qvac": {
             "procMs": {
-              "mean": 906.535416399315,
-              "min": 805.3522909991443,
-              "max": 978.0630829986185,
-              "stddev": 61.09260284728995,
-              "p50": 903.0923330001533,
-              "p95": 974.4804829988628,
+              "mean": 1622.4628,
+              "min": 1476.689,
+              "max": 1757.464,
+              "stddev": 90.20741384476108,
+              "p50": 1625.334,
+              "p95": 1736.0955999999999,
               "count": 5
             },
-            "rtf": 0.08241231058175591,
+            "rtf": 0.1474966181818182,
             "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
           },
           "mudler": {
             "procMs": {
-              "mean": 1076.891,
-              "min": 1058.342,
-              "max": 1129.106,
-              "stddev": 26.42183974669438,
-              "p50": 1065.259,
-              "p95": 1117.3766,
+              "mean": 1552.6232,
+              "min": 1502.988,
+              "max": 1627.986,
+              "stddev": 40.95229852108428,
+              "p50": 1542.355,
+              "p95": 1611.9560000000001,
               "count": 5
             },
-            "rtf": 0.09789918181818182,
+            "rtf": 0.14114756363636363,
             "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
           },
           "werRefQvac": 0,
@@ -445,28 +445,28 @@
           "audioSec": 20.1335,
           "qvac": {
             "procMs": {
-              "mean": 1546.241916399449,
-              "min": 1540.8273329995573,
-              "max": 1555.3369580004364,
-              "stddev": 5.321102459554956,
-              "p50": 1545.579040998593,
-              "p95": 1553.9167748004197,
+              "mean": 2469.411,
+              "min": 2398.508,
+              "max": 2513.093,
+              "stddev": 39.06904351529486,
+              "p50": 2484.549,
+              "p95": 2508.3736,
               "count": 5
             },
-            "rtf": 0.07679945942828863,
+            "rtf": 0.12265184890853552,
             "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
           },
           "mudler": {
             "procMs": {
-              "mean": 2181.9139999999998,
-              "min": 2057.317,
-              "max": 2304.776,
-              "stddev": 98.11243836130046,
-              "p50": 2224.846,
-              "p95": 2293.2996,
+              "mean": 2903.5289999999995,
+              "min": 2856.962,
+              "max": 2935.356,
+              "stddev": 29.88038160398899,
+              "p50": 2915.13,
+              "p95": 2934.0862,
               "count": 5
             },
-            "rtf": 0.10837231479871855,
+            "rtf": 0.14421382273325548,
             "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
           },
           "werRefQvac": 0,
@@ -479,28 +479,28 @@
           "audioSec": 27.3706875,
           "qvac": {
             "procMs": {
-              "mean": 2273.4300582002847,
-              "min": 2236.713167000562,
-              "max": 2398.5068330001086,
-              "stddev": 62.72331159022662,
-              "p50": 2241.5945830009878,
-              "p95": 2369.0029748000206,
+              "mean": 3353.9256,
+              "min": 3276.715,
+              "max": 3398.023,
+              "stddev": 49.47612208570909,
+              "p50": 3389.151,
+              "p95": 3396.8540000000003,
               "count": 5
             },
-            "rtf": 0.08306075827288902,
+            "rtf": 0.12253713617053164,
             "text": "do done yeses i'm nicola potusha eljiv mukiperpe scor yadan smeseti you i'm a doctorato mathematico absm professor in a university atu toronto moa concentraatio mathematica mes in a vistage school intelligentsio e local tether is some"
           },
           "mudler": {
             "procMs": {
-              "mean": 2858.8477999999996,
-              "min": 2695.124,
-              "max": 3034.727,
-              "stddev": 115.22522683058601,
-              "p50": 2886.912,
-              "p95": 3007.4026,
+              "mean": 4170.158,
+              "min": 4026.235,
+              "max": 4272.14,
+              "stddev": 92.4166428496513,
+              "p50": 4161.477,
+              "p95": 4271.112,
               "count": 5
             },
-            "rtf": 0.10444925258909284,
+            "rtf": 0.1523585432839154,
             "text": "do done yeses i'm nicola potusha eljiv mukiperupe scor yadan smeseti you i'm a doctorato mathematico absm professor in a university atu toronto moa concentratio mathematica mes in a vistage school intelligentsio eal tether is some"
           },
           "werRefQvac": null,
@@ -513,28 +513,28 @@
           "audioSec": 29.376,
           "qvac": {
             "procMs": {
-              "mean": 2438.694783599675,
-              "min": 2395.5473339986056,
-              "max": 2567.4587919991463,
-              "stddev": 64.6695728804623,
-              "p50": 2409.8284999988973,
-              "p95": 2536.7428169995546,
+              "mean": 3693.7358,
+              "min": 3543.725,
+              "max": 3981.484,
+              "stddev": 153.6063608831353,
+              "p50": 3617.989,
+              "p95": 3927.7486,
               "count": 5
             },
-            "rtf": 0.08301657079247259,
-            "text": "pona esqu vous pouvet merder trve l regation de matreal prche civou play j site solege le papon trapion p se ju j voutre reservir and tablet for these persons as so excuse magurch and bon arochet de souvenir depict de la region ac vou des sgisions gou assmentre montreal pnd on tremain portraal"
+            "rtf": 0.1257399169389978,
+            "text": "pona esqu vous pouvet merder trve l regation de matreal prche civou play j site solege le papon trapion p se ju j voutre reservir and tablet for these persons as soire excuse magurch and bon aroischet de souvenir depict de la region ac vou des sisions gou sumentre montreal pnd on tremain portraal"
           },
           "mudler": {
             "procMs": {
-              "mean": 3292.5866,
-              "min": 3228.727,
-              "max": 3441.617,
-              "stddev": 78.13615574009265,
-              "p50": 3266.242,
-              "p95": 3411.9514000000004,
+              "mean": 4964.0178,
+              "min": 4643.506,
+              "max": 5654.961,
+              "stddev": 369.4071963887007,
+              "p50": 4848.141,
+              "p95": 5524.8882,
               "count": 5
             },
-            "rtf": 0.11208423883442264,
+            "rtf": 0.16898208741830065,
             "text": "pona esqu vous pouvet merder trve l regation de matreal prche civou play j site solege le papon trapion p se j j voutre reservir and tablet for these persons as so excuse magurch and bon aroischet de souvenirs depict de la region a vou des sgisions gou assmentre montreal pnd on tremain portraal"
           },
           "werRefQvac": null,
@@ -547,28 +547,28 @@
           "audioSec": 60,
           "qvac": {
             "procMs": {
-              "mean": 6096.151208600029,
-              "min": 5865.485709000379,
-              "max": 6373.123917000368,
-              "stddev": 190.51106651603538,
-              "p50": 6092.815042000264,
-              "p95": 6345.249717000127,
+              "mean": 8559.552,
+              "min": 8401.522,
+              "max": 8689.212,
+              "stddev": 127.37631040660558,
+              "p50": 8631.05,
+              "p95": 8684.772799999999,
               "count": 5
             },
-            "rtf": 0.10160252014333383,
+            "rtf": 0.1426592,
             "text": "perulentamente multivac carendulo sufficiente commo pararesondera preuntas mass complexas and forma mass profunda ilcatr de mayo m centauno lochiast de c momento raturia converti uarida nerjia del sol for almasanada modificada utilisada dectamente in total planetta cso in totas partes el lvito dequim marc carvon ficionad r danio itoro l tiera connecto conuna peicina stacion deonquilometri medo de giametro quesiricundava el plananeta and mitad de dancia de la luna para funcional cont trios invisibles de neria solar cerias noviian al canzado par empenara gloria della contesimento iadeeli dupov in almmente logarano escapar dea celebresation pica para fujier don denadi penszerian bus carlos enast siertas camera subterranias don cvian partes del pioso called pentterado de multivac sinaistentes ossciosa classificando datos concrqu satis feetcho sperresosos multivac am vena vaganadas"
           },
           "mudler": {
             "procMs": {
-              "mean": 7759.8728,
-              "min": 7443.767,
-              "max": 8025.107,
-              "stddev": 195.1082100378147,
-              "p50": 7833.256,
-              "p95": 7986.7946,
+              "mean": 11277.625,
+              "min": 11052.334,
+              "max": 11542.893,
+              "stddev": 200.98736247535555,
+              "p50": 11196.665,
+              "p95": 11532.2684,
               "count": 5
             },
-            "rtf": 0.12933121333333333,
+            "rtf": 0.18796041666666669,
             "text": "perulentamente multivac carendulo sufficiente commo pararesondera preuntas mass complexas and forma mass profunda ilcatr de mayous m centauno lochiast de cimento raturia converti uarida nerjia del sol for almasanada modificada utilisada dectamente in total planetta cso in totas partes el lvito dequim marc carvon ficionad r danio itora l tiera connecto conuna picina stacion deonquilometri medo de giametro quesiricundava el planeta and mitad de dancia de la luna para funcional cont trios invisibles de neria solar cerias novien al canzado par empenara gloria della contesimento iadeeli dupov in almmente logarano escapar dea celebresation pica para fujier don denadi penserian bus carlos enast de siertas camera subterranias don cvian partes del pioso called pentterado de multivac sinaistentes ossciosa classificando datos concrqu satis feetcho sperresosos multivac am vena vaganada"
           },
           "werRefQvac": null,
@@ -581,8 +581,8 @@
       "modelType": "ctc",
       "label": "CTC 0.6B (English)",
       "useGPU": true,
-      "backendId": 1,
-      "mudlerLoadMs": 624.981,
+      "backendId": "ggml-mtl0",
+      "mudlerLoadMs": 700.45,
       "clips": [
         {
           "id": "jfk",
@@ -590,28 +590,28 @@
           "audioSec": 11,
           "qvac": {
             "procMs": {
-              "mean": 244.27596660032867,
-              "min": 238.72608400136232,
-              "max": 253.10666600055993,
-              "stddev": 5.030358374175089,
-              "p50": 241.7437909990549,
-              "p95": 251.73572440072894,
+              "mean": 242.35999999999999,
+              "min": 226.028,
+              "max": 255.912,
+              "stddev": 10.333164220121544,
+              "p50": 240.066,
+              "p95": 254.8522,
               "count": 5
             },
-            "rtf": 0.022206906054575332,
+            "rtf": 0.022032727272727273,
             "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
           },
           "mudler": {
             "procMs": {
-              "mean": 228.45299999999997,
-              "min": 222.565,
-              "max": 234.149,
-              "stddev": 4.561019842096723,
-              "p50": 229.658,
-              "p95": 233.7444,
+              "mean": 219.4306,
+              "min": 198.713,
+              "max": 231.492,
+              "stddev": 13.176756332269335,
+              "p50": 228.393,
+              "p95": 231.11339999999998,
               "count": 5
             },
-            "rtf": 0.02076845454545454,
+            "rtf": 0.019948236363636365,
             "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
           },
           "werRefQvac": 0,
@@ -624,28 +624,28 @@
           "audioSec": 20.1335,
           "qvac": {
             "procMs": {
-              "mean": 450.0340248003602,
-              "min": 447.16933299973607,
-              "max": 453.0928750000894,
-              "stddev": 2.413903349004994,
-              "p50": 450.4338330011815,
-              "p95": 452.8957416001707,
+              "mean": 570.3784,
+              "min": 493.856,
+              "max": 630.092,
+              "stddev": 48.97817050727803,
+              "p50": 594.308,
+              "p95": 623.722,
               "count": 5
             },
-            "rtf": 0.022352498313773568,
+            "rtf": 0.0283298184617677,
             "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
           },
           "mudler": {
             "procMs": {
-              "mean": 427.21359999999993,
-              "min": 424.06,
-              "max": 431.1,
-              "stddev": 2.321965770634882,
-              "p50": 426.911,
-              "p95": 430.46540000000005,
+              "mean": 496.7768,
+              "min": 462,
+              "max": 550.909,
+              "stddev": 31.342051632910053,
+              "p50": 491.418,
+              "p95": 542.2752,
               "count": 5
             },
-            "rtf": 0.0212190428887178,
+            "rtf": 0.024674140114734146,
             "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
           },
           "werRefQvac": 0,
@@ -658,28 +658,28 @@
           "audioSec": 27.3706875,
           "qvac": {
             "procMs": {
-              "mean": 644.9288829997182,
-              "min": 643.6202080007643,
-              "max": 647.3232080005109,
-              "stddev": 1.3419035723657764,
-              "p50": 644.428082998842,
-              "p95": 646.9366080000997,
+              "mean": 907.9477999999999,
+              "min": 869.087,
+              "max": 946.462,
+              "stddev": 26.50996886757885,
+              "p50": 912.857,
+              "p95": 941.4202,
               "count": 5
             },
-            "rtf": 0.023562757895639934,
+            "rtf": 0.03317226929671147,
             "text": "do done yeses i'm nicola potusha eljiv mukiperpe scor yada smeseti you i'm a doctorato mathematico absm professor in a university atu toronto moa concentraatio mathematica mes in a vistitage school intelligentsio eal tether is some"
           },
           "mudler": {
             "procMs": {
-              "mean": 627.6226,
-              "min": 615.559,
-              "max": 638.354,
-              "stddev": 9.726897770615249,
-              "p50": 632.608,
-              "p95": 637.7442,
+              "mean": 753.0824,
+              "min": 734.279,
+              "max": 789.143,
+              "stddev": 20.0511598627112,
+              "p50": 743.043,
+              "p95": 783.3514,
               "count": 5
             },
-            "rtf": 0.022930465720498724,
+            "rtf": 0.02751419429114074,
             "text": "do done yeses i'm nicola potusha eljiv mukiperpe scor yada smeseti you i'm a doctorato mathematico absm professor in a university atu toronto moa concentraatio mathematica mes in a vistage school intelligentsio eal tether is some"
           },
           "werRefQvac": null,
@@ -692,28 +692,28 @@
           "audioSec": 29.376,
           "qvac": {
             "procMs": {
-              "mean": 703.1081002000719,
-              "min": 700.3227089997381,
-              "max": 705.9716250002384,
-              "stddev": 2.300692024653957,
-              "p50": 702.2390410006046,
-              "p95": 705.9125168003142,
+              "mean": 900.9010000000001,
+              "min": 811.015,
+              "max": 959.483,
+              "stddev": 49.77129760414128,
+              "p50": 915.66,
+              "p95": 952.6456,
               "count": 5
             },
-            "rtf": 0.02393478009940332,
+            "rtf": 0.030667926198257082,
             "text": "pona esqu vous pouvet merder trve l regation de matreal prche civou play j site solege le papon trapion p se j j voutre reservir and tablet for these persons as so excuse magurch and bon aroischet de souvenir depict de la region ac vou des sgisions gou sumentre montreal pnd on tremain portraal"
           },
           "mudler": {
             "procMs": {
-              "mean": 674.367,
-              "min": 666.203,
-              "max": 695.425,
-              "stddev": 10.716870942583926,
-              "p50": 669.239,
-              "p95": 690.8295999999999,
+              "mean": 829.0324,
+              "min": 823.899,
+              "max": 839.106,
+              "stddev": 5.236438469035995,
+              "p50": 827.387,
+              "p95": 836.9126,
               "count": 5
             },
-            "rtf": 0.022956392973856207,
+            "rtf": 0.028221418845315902,
             "text": "pona esqu vous pouvet merder trve l regation de matreal prche civou play j site solege le papon trapion p se j j voutre reservir and tablet for these persons as so excuse magurch and bon aroischet de souvenirs depict de la region a vou des sgisions gou sumentre montreal pnd on tremain portraal"
           },
           "werRefQvac": null,
@@ -726,28 +726,28 @@
           "audioSec": 60,
           "qvac": {
             "procMs": {
-              "mean": 1833.0685580000281,
-              "min": 1806.2397079989314,
-              "max": 1899.8440000005066,
-              "stddev": 34.17361949902517,
-              "p50": 1816.0328329987824,
-              "p95": 1885.6659166004508,
+              "mean": 2373.2136,
+              "min": 2149.164,
+              "max": 2591.112,
+              "stddev": 148.7844806323562,
+              "p50": 2389.415,
+              "p95": 2562.4604,
               "count": 5
             },
-            "rtf": 0.030551142633333802,
+            "rtf": 0.03955356,
             "text": "perulentamente multivac carendulo sufficiente commo pararesondera preuntas mass complexas and forma mass profunda ilcatr de mayo m centauno lochiast de cimento raturia convertientarida nerjia del sol for almasanada modificada utilisada dectamente in total planetta cso in totas partes el lvito dequim marc carvon ficionad r danio itoro l tiera connecto conuna peicina stacion deonquilometri medo de giametro quesiricundava el planeta and mitad de dancia de la luna para funcional cont trios invisibles de neria solar cerias noviian al canzado par empenara gloria della contesimento iadeeli dupov in almmente logarano escapar dea celebresation pica para fujier don denadi penszerian bus carlos inast siertas camera subterranias don cvian partes del pioso called pentterado de multivac sinaistentes ossciosa classificando datos concrqu satis feetcho sperresosos multivac am vena vaganadas"
           },
           "mudler": {
             "procMs": {
-              "mean": 1675.8664,
-              "min": 1653.062,
-              "max": 1698.049,
-              "stddev": 17.378410164338995,
-              "p50": 1666.993,
-              "p95": 1697.2974,
+              "mean": 1984.1493999999998,
+              "min": 1938.031,
+              "max": 2027.296,
+              "stddev": 36.28342949942854,
+              "p50": 2000.051,
+              "p95": 2024.093,
               "count": 5
             },
-            "rtf": 0.027931106666666667,
+            "rtf": 0.03306915666666666,
             "text": "perulentamente multivac carendulo sufficiente commo pararesondera preuntas mass complexas and forma mass profunda ilcatr de mayous m centauno lochiast de cimento raturia convertientarida nerjia del sol for almasanada modificada utilisada dectamente in total planetta cso in totas partes el lvito dequim marc carvon ficionad r danio itoro l tiera connecto conuna picina stacion deonquilometri medo de giametro quesiricundava el planeta and mitad de dancia de la luna para funcional contreos invisibles de neria solar cerias noviian al canzado par empenara gloria della contesimento iadeeli dupov in almmente logarano escapar dea celebresation pica para fujier don denadi penserian bus carlos enast siertas camera subterranias don cvian partes del pioso called pentterado de multivac sinaistentes ossciosa classificando datos concrqu satis feetcho sperresosos multivac am vena vaganada"
           },
           "werRefQvac": null,
@@ -760,8 +760,8 @@
       "modelType": "eou",
       "label": "EOU 120M v1 (rnnt/streaming, English)",
       "useGPU": false,
-      "backendId": 0,
-      "mudlerLoadMs": 102.974,
+      "backendId": "ggml-cpu",
+      "mudlerLoadMs": 102.762,
       "clips": [
         {
           "id": "jfk",
@@ -769,28 +769,28 @@
           "audioSec": 11,
           "qvac": {
             "procMs": {
-              "mean": 403.09112499989567,
-              "min": 376.48245799914,
-              "max": 421.44737499952316,
-              "stddev": 15.888899636519444,
-              "p50": 410.29800000041723,
-              "p95": 419.69631659947333,
+              "mean": 518.5866,
+              "min": 461.72,
+              "max": 546.252,
+              "stddev": 30.742557835027306,
+              "p50": 533.949,
+              "p95": 544.9119999999999,
               "count": 5
             },
-            "rtf": 0.036644647727263245,
+            "rtf": 0.04714423636363636,
             "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
           },
           "mudler": {
             "procMs": {
-              "mean": 336.3202,
-              "min": 312.547,
-              "max": 345.453,
-              "stddev": 12.01985163635557,
-              "p50": 341.072,
-              "p95": 344.8316,
+              "mean": 425.9255999999999,
+              "min": 379.384,
+              "max": 459.678,
+              "stddev": 29.205357902960202,
+              "p50": 419.046,
+              "p95": 458.6856,
               "count": 5
             },
-            "rtf": 0.030574563636363638,
+            "rtf": 0.03872050909090908,
             "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country<EOU>"
           },
           "werRefQvac": 0,
@@ -803,28 +803,28 @@
           "audioSec": 20.1335,
           "qvac": {
             "procMs": {
-              "mean": 721.2395415998996,
-              "min": 708.8105839993805,
-              "max": 735.5688329990953,
-              "stddev": 9.310820898210407,
-              "p50": 718.2397499997169,
-              "p95": 733.9446995995938,
+              "mean": 928.8345999999999,
+              "min": 877.329,
+              "max": 1055.959,
+              "stddev": 65.48074581615579,
+              "p50": 903.519,
+              "p95": 1029.2962,
               "count": 5
             },
-            "rtf": 0.03582285949288,
+            "rtf": 0.046133786971962146,
             "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
           },
           "mudler": {
             "procMs": {
-              "mean": 696.622,
-              "min": 682.837,
-              "max": 728.334,
-              "stddev": 17.37422381575648,
-              "p50": 686.582,
-              "p95": 723.1093999999999,
+              "mean": 859.8745999999999,
+              "min": 838.99,
+              "max": 910.092,
+              "stddev": 25.63788482383052,
+              "p50": 849.398,
+              "p95": 899.0686,
               "count": 5
             },
-            "rtf": 0.034600144038542724,
+            "rtf": 0.042708649762833076,
             "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations<EOU>"
           },
           "werRefQvac": 0,
@@ -837,28 +837,28 @@
           "audioSec": 27.3706875,
           "qvac": {
             "procMs": {
-              "mean": 1012.7284332003444,
-              "min": 957.2097500003874,
-              "max": 1110.9900410007685,
-              "stddev": 52.72887806497192,
-              "p50": 998.1185420006514,
-              "p95": 1091.8555494006723,
+              "mean": 1147.0426000000002,
+              "min": 1115.584,
+              "max": 1250.608,
+              "stddev": 52.34017543952251,
+              "p50": 1117.527,
+              "p95": 1227.655,
               "count": 5
             },
-            "rtf": 0.03700047480357753,
-            "text": "no verdun yes his own nicola potusha mukiper scott professor in university at toronto moya concentracion automatica meston"
+            "rtf": 0.04190770220710939,
+            "text": "no verdun yes his own nicola potusha mukiper scott professor and university at toronto moya concentracion"
           },
           "mudler": {
             "procMs": {
-              "mean": 937.6224,
-              "min": 930.517,
-              "max": 955.856,
-              "stddev": 9.427491980373134,
-              "p50": 932.732,
-              "p95": 952.1866,
+              "mean": 1228.0688,
+              "min": 1191.843,
+              "max": 1284.741,
+              "stddev": 32.397850141020115,
+              "p50": 1213.739,
+              "p95": 1275.9572,
               "count": 5
             },
-            "rtf": 0.034256443764089664,
+            "rtf": 0.04486802980137108,
             "text": "no verdun yes his own nicola potusha mukipertumatico i have a professor in university at toronto moya concentracion automatica meston<EOU>"
           },
           "werRefQvac": null,
@@ -871,28 +871,28 @@
           "audioSec": 29.376,
           "qvac": {
             "procMs": {
-              "mean": 1087.6473002005368,
-              "min": 1055.598500000313,
-              "max": 1165.6595000009984,
-              "stddev": 39.64851241717069,
-              "p50": 1074.1736670006067,
-              "p95": 1147.6759834010154,
+              "mean": 1348.875,
+              "min": 1265.544,
+              "max": 1471.366,
+              "stddev": 71.34689605021369,
+              "p50": 1342.765,
+              "p95": 1451.2051999999999,
               "count": 5
             },
-            "rtf": 0.037025030644081455,
+            "rtf": 0.04591758578431372,
             "text": "polish purvey multiple letsion de macro de brush souble reservoir pendant portraits"
           },
           "mudler": {
             "procMs": {
-              "mean": 1029.9876,
-              "min": 1006.275,
-              "max": 1104.572,
-              "stddev": 37.453908808560904,
-              "p50": 1013.695,
-              "p95": 1086.9119999999998,
+              "mean": 1418.0460000000003,
+              "min": 1369.03,
+              "max": 1503.913,
+              "stddev": 46.41135449434762,
+              "p50": 1397.672,
+              "p95": 1488.0702,
               "count": 5
             },
-            "rtf": 0.03506221405228758,
+            "rtf": 0.04827226307189544,
             "text": "polish ascer will purvey multiple lateration de macro debris souple reserve them<EOU>"
           },
           "werRefQvac": null,
@@ -905,28 +905,28 @@
           "audioSec": 60,
           "qvac": {
             "procMs": {
-              "mean": 2421.718475200236,
-              "min": 2340.376207999885,
-              "max": 2527.695917000994,
-              "stddev": 66.03443344860624,
-              "p50": 2401.499792000279,
-              "p95": 2514.468775400892,
+              "mean": 2930.6128,
+              "min": 2873.808,
+              "max": 3036.219,
+              "stddev": 66.01408315018854,
+              "p50": 2885.808,
+              "p95": 3025.085,
               "count": 5
             },
-            "rtf": 0.040361974586670596,
+            "rtf": 0.04884354666666667,
             "text": "peru enamente multifajolos officiente como para responder preguntas mas complex informa mas profunda yators de mayo de mese senta united lo quiestimentor at the convertible modifica utilisada directly de la luna para functional con rios invisible ceteri la gloria de la contesimento ya deluxe in almente logrado nes capar de la celebration publica para refucarce on the nadia penserium gus carlos and as the certas camera subterranios don civilian partes de poderoso quantum de multivac sinistentes ociosa classificando datos conclix satisfios multivac davanad"
           },
           "mudler": {
             "procMs": {
-              "mean": 2453.7744000000002,
-              "min": 2443.709,
-              "max": 2478.045,
-              "stddev": 12.592454528010034,
-              "p50": 2450.793,
-              "p95": 2472.8508,
+              "mean": 3406.9839999999995,
+              "min": 3295.107,
+              "max": 3584.211,
+              "stddev": 100.92703628265316,
+              "p50": 3410.35,
+              "p95": 3551.5202,
               "count": 5
             },
-            "rtf": 0.04089624000000001,
+            "rtf": 0.05678306666666666,
             "text": "peru enamente multifajolos officiente como para responder preguntas mas complex informa mas profunda yators de mayo de mese senta united lo quiestimentor at the convertible modifica utilisada directly de la luna functional con rios invisible cedarius no avian al canado parn penar la gloria de la contesimento ya del mento logrado nes capar de la celebration publica para refucarce on the nadia penserium gus carlos and as the certas camera subterranios don civilian partes de poderoso quantum de multivac sinistentes ociosa classificando datos conclix satisfios i perez multivac ambencia via ganad<EOU>"
           },
           "werRefQvac": null,
@@ -939,8 +939,8 @@
       "modelType": "eou",
       "label": "EOU 120M v1 (rnnt/streaming, English)",
       "useGPU": true,
-      "backendId": 1,
-      "mudlerLoadMs": 82.123,
+      "backendId": "ggml-mtl0",
+      "mudlerLoadMs": 87.167,
       "clips": [
         {
           "id": "jfk",
@@ -948,28 +948,28 @@
           "audioSec": 11,
           "qvac": {
             "procMs": {
-              "mean": 201.74903319999575,
-              "min": 192.95325000025332,
-              "max": 216.22466699965298,
-              "stddev": 8.55183416259283,
-              "p50": 202.68629200011492,
-              "p95": 213.72601679973303,
+              "mean": 208.3176,
+              "min": 205.574,
+              "max": 210.479,
+              "stddev": 1.9509006740477606,
+              "p50": 209.497,
+              "p95": 210.31140000000002,
               "count": 5
             },
-            "rtf": 0.018340821199999614,
+            "rtf": 0.018937963636363634,
             "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
           },
           "mudler": {
             "procMs": {
-              "mean": 165.6616,
-              "min": 163.341,
-              "max": 167.875,
-              "stddev": 1.6329450205074254,
-              "p50": 165.586,
-              "p95": 167.6966,
+              "mean": 185.2942,
+              "min": 184.858,
+              "max": 186.307,
+              "stddev": 0.5292702145407358,
+              "p50": 185.119,
+              "p95": 186.1026,
               "count": 5
             },
-            "rtf": 0.015060145454545454,
+            "rtf": 0.01684492727272727,
             "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country<EOU>"
           },
           "werRefQvac": 0,
@@ -982,28 +982,28 @@
           "audioSec": 20.1335,
           "qvac": {
             "procMs": {
-              "mean": 397.2732750002295,
-              "min": 383.7583339996636,
-              "max": 419.0993750002235,
-              "stddev": 16.238833622940003,
-              "p50": 384.4557500015944,
-              "p95": 418.29935000017286,
+              "mean": 408.84520000000003,
+              "min": 403.09,
+              "max": 414.15,
+              "stddev": 4.643846138708733,
+              "p50": 410.875,
+              "p95": 413.8388,
               "count": 5
             },
-            "rtf": 0.019731952963976927,
+            "rtf": 0.02030671269277572,
             "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
           },
           "mudler": {
             "procMs": {
-              "mean": 346.9978,
-              "min": 345.202,
-              "max": 351.923,
-              "stddev": 2.4802868705051018,
-              "p50": 345.99,
-              "p95": 350.7402,
+              "mean": 393.36379999999997,
+              "min": 390.783,
+              "max": 397.593,
+              "stddev": 2.349791684383965,
+              "p50": 392.215,
+              "p95": 396.877,
               "count": 5
             },
-            "rtf": 0.0172348473936474,
+            "rtf": 0.019537775349541806,
             "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations<EOU>"
           },
           "werRefQvac": 0,
@@ -1016,28 +1016,28 @@
           "audioSec": 27.3706875,
           "qvac": {
             "procMs": {
-              "mean": 521.8223918002099,
-              "min": 504.6128749996424,
-              "max": 540.8441669996828,
-              "stddev": 15.258067381459048,
-              "p50": 522.6896670013666,
-              "p95": 539.9395251996815,
+              "mean": 548.4057999999999,
+              "min": 537.214,
+              "max": 560.506,
+              "stddev": 8.445838203517734,
+              "p50": 546.015,
+              "p95": 559.4846,
               "count": 5
             },
-            "rtf": 0.019065008571677634,
+            "rtf": 0.020036245345248362,
             "text": "no verdun yes his arm nicole potusha as you pair up the doctor atomatic professor in university at toronto moya concentracion automatica meston"
           },
           "mudler": {
             "procMs": {
-              "mean": 427.076,
-              "min": 424.273,
-              "max": 432.7,
-              "stddev": 2.9532188540641453,
-              "p50": 426.595,
-              "p95": 431.493,
+              "mean": 528.4105999999999,
+              "min": 517.397,
+              "max": 551.374,
+              "stddev": 12.095624706479608,
+              "p50": 524.3,
+              "p95": 546.8374,
               "count": 5
             },
-            "rtf": 0.015603408127826679,
+            "rtf": 0.019305711983042293,
             "text": "no verdun yes his own nicola potusha mukiper scott professor in university at toronto concentracion automatica meston<EOU>"
           },
           "werRefQvac": null,
@@ -1050,28 +1050,28 @@
           "audioSec": 29.376,
           "qvac": {
             "procMs": {
-              "mean": 574.9707582000643,
-              "min": 574.4842910002917,
-              "max": 575.8308749999851,
-              "stddev": 0.46760068748293077,
-              "p50": 574.7822500001639,
-              "p95": 575.6761500000954,
+              "mean": 612.6388000000001,
+              "min": 592.597,
+              "max": 629.108,
+              "stddev": 13.067822211830087,
+              "p50": 616.52,
+              "p95": 627.6043999999999,
               "count": 5
             },
-            "rtf": 0.019572806311276697,
+            "rtf": 0.02085507897603486,
             "text": "polish purvey multiplechelet jue reservoir pendant portrait"
           },
           "mudler": {
             "procMs": {
-              "mean": 459.84440000000006,
-              "min": 457.071,
-              "max": 467.919,
-              "stddev": 4.087292384941391,
-              "p50": 458.235,
-              "p95": 466.092,
+              "mean": 591.3244,
+              "min": 573.533,
+              "max": 614.413,
+              "stddev": 13.334381569461705,
+              "p50": 587.348,
+              "p95": 610.3374,
               "count": 5
             },
-            "rtf": 0.015653744553376907,
+            "rtf": 0.02012950708061002,
             "text": "polish purvey multiple letsion de macro de bruch souplet jue reservoir pendant portrait<EOU>"
           },
           "werRefQvac": null,
@@ -1084,28 +1084,28 @@
           "audioSec": 60,
           "qvac": {
             "procMs": {
-              "mean": 1351.5120670005679,
-              "min": 1342.5836250018328,
-              "max": 1356.7953340001404,
-              "stddev": 4.872383749421997,
-              "p50": 1353.3935839999467,
-              "p95": 1356.260742200166,
+              "mean": 1605.4418,
+              "min": 1519.405,
+              "max": 1644.991,
+              "stddev": 47.188894195138765,
+              "p50": 1629.753,
+              "p95": 1644.4574,
               "count": 5
             },
-            "rtf": 0.02252520111667613,
+            "rtf": 0.026757363333333336,
             "text": "peru enamente multifajolos officiente como para responder preguntas mas complex informa mas profunda yators de mayo de smith in almente logrado es capar de la celebration publica para refucarce on the nadia penserium gus carlos and as the certas camera subterranios don civilian partes de poderoso quantum de multivac sinistentes ociosa classificando datos conclix satisfios multivacanad"
           },
           "mudler": {
             "procMs": {
-              "mean": 1212.1616000000001,
-              "min": 1185.307,
-              "max": 1229.976,
-              "stddev": 17.15403079861993,
-              "p50": 1220.457,
-              "p95": 1229.1846,
+              "mean": 1450.2918,
+              "min": 1424.429,
+              "max": 1506.054,
+              "stddev": 29.485306139838567,
+              "p50": 1438.224,
+              "p95": 1495.4162000000001,
               "count": 5
             },
-            "rtf": 0.020202693333333337,
+            "rtf": 0.02417153,
             "text": "peru and tamente multifajolos officiente como para responder preguntas mas complex informa mas profunda yators de mayo de smithsia de la luna para functional con rios invisible cedarius no avian al canado parn penar la gloria de la contesimento ya del mento logrado nes capar de la celebration publica para refucarce on the nadia penserium gus carlos and as the certas camera subterranios don civilian partes de poderoso quantum de multivac sinistentes ociosa classificando datos conclix satisfios i perez multivac ambencia via ganad<EOU>"
           },
           "werRefQvac": null,
