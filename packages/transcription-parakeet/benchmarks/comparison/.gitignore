@@ -1,0 +1,4 @@
+# Generated benchmark working dir: canonical clips, FLEURS corpus (~600MB),
+# per-engine JSON, and the live (platform-named) reports. Committed baselines
+# live under baseline/<platform>/ instead.
+out/

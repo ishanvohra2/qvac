@@ -58,3 +58,7 @@ docs/website/scripts/api-docs/api-data.json
 
 # Local perf-report sim output (sim-*.js scripts)
 /tmp/
+
+# Third-party engine cloned locally for the parakeet comparison benchmark
+# (cloned + built by hand; see packages/transcription-parakeet/benchmarks/comparison/README.md)
+packages/parakeet.cpp/
