@@ -153,8 +153,9 @@ Outputs land in `benchmarks/comparison/out/`:
 | `QVAC_CMP_QUANT` | `q8_0` | Quant label (reporting only). |
 | `QVAC_CMP_SKIP_MATRIX` | – | `1` reuses the cached matrix and only re-renders / re-runs FLEURS. |
 | `QVAC_CMP_FLEURS_GPU` | `true` | `false` runs the FLEURS pass on CPU. |
-| `QVAC_CMP_GPU_LABEL` | `Metal` on macOS, else `GPU` | Display label for the GPU backend column. |
+| `QVAC_CMP_GPU_LABEL` | `Metal` on macOS, else `GPU` | Display label for the GPU backend column (e.g. `Vulkan`, `CUDA`). |
 | `QVAC_CMP_PLATFORM_NOTE` | derived | Free-text note shown in the report header. |
+| `QVAC_CMP_RENDER_FROM` | – | Path to an existing `comparison-data-*.json`; re-renders just the `.md`/`.html` (no engine runs) using that file's platform. Useful after editing report templates. |
 
 Example (CPU + GPU, TDT only, NVIDIA, labelled "CUDA"):
 

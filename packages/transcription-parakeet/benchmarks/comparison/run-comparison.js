@@ -44,13 +44,20 @@ const WARMUP = intEnv('QVAC_CMP_WARMUP', 1)
 const THREADS = intEnv('QVAC_CMP_THREADS', 4)
 const QUANT = process.env.QVAC_CMP_QUANT || 'q8_0'
 
-// Platform slug for artifact names (mac-arm64, linux-x64, windows-x64, ...).
-const PLATFORM_SLUG = (process.platform === 'darwin' ? 'mac' : process.platform === 'win32' ? 'windows' : process.platform) + '-' + process.arch
-// Human label for the GPU backend column. On Apple Silicon both engines use
-// Metal; elsewhere mudler uses CUDA/HIP and qvac uses Vulkan, so we keep the
-// column generic and record qvac's actual backend id in comparison-data.json.
-const GPU_LABEL = process.env.QVAC_CMP_GPU_LABEL || (process.platform === 'darwin' ? 'Metal' : 'GPU')
-const PLATFORM_NOTE = process.env.QVAC_CMP_PLATFORM_NOTE || (process.platform === 'darwin' ? 'Apple Silicon, Metal' : `${process.platform}-${process.arch}, ${GPU_LABEL}`)
+// Platform-derived presentation values. These are re-derivable from a stored
+// meta.platform so a report can be re-rendered for any platform (e.g. on a Mac
+// from a committed linux-x64 data file) -- see QVAC_CMP_RENDER_FROM in main().
+let PLATFORM_SLUG, GPU_LABEL, PLATFORM_NOTE
+function derivePlatform (platformStr) {
+  const parts = (platformStr || `${process.platform}-${process.arch}`).split('-')
+  const os = parts[0]
+  const arch = parts.slice(1).join('-') || process.arch
+  const osSlug = os === 'darwin' ? 'mac' : os === 'win32' ? 'windows' : os
+  PLATFORM_SLUG = `${osSlug}-${arch}`
+  GPU_LABEL = process.env.QVAC_CMP_GPU_LABEL || (os === 'darwin' ? 'Metal' : 'GPU')
+  PLATFORM_NOTE = process.env.QVAC_CMP_PLATFORM_NOTE || (os === 'darwin' ? 'Apple Silicon, Metal' : `${osSlug}-${arch}, ${GPU_LABEL}`)
+}
+derivePlatform(`${process.platform}-${process.arch}`)
 
 const MODEL_MAP = {
   tdt: { qvac: 'parakeet-tdt-0.6b-v3.q8_0.gguf', mudler: 'tdt-0.6b-v3-q8_0.gguf', decoder: 'tdt', multilingual: true, label: 'TDT 0.6B v3 (multilingual)' },
@@ -320,8 +327,8 @@ function buildMatrix () {
 // ---------------------------------------------------------------------------
 function fmt (n, d = 4) { return (n === null || n === undefined) ? 'n/a' : Number(n).toFixed(d) }
 function pct (n, d = 1) { return (n === null || n === undefined) ? 'n/a' : (n * 100).toFixed(d) + '%' }
-function writeReports (rows, fleurs) {
-  const meta = { generatedAt: new Date().toISOString(), platform: `${process.platform}-${process.arch}`, runs: RUNS, warmup: WARMUP, threads: THREADS, quant: QUANT, clips: CLIPS.map(c => ({ id: c.id, lang: c.lang, audioSec: c.audioSec, hasRef: !!c.ref })) }
+function writeReports (rows, fleurs, existingMeta) {
+  const meta = existingMeta || { generatedAt: new Date().toISOString(), platform: `${process.platform}-${process.arch}`, runs: RUNS, warmup: WARMUP, threads: THREADS, quant: QUANT, clips: CLIPS.map(c => ({ id: c.id, lang: c.lang, audioSec: c.audioSec, hasRef: !!c.ref })) }
   fs.writeFileSync(path.join(OUT_DIR, `comparison-data-${PLATFORM_SLUG}.json`), JSON.stringify({ meta, rows, fleurs }, null, 2) + '\n')
   fs.writeFileSync(path.join(OUT_DIR, `report-${PLATFORM_SLUG}.md`), renderMd(meta, rows, fleurs))
   fs.writeFileSync(path.join(OUT_DIR, `report-${PLATFORM_SLUG}.html`), renderHtml(meta, rows, fleurs))
@@ -340,6 +347,35 @@ function renderMd (meta, rows, fleurs) {
   L.push('**RTF** = proc/audio (lower is faster) · **WER** lower is better.')
   L.push('')
   L.push('> qvac time = full JS `run()` wall (product-level, includes Bare/JS tax); mudler time = engine-only `transcribe_pcm`. Same canonical clips, same threads, same quant level. Each engine loads its own native q8_0 GGUF (the two schemas are not interchangeable).')
+  L.push('')
+  L.push('## Model types in this benchmark')
+  L.push('')
+  L.push('New to Parakeet? These are the three ASR "decoders" compared here (all share the same FastConformer audio encoder; they differ in how they turn encoder output into text).')
+  L.push('')
+  L.push('| Model | Full name | How it works | Trade-off | Languages |')
+  L.push('|-------|-----------|--------------|-----------|-----------|')
+  L.push('| **CTC** | Connectionist Temporal Classification | Non-autoregressive: predicts one token per audio frame (plus a "blank"), then collapses repeats/blanks into text in a single pass. | Fastest & simplest; no explicit duration model, slightly weaker on hard audio. | English |')
+  L.push('| **TDT** | Token-and-Duration Transducer (RNN-T family) | A transducer that predicts each token *and how many frames to skip* (its duration), striding over audio instead of stepping frame-by-frame. | Best accuracy + punctuation/capitalization; multilingual. Slightly heavier decoder. | ~25 (v3) |')
+  L.push('| **EOU** | End-of-Utterance streaming (RNN-T + `<EOU>`) | A small 120M streaming model that also emits an `<EOU>` token to detect when a speaker finished their turn. | Built for low-latency live conversation / turn-taking, not peak accuracy. | English |')
+  L.push('')
+  L.push('> Not benchmarked here: **Sortformer** — speaker *diarization* ("who spoke when"), which is qvac-only.')
+  L.push('')
+  L.push('## Platform & GPU support matrix')
+  L.push('')
+  L.push('What each project supports out of the box (CPU is available everywhere; **bold** = GPU acceleration).')
+  L.push('')
+  L.push('| Platform / Arch | qvac transcription-parakeet | mudler/parakeet.cpp |')
+  L.push('|-----------------|-----------------------------|---------------------|')
+  L.push('| macOS arm64 | CPU + **Metal** | CPU + **Metal** |')
+  L.push('| macOS x64 | CPU + **Metal** | CPU only |')
+  L.push('| iOS arm64 | CPU + **Metal** | — not supported |')
+  L.push('| Linux x64 | CPU + **Vulkan** | CPU + **Vulkan** + **CUDA** |')
+  L.push('| Linux arm64 | CPU + **Vulkan** | CPU only |')
+  L.push('| Android arm64 | CPU + **Vulkan / OpenCL** | — not supported |')
+  L.push('| Windows x64 | CPU + **Vulkan** | CPU + **Vulkan** + **CUDA** |')
+  L.push('| AMD (ROCm/HIP) | — | source build (`PARAKEET_GGML_HIP`) |')
+  L.push('')
+  L.push('**GPU backends:** Metal (both) · Vulkan (both) · **OpenCL → qvac only** (Android/Adreno) · **CUDA + HIP → mudler only** (NVIDIA / AMD).')
   L.push('')
   L.push(`## 1. Headline speed (clip: ${CANON}, English ~${fmt(meta.clips.find(c => c.id === CANON).audioSec, 1)}s)`)
   L.push('')
@@ -393,11 +429,32 @@ function renderMd (meta, rows, fleurs) {
     }
     L.push('')
   }
-  L.push('## Notes')
-  L.push('- Sortformer diarization (v1 + v2.1 AOSC) is **qvac-only** — mudler has no diarization, excluded from this comparison.')
-  L.push('- mudler-only (not benchmarked): K-quants, batched decode, 1.1B/RNNT/nemotron multilingual streaming, CUDA/HIP.')
+  L.push('## Feature differences')
+  L.push('')
+  L.push('Both are ggml ports of the same NVIDIA Parakeet checkpoints, but they target different products, so their feature sets diverge.')
+  L.push('')
+  L.push('### Only in qvac (`transcription-parakeet`)')
+  L.push('- **Speaker diarization** — Sortformer v1 / v2 / v2.1 with NeMo Audio-Online Speaker Cache (AOSC) so speakers rebind to their slot across gaps. mudler has no diarization at all.')
+  L.push('- **Speaker-attributed transcription** ("who said what") — ASR + Sortformer combined into one tagged transcript.')
+  L.push('- **Live duplex streaming + microphone** — Mode 3 cache-aware chunks (left-context / right-lookahead), `<EOU>` turn boundaries, `StreamEvent` callbacks, energy VAD, and `live-mic` / `live-mic-attributed` example apps.')
+  L.push('- **Mobile & embedded reach** — iOS and Android (arm64) builds, plus the **OpenCL** backend for Adreno GPUs.')
+  L.push('- **Runtime integration** — ships as a Bare/Node native addon driven from the QVAC SDK (JS API, P2P, batched `run()` / streaming `runStreaming()`), not just a CLI.')
+  L.push('')
+  L.push('### Only in mudler (`parakeet.cpp`)')
+  L.push('- **CUDA (NVIDIA) and HIP/ROCm (AMD) backends** — qvac is Metal / Vulkan / OpenCL only (no CUDA).')
+  L.push('- **K-quants** (`q4_k`, `q5_k`, `q6_k`) via `parakeet-cli quantize`. qvac ships `f16 / q8_0 / q5_0 / q4_0` only.')
+  L.push('- **More & larger checkpoints** — 1.1B family (CTC / RNNT / TDT / hybrid TDT+CTC), 110M hybrid, RNNT 0.6B, and **nemotron-3.5 streaming multilingual** (40+ locales, prompt-conditioned, `--lang`).')
+  L.push('- **Batched decode** (`bench-batch`, `--batch-sizes`) and a `bench-decode` microbenchmark.')
+  L.push('- **Distribution surface** — flat C-API (`parakeet_capi.h`) + shared lib for dlopen/FFI/LocalAI, prebuilt CLI binaries for 5 platforms, and Docker images (CPU + CUDA, multi-arch) on GHCR.')
+  L.push('- **Word/segment timestamps** (`--timestamps`).')
+  L.push('')
+  L.push('### Shared by both')
+  L.push('CTC + TDT + EOU transcription · `q8_0` / `f16` · CPU + Metal + Vulkan · ggml-based · log-mel front-end on GPU · WER-0 parity vs NeMo on clean English.')
+  L.push('')
+  L.push('## Benchmark caveats')
   L.push('- CTC and EOU are English-only; their transcripts on non-English clips are expected to be wrong (timing still valid).')
   L.push('- GGUF schemas are not interchangeable (verified both directions): qvac uses renamed `blk`-style tensors + `parakeet.*` KV; mudler keeps verbatim NeMo names. Each engine runs its own native q8_0 file.')
+  L.push('- On NVIDIA the GPU column means **CUDA for mudler / Vulkan for qvac** unless mudler is also built with Vulkan; qvac\'s actual backend is recorded as `backendId` in the JSON.')
   L.push('')
   return L.join('\n')
 }
@@ -474,6 +531,26 @@ Quant <code>${esc(meta.quant)}</code> · Threads ${meta.threads} · Warmup ${met
 <strong>RTF</strong> = proc/audio (lower is faster) · <strong>WER</strong> lower is better<br/>
 qvac time = full JS <code>run()</code> wall (incl. Bare/JS tax); mudler = engine-only <code>transcribe_pcm</code>.
 </div>
+<h2>Model types in this benchmark</h2>
+<div class="meta">All three share the same FastConformer audio encoder; they differ in how they turn encoder output into text. Sortformer (speaker diarization) is qvac-only and not benchmarked here.</div>
+<table><thead><tr><th>Model</th><th>Full name</th><th>How it works</th><th>Trade-off</th><th>Langs</th></tr></thead><tbody>
+<tr><td><strong>CTC</strong></td><td style="text-align:left">Connectionist Temporal Classification</td><td style="text-align:left">Non-autoregressive: one token per audio frame (plus "blank"), collapsed into text in a single pass.</td><td style="text-align:left">Fastest &amp; simplest; no duration model, slightly weaker on hard audio.</td><td>English</td></tr>
+<tr><td><strong>TDT</strong></td><td style="text-align:left">Token-and-Duration Transducer (RNN-T family)</td><td style="text-align:left">Predicts each token <em>and how many frames to skip</em>, striding over audio instead of frame-by-frame.</td><td style="text-align:left">Best accuracy + punctuation/caps; multilingual. Heavier decoder.</td><td>~25 (v3)</td></tr>
+<tr><td><strong>EOU</strong></td><td style="text-align:left">End-of-Utterance streaming (RNN-T + &lt;EOU&gt;)</td><td style="text-align:left">Small 120M streaming model that also emits an &lt;EOU&gt; token to detect end-of-turn.</td><td style="text-align:left">Built for low-latency live conversation, not peak accuracy.</td><td>English</td></tr>
+</tbody></table>
+<h2>Platform &amp; GPU support matrix</h2>
+<div class="meta">What each project supports out of the box. CPU is available everywhere; <strong>bold</strong> = GPU acceleration.</div>
+<table><thead><tr><th>Platform / Arch</th><th>qvac transcription-parakeet</th><th>mudler/parakeet.cpp</th></tr></thead><tbody>
+<tr><td style="text-align:left">macOS arm64</td><td style="text-align:left">CPU + <strong>Metal</strong></td><td style="text-align:left">CPU + <strong>Metal</strong></td></tr>
+<tr><td style="text-align:left">macOS x64</td><td style="text-align:left">CPU + <strong>Metal</strong></td><td style="text-align:left">CPU only</td></tr>
+<tr><td style="text-align:left">iOS arm64</td><td style="text-align:left">CPU + <strong>Metal</strong></td><td style="text-align:left">— not supported</td></tr>
+<tr><td style="text-align:left">Linux x64</td><td style="text-align:left">CPU + <strong>Vulkan</strong></td><td style="text-align:left">CPU + <strong>Vulkan</strong> + <strong>CUDA</strong></td></tr>
+<tr><td style="text-align:left">Linux arm64</td><td style="text-align:left">CPU + <strong>Vulkan</strong></td><td style="text-align:left">CPU only</td></tr>
+<tr><td style="text-align:left">Android arm64</td><td style="text-align:left">CPU + <strong>Vulkan / OpenCL</strong></td><td style="text-align:left">— not supported</td></tr>
+<tr><td style="text-align:left">Windows x64</td><td style="text-align:left">CPU + <strong>Vulkan</strong></td><td style="text-align:left">CPU + <strong>Vulkan</strong> + <strong>CUDA</strong></td></tr>
+<tr><td style="text-align:left">AMD (ROCm/HIP)</td><td style="text-align:left">—</td><td style="text-align:left">source build (PARAKEET_GGML_HIP)</td></tr>
+</tbody></table>
+<div class="meta"><strong>GPU backends:</strong> Metal (both) · Vulkan (both) · <strong>OpenCL → qvac only</strong> (Android/Adreno) · <strong>CUDA + HIP → mudler only</strong> (NVIDIA / AMD).</div>
 <h2>1. Headline speed — clip <code>${CANON}</code> (English ~${canonSec.toFixed(1)}s)</h2>
 <table><thead><tr><th>Model</th><th>Backend</th><th>Engine</th><th>Proc ms</th><th>RTF</th><th>Faster</th></tr></thead><tbody>${headlineRows}</tbody></table>
 <h2>2. RTF vs clip duration</h2>
@@ -484,12 +561,34 @@ qvac time = full JS <code>run()</code> wall (incl. Bare/JS tax); mudler = engine
 <div class="meta">Reference WER = vs ground-truth transcript (English clips). Agreement = WER between the two engines (0% means identical word stream). Non-English WER shown only for multilingual TDT. Rows with qvac reference WER &gt; 30% are highlighted.</div>
 <table><thead><tr><th>Model</th><th>Backend</th><th>Clip</th><th>Lang</th><th>qvac WER (ref)</th><th>mudler WER (ref)</th><th>Agreement</th></tr></thead><tbody>${accRows}</tbody></table>
 ${fleursSection}
-<h2>Notes</h2>
+<h2>Feature differences</h2>
+<div class="meta">Both are ggml ports of the same NVIDIA Parakeet checkpoints, but they target different products, so feature sets diverge.</div>
+<p class="note"><strong style="color:#58a6ff">Only in qvac (transcription-parakeet)</strong></p>
 <ul class="note">
-<li><strong>Sortformer diarization (v1 + v2.1 AOSC) is qvac-only</strong> — mudler has no diarization.</li>
-<li>mudler-only (not benchmarked): K-quants, batched decode, 1.1B/RNNT/nemotron multilingual streaming, CUDA/HIP.</li>
+<li><strong>Speaker diarization</strong> — Sortformer v1 / v2 / v2.1 with NeMo Audio-Online Speaker Cache (AOSC). mudler has no diarization at all.</li>
+<li><strong>Speaker-attributed transcription</strong> ("who said what") — ASR + Sortformer combined into one tagged transcript.</li>
+<li><strong>Live duplex streaming + microphone</strong> — Mode 3 cache-aware chunks (left-context / right-lookahead), &lt;EOU&gt; turn boundaries, StreamEvent callbacks, energy VAD, live-mic example apps.</li>
+<li><strong>Mobile &amp; embedded reach</strong> — iOS and Android (arm64) builds, plus the <strong>OpenCL</strong> backend for Adreno GPUs.</li>
+<li><strong>Runtime integration</strong> — ships as a Bare/Node native addon driven from the QVAC SDK (JS API, P2P), not just a CLI.</li>
+</ul>
+<p class="note"><strong style="color:#f0883e">Only in mudler (parakeet.cpp)</strong></p>
+<ul class="note">
+<li><strong>CUDA (NVIDIA) and HIP/ROCm (AMD) backends</strong> — qvac is Metal / Vulkan / OpenCL only (no CUDA).</li>
+<li><strong>K-quants</strong> (q4_k, q5_k, q6_k) via <code>parakeet-cli quantize</code>. qvac ships f16 / q8_0 / q5_0 / q4_0 only.</li>
+<li><strong>More &amp; larger checkpoints</strong> — 1.1B family (CTC/RNNT/TDT/hybrid TDT+CTC), 110M hybrid, RNNT 0.6B, and nemotron-3.5 streaming multilingual (40+ locales, prompt-conditioned).</li>
+<li><strong>Batched decode</strong> (bench-batch, --batch-sizes) and a bench-decode microbenchmark.</li>
+<li><strong>Distribution surface</strong> — flat C-API (parakeet_capi.h) + shared lib for dlopen/FFI/LocalAI, prebuilt CLI binaries for 5 platforms, and Docker images (CPU + CUDA) on GHCR.</li>
+<li><strong>Word/segment timestamps</strong> (--timestamps).</li>
+</ul>
+<p class="note"><strong>Shared by both</strong></p>
+<ul class="note">
+<li>CTC + TDT + EOU transcription · q8_0 / f16 · CPU + Metal + Vulkan · ggml-based · log-mel front-end on GPU · WER-0 parity vs NeMo on clean English.</li>
+</ul>
+<h2>Benchmark caveats</h2>
+<ul class="note">
 <li>CTC &amp; EOU are English-only; their non-English transcripts are expected to be wrong (timing still valid).</li>
 <li>GGUF schemas are not interchangeable (verified both ways): qvac renamed <code>blk</code> tensors + <code>parakeet.*</code> KV; mudler verbatim NeMo names.</li>
+<li>On NVIDIA the GPU column means <strong>CUDA for mudler / Vulkan for qvac</strong> unless mudler is also built with Vulkan; qvac's actual backend is the <code>backendId</code> in the JSON.</li>
 </ul>
 </body></html>
 `
@@ -524,6 +623,17 @@ function renderRtfChart (rows) {
 }
 
 function main () {
+  // Render-only mode: re-render report .md/.html from an existing data JSON
+  // (e.g. regenerate a committed linux-x64 report on a Mac after template edits).
+  const renderFrom = process.env.QVAC_CMP_RENDER_FROM
+  if (renderFrom) {
+    const data = JSON.parse(fs.readFileSync(renderFrom, 'utf8'))
+    derivePlatform(data.meta && data.meta.platform)
+    if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true })
+    writeReports(data.rows, data.fleurs, data.meta)
+    console.log(`Re-rendered report-${PLATFORM_SLUG}.{md,html} from ${path.basename(renderFrom)}`)
+    return
+  }
   console.log('Parakeet comparison harness (multi-clip + WER)')
   console.log(`  models: ${MODELS.join(', ')} · gpu: ${GPU_MODES.join(', ')} · runs ${RUNS} (warmup ${WARMUP}) · threads ${THREADS}`)
   if (!fs.existsSync(MUDLER_CLI)) throw new Error(`parakeet-cli not found at ${MUDLER_CLI}`)
