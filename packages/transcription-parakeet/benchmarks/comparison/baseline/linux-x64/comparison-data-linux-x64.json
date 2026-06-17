@@ -1,0 +1,1401 @@
+{
+  "meta": {
+    "generatedAt": "2026-06-17T10:14:59.387Z",
+    "platform": "linux-x64",
+    "runs": 5,
+    "warmup": 1,
+    "threads": 4,
+    "quant": "q8_0",
+    "clips": [
+      {
+        "id": "jfk",
+        "lang": "en",
+        "audioSec": 11,
+        "hasRef": true
+      },
+      {
+        "id": "alice",
+        "lang": "en",
+        "audioSec": 20.1335,
+        "hasRef": true
+      },
+      {
+        "id": "croatian",
+        "lang": "hr",
+        "audioSec": 27.3706875,
+        "hasRef": false
+      },
+      {
+        "id": "french",
+        "lang": "fr",
+        "audioSec": 29.376,
+        "hasRef": false
+      },
+      {
+        "id": "spanish60",
+        "lang": "es",
+        "audioSec": 60,
+        "hasRef": false
+      }
+    ]
+  },
+  "rows": [
+    {
+      "modelType": "tdt",
+      "label": "TDT 0.6B v3 (multilingual)",
+      "useGPU": false,
+      "backendId": 0,
+      "mudlerLoadMs": 289.296,
+      "clips": [
+        {
+          "id": "jfk",
+          "lang": "en",
+          "audioSec": 11,
+          "qvac": {
+            "procMs": {
+              "mean": 672.68544921875,
+              "min": 671.2838840484619,
+              "max": 673.251186132431,
+              "stddev": 0.7461228394510387,
+              "p50": 673.1209988594055,
+              "p95": 673.2457775115967,
+              "count": 5
+            },
+            "rtf": 0.061153222656250006,
+            "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country."
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 399.0052,
+              "min": 397.329,
+              "max": 403.691,
+              "stddev": 2.358868915391429,
+              "p50": 398.05,
+              "p95": 402.5738,
+              "count": 5
+            },
+            "rtf": 0.0362732,
+            "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country."
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0,
+          "werAgreement": 0
+        },
+        {
+          "id": "alice",
+          "lang": "en",
+          "audioSec": 20.1335,
+          "qvac": {
+            "procMs": {
+              "mean": 1265.902622270584,
+              "min": 1265.5351932048798,
+              "max": 1266.401622056961,
+              "stddev": 0.3398490193692425,
+              "p50": 1265.8306820392609,
+              "p95": 1266.356937456131,
+              "count": 5
+            },
+            "rtf": 0.06287543756776437,
+            "text": "Alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it. And what is the use of a book? thought Alice, without pictures or conversations."
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 773.729,
+              "min": 766.56,
+              "max": 800.092,
+              "stddev": 13.185642479606365,
+              "p50": 767.277,
+              "p95": 793.5889999999999,
+              "count": 5
+            },
+            "rtf": 0.03842993021580947,
+            "text": "Alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it. And what is the use of a book? thought Alice, without pictures or conversations."
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0,
+          "werAgreement": 0
+        },
+        {
+          "id": "croatian",
+          "lang": "hr",
+          "audioSec": 27.3706875,
+          "qvac": {
+            "procMs": {
+              "mean": 1745.5558866024016,
+              "min": 1744.8314759731293,
+              "max": 1745.9107880592346,
+              "stddev": 0.41880410760738646,
+              "p50": 1745.8392219543457,
+              "p95": 1745.9017668247222,
+              "count": 5
+            },
+            "rtf": 0.06377464528804407,
+            "text": "Dobrad, ja se zavam Nikola Počiša, ja živim u Kipu pre skoro 11 mjeseci. Imam doktoratu u matematiku i bio sam profesoran na univerzitetu u Torontu. Moja koncentracija u matematika je u mesta na više inteligenciju. Ted, i sam."
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 1072.4822,
+              "min": 1061.956,
+              "max": 1110.644,
+              "stddev": 19.093294219699228,
+              "p50": 1063.201,
+              "p95": 1101.3220000000001,
+              "count": 5
+            },
+            "rtf": 0.03918360543891353,
+            "text": "Dobrad, ja se zavam Nikola Počiša, ja živim u Kipu pre skoro 11 mjeseci. Imam doktoratu u matematiku i bio sam profesoran na univerzitetu u Torontu. Moja koncentracija u matematika je u mjestu na višešku inteligenciju i tejed, i sam."
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": 0.10256410256410256
+        },
+        {
+          "id": "french",
+          "lang": "fr",
+          "audioSec": 29.376,
+          "qvac": {
+            "procMs": {
+              "mean": 1899.1935191631317,
+              "min": 1898.9237251281738,
+              "max": 1899.5772500038147,
+              "stddev": 0.30334356844580407,
+              "p50": 1898.9579768180847,
+              "p95": 1899.5721915721892,
+              "count": 5
+            },
+            "rtf": 0.0646511955052809,
+            "text": "Bonjour, est-ce que vous pouvez me dire se trouve la tradition de ma trelle proche, s'il vous plaît? Je suis désolé, je n'ai pas trop bien passé, mais je voudrais réserver un tableau pour 12 personnes ce soir. Excusez-moi, je cherchais un bon endroit pour acheter des souvenirs typiques de la région avec vous des suggestions. Je vais assurer Montréal pendant trois mois pour travailler."
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 1122.2134,
+              "min": 1109.681,
+              "max": 1161.643,
+              "stddev": 19.919430017949818,
+              "p50": 1111.377,
+              "p95": 1152.8688,
+              "count": 5
+            },
+            "rtf": 0.03820170887799565,
+            "text": "Bonjour, est-ce que vous pouvez me dire se trouve la tradition de ma trelle proche, s'il vous plaît? Je suis désolé, je n'ai pas trop bien passé, mais je voudrais réserver un tableau pour 12 personnes ce soir. Excusez-moi, je cherchais un bon endroit pour acheter des souvenirs typiques de la région avec vous des suggestions. Je vais assurer Montréal pendant trois mois pour travailler."
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": 0
+        },
+        {
+          "id": "spanish60",
+          "lang": "es",
+          "audioSec": 60,
+          "qvac": {
+            "procMs": {
+              "mean": 4273.106719350815,
+              "min": 4271.931366920471,
+              "max": 4274.62513589859,
+              "stddev": 1.011941115610861,
+              "p50": 4273.002820968628,
+              "p95": 4274.464490318298,
+              "count": 5
+            },
+            "rtf": 0.07121844532251358,
+            "text": "But lent, Multivack approached the sufficient more complex in formula, and the 14th of May of 2061, the energy of the Sol was almacenated, modificated and utilized directly in the planet. Seven years had been to improve the glory of the game, and Adelopov finally escaped the celebration public to refuge where nobody."
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 2754.2144,
+              "min": 2731.531,
+              "max": 2837.124,
+              "stddev": 41.46750774088062,
+              "p50": 2734.069,
+              "p95": 2816.5906,
+              "count": 5
+            },
+            "rtf": 0.04590357333333333,
+            "text": "But lent, Multivack approached the sufficient more complex in formula, and the 14th of May of 2061, the energy of the Sol was almacenated, modificated and utilized directly in the planet. In the desert cameras subterranean, where they were parties of the work entered by Multivac. With assistance, ociosa, classification with clicks satisfied and Multivack had its vacuum."
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": 0.4716981132075472
+        }
+      ]
+    },
+    {
+      "modelType": "tdt",
+      "label": "TDT 0.6B v3 (multilingual)",
+      "useGPU": true,
+      "backendId": 3,
+      "mudlerLoadMs": 569.819,
+      "clips": [
+        {
+          "id": "jfk",
+          "lang": "en",
+          "audioSec": 11,
+          "qvac": {
+            "procMs": {
+              "mean": 48.465773010253905,
+              "min": 27.208972930908203,
+              "max": 59.44123601913452,
+              "stddev": 12.838180069850301,
+              "p50": 57.12892699241638,
+              "p95": 59.2810474395752,
+              "count": 5
+            },
+            "rtf": 0.004405979364568537,
+            "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country."
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 38.85,
+              "min": 36.201,
+              "max": 43.196,
+              "stddev": 2.4232215746811088,
+              "p50": 37.798,
+              "p95": 42.4692,
+              "count": 5
+            },
+            "rtf": 0.003531818181818182,
+            "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country."
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0,
+          "werAgreement": 0
+        },
+        {
+          "id": "alice",
+          "lang": "en",
+          "audioSec": 20.1335,
+          "qvac": {
+            "procMs": {
+              "mean": 43.73780159950256,
+              "min": 41.96829700469971,
+              "max": 46.54158616065979,
+              "stddev": 1.6849926869014202,
+              "p50": 42.9698588848114,
+              "p95": 46.18128333091736,
+              "count": 5
+            },
+            "rtf": 0.0021723893808579015,
+            "text": "Alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it. And what is the use of a book? thought Alice, without pictures or conversations."
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 330.962,
+              "min": 57.221,
+              "max": 1343.947,
+              "stddev": 507.4055475554046,
+              "p50": 59.088,
+              "p95": 1102.4823999999996,
+              "count": 5
+            },
+            "rtf": 0.01643837385452107,
+            "text": "Alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it. And what is the use of a book? thought Alice without pictures or conversations."
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0,
+          "werAgreement": 0
+        },
+        {
+          "id": "croatian",
+          "lang": "hr",
+          "audioSec": 27.3706875,
+          "qvac": {
+            "procMs": {
+              "mean": 55.37691254615784,
+              "min": 54.646759033203125,
+              "max": 56.034931898117065,
+              "stddev": 0.505763866098635,
+              "p50": 55.55086803436279,
+              "p95": 55.9676344871521,
+              "count": 5
+            },
+            "rtf": 0.0020232196413099905,
+            "text": "Dobrad, ja se zivam Nikolo Počiša, ja živim u Kipu pre skoro 11 mjeseci. Imam doktoratu matematiku i bio sam profesoran na universitetu u Torontu. Moja koncentracija u matematika je u miestu na vesničkuje inteligencije i to tejeder i sam."
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 66.67060000000001,
+              "min": 63.892,
+              "max": 73.981,
+              "stddev": 3.73252298586358,
+              "p50": 65.084,
+              "p95": 72.40559999999999,
+              "count": 5
+            },
+            "rtf": 0.002435839480390098,
+            "text": "Dobrad, ja se zavam Nikola Počiša, ja živim u Kipu pre skoro 11 mjeseci. Imam doktoratu u matematiku i bio sam profesoran na univerzitetu u Torontu. Moja koncentracija u matematika je u miestu na vešičku inteligenciju i tjedan i sam."
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": 0.2
+        },
+        {
+          "id": "french",
+          "lang": "fr",
+          "audioSec": 29.376,
+          "qvac": {
+            "procMs": {
+              "mean": 65.67893495559693,
+              "min": 64.8418779373169,
+              "max": 68.14064192771912,
+              "stddev": 1.2535617309963019,
+              "p50": 64.9773759841919,
+              "p95": 67.61568832397461,
+              "count": 5
+            },
+            "rtf": 0.0022358025243599173,
+            "text": "Bonjour, est-vous que vous pouvez me direct se trouve l'atraction de maître, s'il plaît. Je suis désolé, je n's pas tropien passé mais je voudra réserver un table pour 12 personnes ce soir. Excusez moi, je cherchai un bon endroit pour acheter des souvenirs typiques de la région avec vous des suggestions. Je va sure Montreal pendant trois pour travail."
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 80.9276,
+              "min": 78.834,
+              "max": 85.431,
+              "stddev": 2.434009745255757,
+              "p50": 80.072,
+              "p95": 84.6206,
+              "count": 5
+            },
+            "rtf": 0.0027548883442265796,
+            "text": "Bonjour, est-ce que vous pouvez me dire se trouve la tradition de ma trelle proche, s'il vous plaît? Je suis désolé, je ne peux pas bien passer, mais je voudrais recevoir un tableau pour 12 personnes ce soir. Excuse-moi, je cherche un bon endroit pour acheter des souvenirs typiques de la région avec vous des suggestions. Je vais assurer Montreal pendant 3 mois pour travailler."
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": 0.34375
+        },
+        {
+          "id": "spanish60",
+          "lang": "es",
+          "audioSec": 60,
+          "qvac": {
+            "procMs": {
+              "mean": 164.459551858902,
+              "min": 162.95594811439514,
+              "max": 165.82184100151062,
+              "stddev": 1.0386495001399922,
+              "p50": 164.6965250968933,
+              "p95": 165.69580297470094,
+              "count": 5
+            },
+            "rtf": 0.0027409925309817,
+            "text": "But lentemente approted the sufficient to responds more complex in formation, and the 14610000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000. The energy of the Sol was almacenated, modificated and utilizated directom in the planet. Seven years had to impegat the glory of the accom, and Adel Lupov finally escappen of the celebration public to refugi. In the desertes subterranears where they were parties of the enter of Multiv. With assists ociosa, classificated data on clicks satis and Multiv had"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 547.6596000000001,
+              "min": 160.172,
+              "max": 2090.32,
+              "stddev": 771.3311722031207,
+              "p50": 162.143,
+              "p95": 1705.0569999999998,
+              "count": 5
+            },
+            "rtf": 0.009127660000000001,
+            "text": "But lent, Multivack appeared the sufficient more complex in formula, and the 14th of May of 2061, the energy of the Sol was almacenated, modificated and utilized directly in the planet. Seven years had to impegn the glory of the game, and Adel finally escaped the celebration public to refuge where nobody in the desert cameras subterranean where they were parties of the work of Multivack. With assistance, ociosa, classification with clicks satisfied and Multivack had its vacuum."
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": 0.4657534246575342
+        }
+      ]
+    },
+    {
+      "modelType": "ctc",
+      "label": "CTC 0.6B (English)",
+      "useGPU": false,
+      "backendId": 0,
+      "mudlerLoadMs": 273.273,
+      "clips": [
+        {
+          "id": "jfk",
+          "lang": "en",
+          "audioSec": 11,
+          "qvac": {
+            "procMs": {
+              "mean": 612.0360444545746,
+              "min": 610.1974279880524,
+              "max": 613.3503129482269,
+              "stddev": 1.2719074568674615,
+              "p50": 612.9017860889435,
+              "p95": 613.2617975711822,
+              "count": 5
+            },
+            "rtf": 0.055639640404961326,
+            "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 370.2808,
+              "min": 369.747,
+              "max": 370.938,
+              "stddev": 0.5033767575087317,
+              "p50": 370.087,
+              "p95": 370.9146,
+              "count": 5
+            },
+            "rtf": 0.033661890909090914,
+            "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0,
+          "werAgreement": 0
+        },
+        {
+          "id": "alice",
+          "lang": "en",
+          "audioSec": 20.1335,
+          "qvac": {
+            "procMs": {
+              "mean": 1142.4186003684997,
+              "min": 1141.4930319786072,
+              "max": 1143.6561279296875,
+              "stddev": 0.788815214936893,
+              "p50": 1142.5769290924072,
+              "p95": 1143.4699765205382,
+              "count": 5
+            },
+            "rtf": 0.05674217599366725,
+            "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 715.816,
+              "min": 711.939,
+              "max": 729.054,
+              "stddev": 6.626018201001246,
+              "p50": 712.652,
+              "p95": 725.8122,
+              "count": 5
+            },
+            "rtf": 0.03555348051754538,
+            "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0,
+          "werAgreement": 0
+        },
+        {
+          "id": "croatian",
+          "lang": "hr",
+          "audioSec": 27.3706875,
+          "qvac": {
+            "procMs": {
+              "mean": 1588.4771185398101,
+              "min": 1587.4953408241272,
+              "max": 1589.1520018577576,
+              "stddev": 0.5867137357706328,
+              "p50": 1588.507574081421,
+              "p95": 1589.1171498775482,
+              "count": 5
+            },
+            "rtf": 0.05803570401875401,
+            "text": "do done yeses i'm nicola potusha eljiv mukiperupe scor yadan smeseti you i'm a doctorato mathematico absm professor in a university atu toronto moa concentratio mathematica mes in a vistitage school intelligentsio e local tether is some"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 1005.7168000000001,
+              "min": 1000.416,
+              "max": 1025.661,
+              "stddev": 9.975299001032512,
+              "p50": 1000.85,
+              "p95": 1020.7556000000001,
+              "count": 5
+            },
+            "rtf": 0.03674430239913233,
+            "text": "doid done yeses i'm nicola potusha eljiv mukiperpe scor yadan smeseti you i'm a doctorato mathematico absm professor in a university atu toronto moa concentraatio mathematica mes in a vistage school intelligentsio eal tether is some"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        },
+        {
+          "id": "french",
+          "lang": "fr",
+          "audioSec": 29.376,
+          "qvac": {
+            "procMs": {
+              "mean": 1703.386487197876,
+              "min": 1703.090744972229,
+              "max": 1703.736174106598,
+              "stddev": 0.2485527544197224,
+              "p50": 1703.2990679740906,
+              "p95": 1703.712232875824,
+              "count": 5
+            },
+            "rtf": 0.05798565111648543,
+            "text": "pona esqu vous pouvet merder trve l regation de matreal prche civou play j site solege le papon trapion p se ju j voutre reservir and tablet for these persons as soire excuse magurch and bon aroischet de souvenir depict de la region ac vou des sgisions gou sumentre montreal pnd on tremain portraal"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 1038.3006,
+              "min": 1031.411,
+              "max": 1064.688,
+              "stddev": 13.196103039913014,
+              "p50": 1031.782,
+              "p95": 1058.1762,
+              "count": 5
+            },
+            "rtf": 0.0353452001633987,
+            "text": "pona esqu vous pouvet merder trve l regation de matreal prche civou play j site solege le papon trapion p se j j voutre reservir and tablet for these persons as so excuse magurch and bon aroischet de souvenirs depict de la region a vou des sgisions gou assmentre montreal pnd on tremain portraal"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        },
+        {
+          "id": "spanish60",
+          "lang": "es",
+          "audioSec": 60,
+          "qvac": {
+            "procMs": {
+              "mean": 3888.7724534511567,
+              "min": 3887.8313150405884,
+              "max": 3890.279618024826,
+              "stddev": 0.8281941023744991,
+              "p50": 3888.685697078705,
+              "p95": 3889.9850056171417,
+              "count": 5
+            },
+            "rtf": 0.06481287422418594,
+            "text": "perulentamente multivac carendulo sufficiente como pararesondera preuntas mass complexas and forma mass profunda ilcatr de mayous m centauno lochiast de c momento raturiae converti uarida nerjia del sol for almasanada modificada utilisada dectamente in total planetta cso in totas partes el lvito dequim marc carvon ficionad r danio itoro l tiera connecto conuna picina stacion deonquilometri medo de giametro quesiricundava el plananeta and mitad de dancia de la luna para funcional cont trios invisibles de neria solar cerias novien al canzado par empenara gloria della contesimento iadeeli dupov in almmente logarano escapar dea celebresation pica para fujier don d nadi penszerian bus carlos inast siertas camera subterranias don cvian partes del pioso called pentterado de multivac sinaistentes ossciosa classificando datos concrqu satis feetcho sperresosos multivac am vena vaganadas"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 2610.2874,
+              "min": 2593.425,
+              "max": 2663.32,
+              "stddev": 26.95491155689445,
+              "p50": 2594.605,
+              "p95": 2651.9314,
+              "count": 5
+            },
+            "rtf": 0.04350479,
+            "text": "perulentamente multivac carendulo sufficiente commo pararesondera preuntas mass complexas and forma mass profunda ellcatr de mayous m centauno lochiast de cento raturia converti uarida nerjia del sol for almassanada modificada utilisada dectamente in total planetta cso in totas partes el lvito dequim marc carvon ficionad r danio it toora l tiera connecto conuna picina stacion deonquilometri medo de giametro quesiricundava el planeta and mitad de dancia de la luna para funcional cont trios invisibles de neria solar cerias novien al canzado par empenara gloria della contesimento iadeeli dupov in almmente logarano escapar dea celebresation pica para fujier don denadi penserian bus carlos enast siertas camera subterranias don cvian partes del pioso called pentterado de multivac sinaistentes ossciosa classificando datos concrqu satis feetcho sperresosos multivac am vena vaganada"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        }
+      ]
+    },
+    {
+      "modelType": "ctc",
+      "label": "CTC 0.6B (English)",
+      "useGPU": true,
+      "backendId": 3,
+      "mudlerLoadMs": 509.71,
+      "clips": [
+        {
+          "id": "jfk",
+          "lang": "en",
+          "audioSec": 11,
+          "qvac": {
+            "procMs": {
+              "mean": 15.58972601890564,
+              "min": 15.52114200592041,
+              "max": 15.696693897247314,
+              "stddev": 0.07323024838500285,
+              "p50": 15.537101984024048,
+              "p95": 15.689211750030518,
+              "count": 5
+            },
+            "rtf": 0.0014172478199005129,
+            "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 22.183799999999998,
+              "min": 21.468,
+              "max": 22.904,
+              "stddev": 0.5394012977366669,
+              "p50": 22.019,
+              "p95": 22.8636,
+              "count": 5
+            },
+            "rtf": 0.002016709090909091,
+            "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0,
+          "werAgreement": 0
+        },
+        {
+          "id": "alice",
+          "lang": "en",
+          "audioSec": 20.1335,
+          "qvac": {
+            "procMs": {
+              "mean": 21.226300573349,
+              "min": 21.16848087310791,
+              "max": 21.33233094215393,
+              "stddev": 0.06760701197027773,
+              "p50": 21.18111515045166,
+              "p95": 21.32197732925415,
+              "count": 5
+            },
+            "rtf": 0.0010542777248540491,
+            "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 29.109999999999996,
+              "min": 27.505,
+              "max": 33.138,
+              "stddev": 2.0698813492565216,
+              "p50": 28.115,
+              "p95": 32.3002,
+              "count": 5
+            },
+            "rtf": 0.0014458489582039882,
+            "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0,
+          "werAgreement": 0
+        },
+        {
+          "id": "croatian",
+          "lang": "hr",
+          "audioSec": 27.3706875,
+          "qvac": {
+            "procMs": {
+              "mean": 26.20654692649841,
+              "min": 26.135926008224487,
+              "max": 26.310284852981567,
+              "stddev": 0.06256627797493529,
+              "p50": 26.190879821777344,
+              "p95": 26.296070098876953,
+              "count": 5
+            },
+            "rtf": 0.0009574676166427465,
+            "text": "doone yeses i'm nicola potusha eljiiv mukiperpe scorada smeseti you i'm a doctorato mathematico absm professor in a university atu toronto moa concentraatio mathematica mes in a vistage school intelligentsio eal tether is some"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 36.74080000000001,
+              "min": 35.224,
+              "max": 39.448,
+              "stddev": 1.5482008138481271,
+              "p50": 35.906,
+              "p95": 39.0496,
+              "count": 5
+            },
+            "rtf": 0.001342341169587742,
+            "text": "do done yeses i'm nicola potusha eljiiv mukiperupe scor yada smeseti you i'm a doctorato mathematico absm professor in a university atu toronto moa concentratio mathematica mes in a vistage school intelligentsio eal tether is some"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        },
+        {
+          "id": "french",
+          "lang": "fr",
+          "audioSec": 29.376,
+          "qvac": {
+            "procMs": {
+              "mean": 27.492023849487303,
+              "min": 27.44121217727661,
+              "max": 27.63212299346924,
+              "stddev": 0.07156388973620137,
+              "p50": 27.45195198059082,
+              "p95": 27.602588987350465,
+              "count": 5
+            },
+            "rtf": 0.0009358668249416975,
+            "text": "pon esqu vous pouvet merder trve l regation de matreal prche civou play j site solege le papon trapion p se j j voutre reservir and tablet for these persons as so excuse magurch and bon aroischet de souvenir depict de la region ac vou de sgisions gou sumentre montreal pnd on tremain portraal"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 39.809799999999996,
+              "min": 38.435,
+              "max": 43.729,
+              "stddev": 2.0293174616111687,
+              "p50": 38.588,
+              "p95": 42.9524,
+              "count": 5
+            },
+            "rtf": 0.0013551811002178646,
+            "text": "pon esqu vous pouvet merder trve l regation de matreal prche civou play j site solege le papon trapion p se j j voutre reservir and tablet for these persons as so excuse magurch and bon arois pchet de souvenir depict de la region a vou des sisions gou sumentre montreal pnd on tremain portraal"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        },
+        {
+          "id": "spanish60",
+          "lang": "es",
+          "audioSec": 60,
+          "qvac": {
+            "procMs": {
+              "mean": 53.546708822250366,
+              "min": 53.45080018043518,
+              "max": 53.84156799316406,
+              "stddev": 0.14857498963803478,
+              "p50": 53.49053502082825,
+              "p95": 53.77252359390259,
+              "count": 5
+            },
+            "rtf": 0.000892445147037506,
+            "text": "perulentamente multivac carendulo sufficiente commo pararesondera preuntas mass complexas and forma mass profunda ilcatr de mayous m centauno lochiast de cimento raturia converti uarida nerjia del sol for almasanada modificada utilisada dectamente in total planetta cso in totas partes el lvito dequim marc carvon ficionad r danio it tooroa tiera connecto conuna peicina stacion deonquilometri medo de giametro quesiricundava el planeta and mitad de dancia de la luna para funcional cont trios invisibles de neria solar cerias novien al canzado par empenara gloria della contesimento iadeeli dupov in almmente logarano escapar dea celebresation pica para fujier don denadi penserian bus carlos enast siertas camera subterranias don cvian partes del pioso called pentterado de multivac sinaistentes ossciosa classificando datos concrqu satis feetcho sperresosos multivac am venza vaganadas"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 93.1474,
+              "min": 91.198,
+              "max": 100.519,
+              "stddev": 3.6887334737006987,
+              "p50": 91.22,
+              "p95": 98.733,
+              "count": 5
+            },
+            "rtf": 0.0015524566666666668,
+            "text": "perulentamente multivac carendulo sufficiente commo pararesondera preuntas mass complexas and forma mass profunda ellcatr de mayous m centauno lochiast de cimento raturiae convertientarida nerjia del sol for almassanada modificada utilizada dectamente in total planetta cso in totas partes el lvitoquim marc carvon ficionad r danio itoro l tiera conecto conuna pina stacion deonquilometri medo de giametro quesiricundava el planeta and mitad de dancia de la luna para funcional contreos invisibles de neria solar cerias noviian al canzado par empenara gloria della contesimento iadeeli dupov in almmente logarano escapar de laa celebresation pica para fujier don denadi penserian busclos enast de siertas camera subterranias don cvian partes del pioso called pentterado de multivac sinaistentes ossciosa classificando datos concrqu satis feetcho sperresosos multivac am vena vaganada"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        }
+      ]
+    },
+    {
+      "modelType": "eou",
+      "label": "EOU 120M v1 (rnnt/streaming, English)",
+      "useGPU": false,
+      "backendId": 0,
+      "mudlerLoadMs": 55.15,
+      "clips": [
+        {
+          "id": "jfk",
+          "lang": "en",
+          "audioSec": 11,
+          "qvac": {
+            "procMs": {
+              "mean": 251.34811782836914,
+              "min": 250.91107201576233,
+              "max": 251.7413010597229,
+              "stddev": 0.29988015663055906,
+              "p50": 251.2669939994812,
+              "p95": 251.7175060749054,
+              "count": 5
+            },
+            "rtf": 0.022849828893488102,
+            "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 157.837,
+              "min": 157.376,
+              "max": 158.14,
+              "stddev": 0.2760804230654466,
+              "p50": 157.939,
+              "p95": 158.12099999999998,
+              "count": 5
+            },
+            "rtf": 0.01434881818181818,
+            "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country<EOU>"
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0.045454545454545456,
+          "werAgreement": 0.045454545454545456
+        },
+        {
+          "id": "alice",
+          "lang": "en",
+          "audioSec": 20.1335,
+          "qvac": {
+            "procMs": {
+              "mean": 482.9205928325653,
+              "min": 482.40678310394287,
+              "max": 483.36628699302673,
+              "stddev": 0.3714158274768907,
+              "p50": 483.1061260700226,
+              "p95": 483.3263635635376,
+              "count": 5
+            },
+            "rtf": 0.023985923601587668,
+            "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 329.64520000000005,
+              "min": 322.276,
+              "max": 355.964,
+              "stddev": 13.166596574665748,
+              "p50": 323.369,
+              "p95": 349.4806,
+              "count": 5
+            },
+            "rtf": 0.01637297042243028,
+            "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations<EOU>"
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0.017543859649122806,
+          "werAgreement": 0.017543859649122806
+        },
+        {
+          "id": "croatian",
+          "lang": "hr",
+          "audioSec": 27.3706875,
+          "qvac": {
+            "procMs": {
+              "mean": 654.9602848052979,
+              "min": 654.1261069774628,
+              "max": 655.600291967392,
+              "stddev": 0.5694394640434062,
+              "p50": 655.1148450374603,
+              "p95": 655.5753647804261,
+              "count": 5
+            },
+            "rtf": 0.02392925953377305,
+            "text": "no verdun yes his own nicola potusha mukiper scott professor in university at toronto moya concentracion automatica meston"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 450.73339999999996,
+              "min": 442.82,
+              "max": 479.765,
+              "stddev": 14.525217101303507,
+              "p50": 443.6,
+              "p95": 472.6852,
+              "count": 5
+            },
+            "rtf": 0.016467741566004536,
+            "text": "no verdun yes his own nicola potusha mukipertumatico i professor and university at toronto concentracion<EOU>"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        },
+        {
+          "id": "french",
+          "lang": "fr",
+          "audioSec": 29.376,
+          "qvac": {
+            "procMs": {
+              "mean": 710.5277814388276,
+              "min": 710.0978491306305,
+              "max": 710.8739960193634,
+              "stddev": 0.260533754965008,
+              "p50": 710.6008200645447,
+              "p95": 710.8300248146057,
+              "count": 5
+            },
+            "rtf": 0.0241873563942956,
+            "text": "polish purvey multiple letsion de macro de brush souble reservoir pendant portraits"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 496.00820000000004,
+              "min": 486.616,
+              "max": 531.142,
+              "stddev": 17.570107960966006,
+              "p50": 487.352,
+              "p95": 522.4416,
+              "count": 5
+            },
+            "rtf": 0.016884810729847495,
+            "text": "polish purvey multiple lets sublet jue reservoirs<EOU>"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        },
+        {
+          "id": "spanish60",
+          "lang": "es",
+          "audioSec": 60,
+          "qvac": {
+            "procMs": {
+              "mean": 1687.2650120258331,
+              "min": 1684.2173788547516,
+              "max": 1688.6175620555878,
+              "stddev": 1.6425756810748098,
+              "p50": 1688.0673711299896,
+              "p95": 1688.5994536399842,
+              "count": 5
+            },
+            "rtf": 0.02812108353376389,
+            "text": "peru enamente multifajolos officiente como para responder preguntas mas complex informa mas profunda yators de mayo de smithimento ya delupo final mental logarith capar de la celebration publica para refucarc and as the certas camera subterranios don civilian partes de poderoso quinterado de multivac sinistentes ociosa classificando datos conclix satisfios i perez multivac ambencia via ganad"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 1237.7488,
+              "min": 1217.523,
+              "max": 1315.929,
+              "stddev": 39.093878305432966,
+              "p50": 1218.141,
+              "p95": 1296.5794,
+              "count": 5
+            },
+            "rtf": 0.020629146666666667,
+            "text": "peru and tamente multifajolos officiente como para responder preguntas mas complex informa mas profunda yators de mayo de mese senta united lo quiestimentor attorius convert the distancia de la luna para functional con rios invisible cedarius no avian al canado parn penar la gloria de la contesimento ya del mento logrado nes capar de la celebration publica para refucarce on the nadia penserium gus carlos and as the certas camera subterranios don civilian partes de poderoso quantum de multivac sinistentes ociosa classificando datos conclix satisfios i perez multivac ambencia via ganad<EOU>"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        }
+      ]
+    },
+    {
+      "modelType": "eou",
+      "label": "EOU 120M v1 (rnnt/streaming, English)",
+      "useGPU": true,
+      "backendId": 3,
+      "mudlerLoadMs": 246.398,
+      "clips": [
+        {
+          "id": "jfk",
+          "lang": "en",
+          "audioSec": 11,
+          "qvac": {
+            "procMs": {
+              "mean": 28.97983479499817,
+              "min": 28.90793204307556,
+              "max": 29.076792001724243,
+              "stddev": 0.06241198985002614,
+              "p50": 28.95841884613037,
+              "p95": 29.066460418701173,
+              "count": 5
+            },
+            "rtf": 0.0026345304359089244,
+            "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 25.0434,
+              "min": 23.847,
+              "max": 26.11,
+              "stddev": 0.8712530286891398,
+              "p50": 24.982,
+              "p95": 26.070999999999998,
+              "count": 5
+            },
+            "rtf": 0.002276672727272727,
+            "text": "and so my fellow americans ask not what your country can do for you ask what you can do for your country<EOU>"
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0.045454545454545456,
+          "werAgreement": 0.045454545454545456
+        },
+        {
+          "id": "alice",
+          "lang": "en",
+          "audioSec": 20.1335,
+          "qvac": {
+            "procMs": {
+              "mean": 57.00402960777283,
+              "min": 56.89495491981506,
+              "max": 57.125380992889404,
+              "stddev": 0.07618043186291613,
+              "p50": 56.98727107048035,
+              "p95": 57.10804419517517,
+              "count": 5
+            },
+            "rtf": 0.002831302535961101,
+            "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 50.297000000000004,
+              "min": 47.887,
+              "max": 54.798,
+              "stddev": 2.4134358081374363,
+              "p50": 49.209,
+              "p95": 53.963,
+              "count": 5
+            },
+            "rtf": 0.002498174683984404,
+            "text": "alice was beginning to get very tired of sitting by her sister on the bank and of having nothing to do once or twice she had peeped into the book her sister was reading but it had no pictures or conversations in it and what is the use of a book thought alice without pictures or conversations<EOU>"
+          },
+          "werRefQvac": 0,
+          "werRefMudler": 0.017543859649122806,
+          "werAgreement": 0.017543859649122806
+        },
+        {
+          "id": "croatian",
+          "lang": "hr",
+          "audioSec": 27.3706875,
+          "qvac": {
+            "procMs": {
+              "mean": 56.41470060348511,
+              "min": 56.36246085166931,
+              "max": 56.55139708518982,
+              "stddev": 0.07076896476650475,
+              "p50": 56.38313817977905,
+              "p95": 56.52373065948486,
+              "count": 5
+            },
+            "rtf": 0.00206113568040573,
+            "text": "no verdun yes his arm nicole potusha as you pair up the doctor atomatic professor in university at toronto moya concentracion automatica meston"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 50.6996,
+              "min": 47.946,
+              "max": 56.987,
+              "stddev": 3.2079425555954098,
+              "p50": 49.482,
+              "p95": 55.5572,
+              "count": 5
+            },
+            "rtf": 0.0018523320222104765,
+            "text": "nobody done yes his arm nicola potusha mukiper scott professor and university at toronto concentracion<EOU>"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        },
+        {
+          "id": "french",
+          "lang": "fr",
+          "audioSec": 29.376,
+          "qvac": {
+            "procMs": {
+              "mean": 53.592182064056395,
+              "min": 53.46744108200073,
+              "max": 53.897332191467285,
+              "stddev": 0.15745122960685037,
+              "p50": 53.52715301513672,
+              "p95": 53.834136962890625,
+              "count": 5
+            },
+            "rtf": 0.001824352602943096,
+            "text": "polish purvey multiplechelet jue reservoir pendant portrait"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 52.4644,
+              "min": 49.433,
+              "max": 57.85,
+              "stddev": 2.9761730863644345,
+              "p50": 51.613,
+              "p95": 56.9138,
+              "count": 5
+            },
+            "rtf": 0.0017859613289760345,
+            "text": "polish purvey multiplechelet jue reservoir pendant portravel<EOU>"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        },
+        {
+          "id": "spanish60",
+          "lang": "es",
+          "audioSec": 60,
+          "qvac": {
+            "procMs": {
+              "mean": 132.7590985774994,
+              "min": 132.52636885643005,
+              "max": 132.93127417564392,
+              "stddev": 0.14823969361809622,
+              "p50": 132.74887013435364,
+              "p95": 132.92557730674744,
+              "count": 5
+            },
+            "rtf": 0.0022126516429583232,
+            "text": "peru enamente multifajolos officiente como para responder preguntas mas complex informa mas profunda yators de mayo de smith in almente logrado es capar de la celebration publica para refucarce on the nadia penserium gus carlos and as the certas camera subterranios don civilian partes de poderoso quantum de multivac sinistentes ociosa classificando datos conclix satisfios i peresos multivacanad"
+          },
+          "mudler": {
+            "procMs": {
+              "mean": 136.094,
+              "min": 129.08,
+              "max": 158.372,
+              "stddev": 11.198358397550958,
+              "p50": 130.47,
+              "p95": 153.2138,
+              "count": 5
+            },
+            "rtf": 0.0022682333333333333,
+            "text": "peru and tamente multifajolos officiente como para responder preguntas mas complex informa mas profunda yatorse de mayo de smithimento ya deli dupo final logarithm publica para refucarce on the nadia penserium gus carlos and as the certas camera subterranios don civilian partes de poderoso quinterado de multivac sinistentes ociosa classificando datos conclix satisfios e perez multivac davincianad<EOU>"
+          },
+          "werRefQvac": null,
+          "werRefMudler": null,
+          "werAgreement": null
+        }
+      ]
+    }
+  ],
+  "fleurs": {
+    "backend": "gpu",
+    "perLang": [
+      {
+        "lang": "fr",
+        "name": "French",
+        "n": 12,
+        "refWords": 265,
+        "qvacWer": 0.12830188679245283,
+        "mudlerWer": 0.07169811320754717
+      },
+      {
+        "lang": "es",
+        "name": "Spanish",
+        "n": 12,
+        "refWords": 306,
+        "qvacWer": 0.016339869281045753,
+        "mudlerWer": 0.00980392156862745
+      },
+      {
+        "lang": "hr",
+        "name": "Croatian",
+        "n": 12,
+        "refWords": 204,
+        "qvacWer": 0.21568627450980393,
+        "mudlerWer": 0.21568627450980393
+      }
+    ],
+    "detail": [
+      {
+        "id": "fr_0",
+        "lang": "fr",
+        "ref": "les plages sont nombreuses car auckland est à cheval sur deux ports les plus populaires se trouvent dans trois zones",
+        "qvac": "Les plages sont nombreuses, carakland est à cheval sur deux ports, les plus populaires se trouvent dans trois zones.",
+        "mudler": "Les plages sont nombreuses, car Auckland est à cheval sur deux ports, les plus populaires se trouvent dans trois zones."
+      },
+      {
+        "id": "fr_1",
+        "lang": "fr",
+        "ref": "l'amazone est également le fleuve le plus large de la planète atteignant parfois 10 km de large",
+        "qvac": "L'Amazone est également le fleuve le plus large de la planète, atteignant parfois dix kilomèt de large.",
+        "mudler": "L'Amazone est également le fleuve le plus large de la planète, atteignant parfois dix kilomètres de large."
+      },
+      {
+        "id": "fr_2",
+        "lang": "fr",
+        "ref": "l'amazone est également le fleuve le plus large de la planète atteignant parfois 10 km de large",
+        "qvac": "L'Amazone est également le fleuve le plus large de la planète, atteignant parfois dix kilomèt de large.",
+        "mudler": "L'Amazone est également le fleuve le plus large de la planète, atteignant parfois dix kilomètres large."
+      },
+      {
+        "id": "fr_3",
+        "lang": "fr",
+        "ref": "l'amazone est également le fleuve le plus large de la planète atteignant parfois 10 km de large",
+        "qvac": "L'Amazone est également le fleuve le plus large de la planète, atteignant parfois dix km de large.",
+        "mudler": "L'Amazone est également le fleuve le plus large de la planète, atteignant parfois dix km de large."
+      },
+      {
+        "id": "fr_4",
+        "lang": "fr",
+        "ref": "les critères qui déterminent une sous-culture comme distincte peuvent être linguistiques esthétiques religieux politiques sexuels géographiques ou une combinaison de facteurs",
+        "qvac": "Les critères qui déterminent une sous-culture comme distincts peuvent être linguistique, esthétique, religieux, politique, sexuel, géographique ou une combinaison de facteurs.",
+        "mudler": "Les critères qui déterminent une sous-culture comme distincte peuvent être linguistique, esthétique, religieux, politique, sexuel, géographique ou une combinaison de facteurs."
+      },
+      {
+        "id": "fr_5",
+        "lang": "fr",
+        "ref": "les critères qui déterminent une sous-culture comme distincte peuvent être linguistiques esthétiques religieux politiques sexuels géographiques ou une combinaison de facteurs",
+        "qvac": "Les critères qui déterminent une sous-culture comme distincte peuvent être linguistique, esthétique, religieux, politique, sexuel, géographique ou une combinaison de facteurs.",
+        "mudler": "Les critères qui déterminent une sous-culture comme distincte peuvent être linguistiques, esthétique, religieux, politique, sexuel, géographique ou une combinaison de facteurs."
+      },
+      {
+        "id": "fr_6",
+        "lang": "fr",
+        "ref": "les critères qui déterminent une sous-culture comme distincte peuvent être linguistiques esthétiques religieux politiques sexuels géographiques ou une combinaison de facteurs",
+        "qvac": "Les critères qui déterminent une sous-culture comme distincte peuvent être linguistique, esthétique, religieux, politique, sexuel, géographique ou une combinaison de facteurs.",
+        "mudler": "Les critères qui déterminent une sous-culture comme distincte peuvent être linguistiques, esthétiques, religieux, politiques, sexuels, géographiques ou une combinaison de facteurs."
+      },
+      {
+        "id": "fr_7",
+        "lang": "fr",
+        "ref": "auparavant le pdg de ring jamie siminoff a fait remarquer qu'il a lancé l'entreprise lorsque la sonnette de sa porte d'entrée n'était pas audible depuis son magasin dans son garage",
+        "qvac": "Auparavant, le PDG de Ring, Jami Siminoff a fait remarqu'il a lancé l'entreprise lorsque la sonnette de sa parte d'entrée n'était pas audible depu son magasin dans son garage.",
+        "mudler": "Auparavant le PDG de Ring Jamy Siminov a fait remarquer qu'il a lancé l'entreprise lorsque la sonnette de sa part d'entrée n'était pas audible depuis son magasin dans son garage."
+      },
+      {
+        "id": "fr_8",
+        "lang": "fr",
+        "ref": "auparavant le pdg de ring jamie siminoff a fait remarquer qu'il a lancé l'entreprise lorsque la sonnette de sa porte d'entrée n'était pas audible depuis son magasin dans son garage",
+        "qvac": "Auparavant le PDG de Ring, Jimis Siminoff a fait remarquer qu'il a lancé l'entreprise lorsque la sonnette de sa porte d'entrée n'était pas audible depuasin dans son garage.",
+        "mudler": "Auparavant le PDG de Ring, Jimmy Siminoff, a fait remarquer qu'il a lancé l'entreprise lorsque la sonnette de sa porte d'entrée n'était pas audible depuis son magasin dans son garage."
+      },
+      {
+        "id": "fr_9",
+        "lang": "fr",
+        "ref": "on essaie encore de déterminer quelle a été l'ampleur de l'accident et comment la terre sera affectée",
+        "qvac": "On essaie encore de déterminer quelle a été l'ampleur de l'accident et comment la Terre sera affectée.",
+        "mudler": "On essaie encore de déterminer quelle a été l'ampleur de l'accident et comment la Terre sera affectée."
+      },
+      {
+        "id": "fr_10",
+        "lang": "fr",
+        "ref": "on essaie encore de déterminer quelle a été l'ampleur de l'accident et comment la terre sera affectée",
+        "qvac": "On essaie encore de déterminer quelle a été l'ample de l'accident et comment la Terre sera affectée.",
+        "mudler": "On essaie encore de déterminer quelle a été l'ampleur de l'accident et comment la Terre sera affectée."
+      },
+      {
+        "id": "fr_11",
+        "lang": "fr",
+        "ref": "on essaie encore de déterminer quelle a été l'ampleur de l'accident et comment la terre sera affectée",
+        "qvac": "On essaie encore de déterminer quelle a été l'ample de l'accident et comment la Terre sera affectée.",
+        "mudler": "On essaie encore de déterminer quelle a été l'ampleur de l'accident et comment la Terre sera affectée."
+      },
+      {
+        "id": "es_0",
+        "lang": "es",
+        "ref": "podemos comenzar a llevar una vida más amigable con el planeta formar parte de movimientos ambientalistas o incluso podemos volvernos activistas y luchar para aminorar en alguna medida el sufrimiento futuro",
+        "qvac": "Podemos comenzar a llevar una vida más amigable con el planeta, formar parte de movimientos ambientalistas o, incluso, podemos volvernos activistas y luchar para aminorar en alguna mayoría el sufrimiento futuro.",
+        "mudler": "Podemos comenzar a llevar una vida más amigable con el planeta, formar parte de movimientos ambientalistas o, incluso, podemos volvernos activistas y luchar para aminorar en alguna mayoría el sufrimiento futuro."
+      },
+      {
+        "id": "es_1",
+        "lang": "es",
+        "ref": "podemos comenzar a llevar una vida más amigable con el planeta formar parte de movimientos ambientalistas o incluso podemos volvernos activistas y luchar para aminorar en alguna medida el sufrimiento futuro",
+        "qvac": "Podemos comenzar a llevar una vida más amigable con el planeta, formar parte de movimientos ambientalistas o, incluso, podemos volvernos activistas y luchar para aminorar, en alguna medida, el sufrimiento futuro.",
+        "mudler": "Podemos comenzar a llevar una vida más amigable con el planeta, formar parte de movimientos ambientalistas o, incluso, podemos volvernos activistas y luchar para aminorar, en alguna medida, el sufrimiento futuro."
+      },
+      {
+        "id": "es_2",
+        "lang": "es",
+        "ref": "podemos comenzar a llevar una vida más amigable con el planeta formar parte de movimientos ambientalistas o incluso podemos volvernos activistas y luchar para aminorar en alguna medida el sufrimiento futuro",
+        "qvac": "Podemos comenzar a llevar una vida más amigable con el planeta, formar parte de movimientos ambientalistas o incluso podemos volvernos activistas y luchar para aminorar, en alguna medida, el sufrimiento futuro.",
+        "mudler": "Podemos comenzar a llevar una vida más amigable con el planeta, formar parte de movimientos ambientalistas o incluso podemos volvernos activistas y luchar para aminorar, en alguna medida, el sufrimiento futuro."
+      },
+      {
+        "id": "es_3",
+        "lang": "es",
+        "ref": "aún intentan establecer cuán importante fue el impacto y de qué modo afectará al planeta",
+        "qvac": "Aún intentan establecer cuán importante fue el impacto y de qué modo afectará al planeta.",
+        "mudler": "Aún intentan establecer cuán importante fue el impacto y de qué modo afectará al planeta."
+      },
+      {
+        "id": "es_4",
+        "lang": "es",
+        "ref": "aún intentan establecer cuán importante fue el impacto y de qué modo afectará al planeta",
+        "qvac": "Aún intentan establecer cuán importante fue el impacto y de qué modo afectará al planeta.",
+        "mudler": "Aún intentan establecer cuán importante fue el impacto y de qué modo afectará al planeta."
+      },
+      {
+        "id": "es_5",
+        "lang": "es",
+        "ref": "aún intentan establecer cuán importante fue el impacto y de qué modo afectará al planeta",
+        "qvac": "Aún intentan establecer cuán importante fue el impacto y de qué modo afectará al planeta.",
+        "mudler": "Aún intentan establecer cuán importante fue el impacto y de qué modo afectará al planeta."
+      },
+      {
+        "id": "es_6",
+        "lang": "es",
+        "ref": "el informe comienza con un llamado a debate abierto y a formar un consenso en los estados unidos acerca de las políticas sobre el oriente medio",
+        "qvac": "El informe comienza con un llamado a debate abierto a formar un consenso en los Estados UU. acerca de las políticas sobre el Oriente Medio.",
+        "mudler": "El informe comienza con un llamado a debate abierto y a formar un consenso en los Estados Unidos. acerca de las políticas sobre el Oriente Medio."
+      },
+      {
+        "id": "es_7",
+        "lang": "es",
+        "ref": "el informe comienza con un llamado a debate abierto y a formar un consenso en los estados unidos acerca de las políticas sobre el oriente medio",
+        "qvac": "El informe comienza con un llamado a debate abierto y formar un consenso en los Estados Unidos. acerca de las políticas sobre el Oriente Medio.",
+        "mudler": "El informe comienza con un llamado a debate abierto y formar un consenso en los Estados Unidos acerca de las políticas sobre el Oriente Medio."
+      },
+      {
+        "id": "es_8",
+        "lang": "es",
+        "ref": "el objetivo capital de la ciencia es descifrar el modo en que funciona el mundo a través del método científico en efecto este método sirve de guía para la mayor parte de las investigaciones científicas",
+        "qvac": "El objetivo capital de la ciencia es descifrar el modo en que funciona el mundo a través del método científico. En efecto, este método sirve para guía para la mayor parte de las investigaciones científicas.",
+        "mudler": "El objetivo capital de la ciencia es descifrar el modo en que funciona el mundo a través del método científico. En efecto, este método sirve para guía para la mayor parte de las investigaciones científicas."
+      },
+      {
+        "id": "es_9",
+        "lang": "es",
+        "ref": "el objetivo capital de la ciencia es descifrar el modo en que funciona el mundo a través del método científico en efecto este método sirve de guía para la mayor parte de las investigaciones científicas",
+        "qvac": "El objetivo capital de la ciencia es descifrar el modo en que funciona el mundo a través del método científico. En efecto, este método sirve de guía para la mayor parte de las investigaciones científicas.",
+        "mudler": "El objetivo capital de la ciencia es descifrar el modo en que funciona el mundo a través del método científico. En efecto, este método sirve de guía para la mayor parte de las investigaciones científicas."
+      },
+      {
+        "id": "es_10",
+        "lang": "es",
+        "ref": "el objetivo capital de la ciencia es descifrar el modo en que funciona el mundo a través del método científico en efecto este método sirve de guía para la mayor parte de las investigaciones científicas",
+        "qvac": "El objetivo capital de la ciencia es descifrar el modo en que funciona el mundo a través del método científico. En efecto, este método sirve de guía para la mayor parte de las investigaciones científicas.",
+        "mudler": "El objetivo capital de la ciencia es descifrar el modo en que funciona el mundo a través del método científico. En efecto, este método sirve de guía para la mayor parte de las investigaciones científicas."
+      },
+      {
+        "id": "es_11",
+        "lang": "es",
+        "ref": "tampoco estaba facultado para anular leyes fiscales o aranceles entre estados",
+        "qvac": "Tampoco estaba facultado para anular leyes fiscales o aranceles entre estados.",
+        "mudler": "Tampoco estaba facultado para anular leyes fiscales o aranceles entre estados."
+      },
+      {
+        "id": "hr_0",
+        "lang": "hr",
+        "ref": "osvajač zlatne olimpijske medalje trebao je plivati u utrkama na 100 i 200 m slobodnim stilom te u tri štafete na igrama commonwealtha no zbog pritužbi je njegovo zdravlje upitno",
+        "qvac": "Osvajac zlatne olimijske medalje trebao je plivati u utrkama na 1000-200 metara slobodnim stilom te u trišta fete na igrama Common Veilta. No zbog pritužbi je njegovo zdravlje upitno.",
+        "mudler": "Osvajac zlatne olimpijske medalje trebao je plivati u utrkama na 100-200 metara slobodnim stilom te u tri štafete na igrama Common Veilta. No zbog pritužbi je njegovo zdravlje upitno."
+      },
+      {
+        "id": "hr_1",
+        "lang": "hr",
+        "ref": "osvajač zlatne olimpijske medalje trebao je plivati u utrkama na 100 i 200 m slobodnim stilom te u tri štafete na igrama commonwealtha no zbog pritužbi je njegovo zdravlje upitno",
+        "qvac": "Osvajajač zlatne olimijske medalje trebao je plivati u utrkama na 100 i 200 metara slobodnim stilom te u tri štafete na igrama Commonta. No zbog pritužbi je njegovo zdravlje upitno.",
+        "mudler": "Osvajač zladne olimpijske medalje trebao je plivati u utrkama na 100 i 200 metara slobodnim stilom te u tri štafete na igrama Commonwealtha, no zbog pritužbi je njegovo zdravlje upitno."
+      },
+      {
+        "id": "hr_2",
+        "lang": "hr",
+        "ref": "slabovidan poljski skijaš maciej krezel s voditeljicom annom ogarzynskom završio je na trinaestom mjestu u superveleslalomu južnokorejac jong seork park završio je dvadesetičetvrti u muškom sjedećem superveleslalomu",
+        "qvac": "Slabovidan polski skijaš Matej Krezel s voditeljicom Anom Ogrizanskom završio je na 13. mjestu u super velesalomu. Južnokorejac Jong Seorg Park završio je 24. u muškom sedećem super velesalomu.",
+        "mudler": "Slabovidan polski skijaš Matei Krezel s voditeljicom Anom Ogrizanskom završio je na 13. mjestu u super veleslalomu. Južnogkorejac Jong Seork Park završio je u 24. u muškom sjedićem supervelesalomu."
+      },
+      {
+        "id": "hr_3",
+        "lang": "hr",
+        "ref": "silna moć kršćanstva utjecala je na sve od kralja do pučanina",
+        "qvac": "Silna moć kršćanstva utjecala je na sve od kralja do pučanina.",
+        "mudler": "Silna moć kršćanstva utjecala je na sve od kralja do pučanina."
+      },
+      {
+        "id": "hr_4",
+        "lang": "hr",
+        "ref": "silna moć kršćanstva utjecala je na sve od kralja do pučanina",
+        "qvac": "Silna moč krščanstva utjecala je na sve od kralja do pučanina.",
+        "mudler": "Silna moč krščanstva utjecala je na sve od kralja do pučanina."
+      },
+      {
+        "id": "hr_5",
+        "lang": "hr",
+        "ref": "silna moć kršćanstva utjecala je na sve od kralja do pučanina",
+        "qvac": "Silna moć kućanstva utjecala je na sve do kralja pa do pučanina.",
+        "mudler": "Silna moć kuććanstva utjecala je na sve do kralja pa do pućanina."
+      },
+      {
+        "id": "hr_6",
+        "lang": "hr",
+        "ref": "u većini okruga voze mali japanski autobusi marke toyota coaster koji su ugodni i čvrsti",
+        "qvac": "U većini okruga voze mali japanski autobusi market ortak costar, koji su uvodni čvrsti",
+        "mudler": "U većini okruga voze mali japanski autobusi marketu i ota kostar, koji su uvodni čvrsti."
+      },
+      {
+        "id": "hr_7",
+        "lang": "hr",
+        "ref": "u većini okruga voze mali japanski autobusi marke toyota coaster koji su ugodni i čvrsti",
+        "qvac": "U većini okruga voze mali japanski autobusi marke totak koster koji su ugodni čvrsti.",
+        "mudler": "U većini okruga voze mali japanski autobusi markeito i otak koster koji su ugodni čvrsti."
+      },
+      {
+        "id": "hr_8",
+        "lang": "hr",
+        "ref": "u većini okruga voze mali japanski autobusi marke toyota coaster koji su ugodni i čvrsti",
+        "qvac": "U većini okruga voze mali japanski autobusi, marke Toyota coaster, koji su ugodni čvrsti.",
+        "mudler": "U većini okruga voze mali japanski autobusi marke Toyota Coaster koji su ugodni čvrsti."
+      },
+      {
+        "id": "hr_9",
+        "lang": "hr",
+        "ref": "pljačke su naširoko nastavile tijekom noći a na ulicama bishkeka nije bilo policije",
+        "qvac": "Pljačke su naširoko nastavile tijekom noći, a na ulicama Biškeka nije bilo policije.",
+        "mudler": "Ljačke su naširoko nastavile tijekom noći, a na ulicama Bishkeka nije bilo policije."
+      },
+      {
+        "id": "hr_10",
+        "lang": "hr",
+        "ref": "pljačke su naširoko nastavile tijekom noći a na ulicama bishkeka nije bilo policije",
+        "qvac": "Pljačke su naširoko nastavile tijekom noći, a na ulicama Bišeka nije bilo policije.",
+        "mudler": "Pjačke su naširoko nastavile tijekom noći, a na ulicama bišeka i nije bilo policije."
+      },
+      {
+        "id": "hr_11",
+        "lang": "hr",
+        "ref": "pljačke su naširoko nastavile tijekom noći a na ulicama bishkeka nije bilo policije",
+        "qvac": "Pljačke su našir roku nastavile tijekom noći, a na ulicama Bisheka nije bilo policije.",
+        "mudler": "Ljačke su našir roku nastavile tijekom noći, a na ulicama Bishkeka nije bilo policije."
+      }
+    ]
+  }
+}
