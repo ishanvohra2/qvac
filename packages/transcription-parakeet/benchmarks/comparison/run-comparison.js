@@ -371,6 +371,8 @@ function renderMd (meta, rows, fleurs) {
   L.push('**RTF** = proc/audio (lower is faster) · **WER** lower is better.')
   L.push('')
   L.push('> Both timings are **engine-only C++ inference** (mel + encoder + decoder), excluding model load and wav read — qvac = `parakeet-cpp --bench` (`inference_ms`), mudler = `parakeet-cli bench` (`transcribe_pcm`). Same canonical clips, same threads, same quant level. Each engine loads its own native q8_0 GGUF (the two schemas are not interchangeable).')
+  L.push('>')
+  L.push('> **Benchmarked binaries:** the qvac side is the standalone `parakeet-cpp` engine CLI from `tetherto/qvac-ext-lib-whisper.cpp` — **not** the Bare/Node `transcription-parakeet` addon — so no JS/Bare runtime overhead is included. This is an engine-to-engine (C++ vs C++) comparison.')
   L.push('')
   L.push('## Model types in this benchmark')
   L.push('')
@@ -549,11 +551,12 @@ td.win { background: rgba(63,185,80,.15); font-weight: 700; } tr.warn td { backg
 </style></head><body>
 <h1>Parakeet Engine Comparison</h1>
 <div class="meta">
-qvac <code>transcription-parakeet</code> (ggml addon) vs <code>mudler/parakeet.cpp</code> (parakeet-cli)<br/>
+qvac <code>parakeet-cpp</code> engine CLI vs <code>mudler/parakeet.cpp</code> (parakeet-cli)<br/>
 Generated ${esc(meta.generatedAt)} · Platform <code>${esc(meta.platform)}</code> (${esc(PLATFORM_NOTE)})<br/>
 Quant <code>${esc(meta.quant)}</code> · Threads ${meta.threads} · Warmup ${meta.warmup} · Timed reps ${meta.runs}<br/>
 <strong>RTF</strong> = proc/audio (lower is faster) · <strong>WER</strong> lower is better<br/>
-Both timings are <strong>engine-only C++ inference</strong> (mel + encoder + decoder), excluding model load + wav read — qvac = <code>parakeet-cpp --bench</code> (inference_ms), mudler = <code>parakeet-cli bench</code> (transcribe_pcm).
+Both timings are <strong>engine-only C++ inference</strong> (mel + encoder + decoder), excluding model load + wav read — qvac = <code>parakeet-cpp --bench</code> (inference_ms), mudler = <code>parakeet-cli bench</code> (transcribe_pcm).<br/>
+<strong>Benchmarked binaries:</strong> the qvac side is the standalone <code>parakeet-cpp</code> engine CLI (from <code>tetherto/qvac-ext-lib-whisper.cpp</code>) — <strong>not</strong> the Bare/Node <code>transcription-parakeet</code> addon — so no JS/Bare overhead is included (engine-to-engine, C++ vs C++).
 </div>
 <h2>Model types in this benchmark</h2>
 <div class="meta">All three share the same FastConformer audio encoder; they differ in how they turn encoder output into text. Sortformer (speaker diarization) is qvac-only and not benchmarked here.</div>

@@ -1,5 +1,14 @@
 # Parakeet Engine Comparison: qvac vs mudler/parakeet.cpp
 
+> ⚠️ **Superseded — re-run pending.** This linux-x64 report was produced with the
+> **old methodology**: the qvac side was measured through the Bare/Node
+> `transcription-parakeet` **addon** (full JS `run()` wall, which includes
+> JS/Bare runtime overhead), *not* the standalone `parakeet-cpp` engine CLI. The
+> harness has since moved to an **engine-to-engine** comparison (qvac
+> `parakeet-cpp --bench` vs mudler `parakeet-cli bench`), as used in the
+> `mac-arm64` baseline. Regenerate this report on the NVIDIA box with the updated
+> harness (qvac `parakeet-cpp` CLI built for Vulkan) before citing these numbers.
+
 Generated: 2026-06-17T10:14:59.387Z  
 Platform: `linux-x64` (linux-x64, GPU)  
 Quant: `q8_0` · Threads: 4 · Warmup: 1 · Timed reps: 5

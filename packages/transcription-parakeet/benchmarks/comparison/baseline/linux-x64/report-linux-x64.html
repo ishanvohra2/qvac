@@ -20,6 +20,9 @@ td.win { background: rgba(63,185,80,.15); font-weight: 700; } tr.warn td { backg
 .grid { display:flex; flex-wrap:wrap; gap:1rem; }
 </style></head><body>
 <h1>Parakeet Engine Comparison</h1>
+<div style="border:1px solid #f85149; background:rgba(248,81,73,.12); color:#e6edf3; padding:.75rem 1rem; border-radius:8px; margin:0 0 1rem; font-size:.85rem; line-height:1.6;">
+⚠️ <strong>Superseded — re-run pending.</strong> This linux-x64 report used the <strong>old methodology</strong>: the qvac side was measured through the Bare/Node <code>transcription-parakeet</code> <strong>addon</strong> (full JS <code>run()</code> wall, which includes JS/Bare runtime overhead), <em>not</em> the standalone <code>parakeet-cpp</code> engine CLI. The harness has since moved to an <strong>engine-to-engine</strong> comparison (qvac <code>parakeet-cpp --bench</code> vs mudler <code>parakeet-cli bench</code>), as used in the <code>mac-arm64</code> baseline. Regenerate on the NVIDIA box with the updated harness (qvac <code>parakeet-cpp</code> CLI built for Vulkan) before citing these numbers.
+</div>
 <div class="meta">
 qvac <code>transcription-parakeet</code> (ggml addon) vs <code>mudler/parakeet.cpp</code> (parakeet-cli)<br/>
 Generated 2026-06-17T10:14:59.387Z · Platform <code>linux-x64</code> (linux-x64, GPU)<br/>
