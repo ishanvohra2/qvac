@@ -199,6 +199,8 @@
     "check-models": "tsx ./models/update-models/index.ts --check",
     "check-models:hook": "tsx ./models/update-models/index.ts --check --non-blocking",
     "update-models": "tsx ./models/update-models/index.ts && bun run contract:export",
+    "android:sync": "tsx ./scripts/android/generate.ts",
+    "android:check-sync": "tsx ./scripts/android/generate.ts --check",
     "changelog:generate": "node ../../scripts/sdk/generate-changelog-sdk-pod.cjs --package=sdk && prettier --write changelog"
   },
   "dependencies": {

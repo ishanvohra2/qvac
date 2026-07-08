@@ -1,0 +1,119 @@
+[
+  {
+    "operation": "heartbeat",
+    "requestSchema": "heartbeatRequestSchema",
+    "responseSchema": "heartbeatResponseSchema",
+    "requestTypeName": "HeartbeatRequest",
+    "responseTypeName": "HeartbeatResponse",
+    "streaming": false,
+    "sourceFile": "heartbeat.ts"
+  },
+  {
+    "operation": "modelRegistryGetModel",
+    "requestSchema": "modelRegistryGetModelRequestSchema",
+    "responseSchema": "modelRegistryGetModelResponseSchema",
+    "requestTypeName": "ModelRegistryGetModelRequest",
+    "responseTypeName": "ModelRegistryGetModelResponse",
+    "streaming": false,
+    "sourceFile": "registry.ts"
+  },
+  {
+    "operation": "modelRegistryList",
+    "requestSchema": "modelRegistryListRequestSchema",
+    "responseSchema": "modelRegistryListResponseSchema",
+    "requestTypeName": "ModelRegistryListRequest",
+    "responseTypeName": "ModelRegistryListResponse",
+    "streaming": false,
+    "sourceFile": "registry.ts"
+  },
+  {
+    "operation": "modelRegistrySearch",
+    "requestSchema": "modelRegistrySearchRequestSchema",
+    "responseSchema": "modelRegistrySearchResponseSchema",
+    "requestTypeName": "ModelRegistrySearchRequest",
+    "responseTypeName": "ModelRegistrySearchResponse",
+    "streaming": false,
+    "sourceFile": "registry.ts"
+  },
+  {
+    "operation": "pluginInvoke",
+    "requestSchema": "pluginInvokeRequestSchema",
+    "responseSchema": "pluginInvokeResponseSchema",
+    "requestTypeName": "PluginInvokeRequest",
+    "responseTypeName": "PluginInvokeResponse",
+    "streaming": false,
+    "sourceFile": "plugin.ts"
+  },
+  {
+    "operation": "pluginInvokeStream",
+    "requestSchema": "pluginInvokeStreamRequestSchema",
+    "responseSchema": "pluginInvokeStreamResponseSchema",
+    "requestTypeName": "PluginInvokeStreamRequest",
+    "responseTypeName": "PluginInvokeStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "plugin.ts"
+  },
+  {
+    "operation": "resume",
+    "requestSchema": "resumeRequestSchema",
+    "responseSchema": "resumeResponseSchema",
+    "requestTypeName": "ResumeRequest",
+    "responseTypeName": "ResumeResponse",
+    "streaming": false,
+    "sourceFile": "resume.ts"
+  },
+  {
+    "operation": "state",
+    "requestSchema": "stateRequestSchema",
+    "responseSchema": "stateResponseSchema",
+    "requestTypeName": "StateRequest",
+    "responseTypeName": "StateResponse",
+    "streaming": false,
+    "sourceFile": "state.ts"
+  },
+  {
+    "operation": "suspend",
+    "requestSchema": "suspendRequestSchema",
+    "responseSchema": "suspendResponseSchema",
+    "requestTypeName": "SuspendRequest",
+    "responseTypeName": "SuspendResponse",
+    "streaming": false,
+    "sourceFile": "suspend.ts"
+  },
+  {
+    "operation": "unloadModel",
+    "requestSchema": "unloadModelRequestSchema",
+    "responseSchema": "unloadModelResponseSchema",
+    "requestTypeName": "UnloadModelRequest",
+    "responseTypeName": "UnloadModelResponse",
+    "streaming": false,
+    "sourceFile": "unload-model.ts"
+  },
+  {
+    "operation": "upscaleStream",
+    "requestSchema": "upscaleRequestSchema",
+    "responseSchema": "upscaleStreamResponseSchema",
+    "requestTypeName": "UpscaleStreamRequest",
+    "responseTypeName": "UpscaleStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "sdcpp-config.ts"
+  },
+  {
+    "operation": "vlaHparams",
+    "requestSchema": "vlaHparamsRequestSchema",
+    "responseSchema": "vlaRunResponseSchema",
+    "requestTypeName": "VlaHparamsRequest",
+    "responseTypeName": "VlaHparamsResponse",
+    "streaming": false,
+    "sourceFile": "vla.ts"
+  },
+  {
+    "operation": "vlaRun",
+    "requestSchema": "vlaRunRequestSchema",
+    "responseSchema": null,
+    "requestTypeName": "VlaRunRequest",
+    "responseTypeName": "VlaRunResponse",
+    "streaming": false,
+    "sourceFile": "vla.ts"
+  }
+]

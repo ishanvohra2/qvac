@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "android": {
+    "groupId": "io.tether.qvac",
+    "artifactId": "sdk-bare-android",
+    "namespace": "io.tether.qvac.sdk",
+    "kotlinPackage": "io.tether.qvac.sdk.generated",
+    "minSdk": 26,
+    "targetSdk": 35,
+    "compileSdk": 35,
+    "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"]
+  },
+  "dependencyPolicy": {
+    "includeScopes": ["dependencies"],
+    "includePrefixes": ["@qvac/", "bare-"],
+    "excludePackages": ["@qvac/registry-client", "bare-pack"]
+  },
+  "runtime": {
+    "bareRuntimePackage": "bare-runtime",
+    "bareAndroidTemplateRepo": "holepunchto/bare-android"
+  },
+  "addonPolicy": {
+    "bci": {
+      "androidSupported": true,
+      "fallbackBehavior": "remote-only"
+    },
+    "classification": {
+      "androidSupported": true,
+      "fallbackBehavior": "unsupported"
+    },
+    "diffusion": {
+      "androidSupported": false,
+      "fallbackBehavior": "remote-only"
+    },
+    "embeddings": {
+      "androidSupported": true,
+      "fallbackBehavior": "remote-only"
+    },
+    "llm": {
+      "androidSupported": true,
+      "fallbackBehavior": "remote-only"
+    },
+    "nmt": {
+      "androidSupported": true,
+      "fallbackBehavior": "remote-only"
+    },
+    "ocr": {
+      "androidSupported": true,
+      "fallbackBehavior": "unsupported"
+    },
+    "parakeet": {
+      "androidSupported": true,
+      "fallbackBehavior": "remote-only"
+    },
+    "tts": {
+      "androidSupported": true,
+      "fallbackBehavior": "remote-only"
+    },
+    "vad": {
+      "androidSupported": false,
+      "fallbackBehavior": "unsupported"
+    },
+    "vla": {
+      "androidSupported": false,
+      "fallbackBehavior": "remote-only"
+    },
+    "whisper": {
+      "androidSupported": true,
+      "fallbackBehavior": "remote-only"
+    },
+    "other": {
+      "androidSupported": false,
+      "fallbackBehavior": "unsupported"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">QVAC SDK Sample</string>
+  <string name="title">QVAC Android SDK Sample</string>
+  <string name="placeholder_info">Loading SDK information...</string>
+  <string name="api_contract_placeholder">Loading generated API contract...</string>
+  <string name="runtime_health_placeholder">Checking runtime health...</string>
+  <string name="model_id_hint">Model constant or source</string>
+  <string name="default_model_id">LLAMA_3_2_1B_INST_Q4_0</string>
+  <string name="load_model_button">Load LLM Model</string>
+  <string name="unload_model_button">Unload LLM Model</string>
+  <string name="loaded_model_none">Loaded model: none</string>
+  <string name="prompt_hint">Prompt</string>
+  <string name="default_prompt">What is a constellation</string>
+  <string name="stream_button">Stream Response</string>
+  <string name="cancel_stream_button">Cancel Stream</string>
+  <string name="run_prompt_set_button">Run Integration Prompt Set</string>
+  <string name="refresh_health_button">Refresh Runtime Health</string>
+  <string name="status_idle">Status: idle</string>
+  <string name="bare_logs_title">Bare worklet logs</string>
+  <string name="bare_logs_placeholder">Waiting for runtime events...</string>
+  <string name="response_title">Streaming output</string>
+  <string name="response_placeholder">Real streaming output appears here.</string>
+</resources>

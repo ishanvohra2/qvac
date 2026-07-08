@@ -1,0 +1,13 @@
+/build/
+/.cxx/
+/.externalNativeBuild/
+/src/main/addons/
+/src/main/assets/app.bundle
+/captures/
+prebuilds.zip
+/libs/
+/.gradle/
+/.idea/
+/local.properties
+*.iml
+.DS_Store

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+      android:id="@+id/titleText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/title"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+    <TextView
+      android:id="@+id/sdkInfo"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:text="@string/placeholder_info"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+
+    <TextView
+      android:id="@+id/apiContractInfo"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/api_contract_placeholder"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
+
+    <TextView
+      android:id="@+id/runtimeHealthInfo"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="6dp"
+      android:text="@string/runtime_health_placeholder"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:hint="@string/model_id_hint">
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/modelInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="@string/default_model_id" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/loadModelButton"
+      style="@style/Widget.MaterialComponents.Button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:text="@string/load_model_button" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/unloadModelButton"
+      style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/unload_model_button" />
+
+    <TextView
+      android:id="@+id/loadedModelText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:text="@string/loaded_model_none"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:hint="@string/prompt_hint">
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/promptInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top|start"
+        android:inputType="textMultiLine"
+        android:lines="4"
+        android:maxLines="8"
+        android:text="@string/default_prompt" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/streamButton"
+      style="@style/Widget.MaterialComponents.Button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:text="@string/stream_button" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/cancelStreamButton"
+      style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/cancel_stream_button" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/runPromptSetButton"
+      style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/run_prompt_set_button" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/healthCheckButton"
+      style="@style/Widget.MaterialComponents.Button.TextButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:text="@string/refresh_health_button" />
+
+    <TextView
+      android:id="@+id/statusText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:text="@string/status_idle"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+      app:drawableStartCompat="@android:drawable/presence_away" />
+
+    <TextView
+      android:id="@+id/bareLogsTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:text="@string/bare_logs_title"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+
+    <TextView
+      android:id="@+id/bareLogsText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="6dp"
+      android:background="@android:color/transparent"
+      android:minHeight="80dp"
+      android:padding="8dp"
+      android:text="@string/bare_logs_placeholder"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
+
+    <TextView
+      android:id="@+id/responseTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:text="@string/response_title"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
+
+    <TextView
+      android:id="@+id/responseText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:background="@android:color/transparent"
+      android:minHeight="120dp"
+      android:padding="8dp"
+      android:text="@string/response_placeholder"
+      android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+  </LinearLayout>
+</ScrollView>
