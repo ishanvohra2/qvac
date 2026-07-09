@@ -16,6 +16,12 @@ import org.json.JSONObject
 import to.holepunch.bare.kit.IPC
 import to.holepunch.bare.kit.Worklet
 
+data class TtsAudioResult(
+  val sampleCount: Int,
+  val sampleRate: Int,
+  val pcmBase64: String
+)
+
 class BareQvacBridge(private val context: Context) {
   private var worklet: Worklet? = null
   private var ipc: IPC? = null
@@ -62,17 +68,89 @@ class BareQvacBridge(private val context: Context) {
     eventListener = listener
   }
 
-  suspend fun loadModel(modelSrc: String): String {
+  suspend fun loadModel(
+    modelSrc: String,
+    modelType: String = "llamacpp-completion",
+    modelConfig: JSONObject = JSONObject()
+  ): String {
     return suspendCancellableCoroutine { continuation ->
-      val requestId = sendRequest("loadModel", JSONObject().put("modelSrc", modelSrc)) { message ->
+      val payload = JSONObject()
+        .put("modelSrc", modelSrc)
+        .put("modelType", modelType)
+        .put("modelConfig", modelConfig)
+      val requestId = sendRequest("loadModel", payload) { message ->
         val success = message.optBoolean("success", false)
         if (!success) {
           continuation.resumeWithException(
-            IllegalStateException(message.optString("error", "loadModel failed"))
+            IllegalStateException(extractErrorSummary(message, "loadModel failed"))
           )
           return@sendRequest
         }
         continuation.resume(message.getString("modelId"))
+      }
+      continuation.invokeOnCancellation {
+        handlers.remove(requestId)
+      }
+    }
+  }
+
+  suspend fun textToSpeech(text: String): TtsAudioResult {
+    return suspendCancellableCoroutine { continuation ->
+      val requestId = sendRequest("textToSpeech", JSONObject().put("text", text)) { message ->
+        val type = message.optString("type")
+        if (type == "error") {
+          continuation.resumeWithException(
+            IllegalStateException(extractErrorSummary(message, "text to speech failed"))
+          )
+          return@sendRequest
+        }
+        continuation.resume(
+          TtsAudioResult(
+            sampleCount = message.optInt("sampleCount", 0),
+            sampleRate = message.optInt("sampleRate", 44100),
+            pcmBase64 = message.optString("pcmBase64", "")
+          )
+        )
+      }
+      continuation.invokeOnCancellation {
+        handlers.remove(requestId)
+      }
+    }
+  }
+
+  suspend fun transcribe(audioPath: String, prompt: String?): String {
+    return suspendCancellableCoroutine { continuation ->
+      val payload = JSONObject().put("audioChunk", audioPath)
+      if (!prompt.isNullOrBlank()) {
+        payload.put("prompt", prompt)
+      }
+      val requestId = sendRequest("transcribe", payload) { message ->
+        val type = message.optString("type")
+        if (type == "error") {
+          continuation.resumeWithException(
+            IllegalStateException(extractErrorSummary(message, "transcription failed"))
+          )
+          return@sendRequest
+        }
+        continuation.resume(message.optString("text", ""))
+      }
+      continuation.invokeOnCancellation {
+        handlers.remove(requestId)
+      }
+    }
+  }
+
+  suspend fun translate(text: String): String {
+    return suspendCancellableCoroutine { continuation ->
+      val requestId = sendRequest("translate", JSONObject().put("text", text)) { message ->
+        val type = message.optString("type")
+        if (type == "error") {
+          continuation.resumeWithException(
+            IllegalStateException(extractErrorSummary(message, "translation failed"))
+          )
+          return@sendRequest
+        }
+        continuation.resume(message.optString("text", ""))
       }
       continuation.invokeOnCancellation {
         handlers.remove(requestId)
@@ -86,7 +164,7 @@ class BareQvacBridge(private val context: Context) {
         val success = message.optBoolean("success", false)
         if (!success) {
           continuation.resumeWithException(
-            IllegalStateException(message.optString("error", "unloadModel failed"))
+            IllegalStateException(extractErrorSummary(message, "unloadModel failed"))
           )
           return@sendRequest
         }
@@ -103,7 +181,7 @@ class BareQvacBridge(private val context: Context) {
       when (message.optString("type")) {
         "token" -> trySend(message.optString("token", ""))
         "done" -> close()
-        "error" -> close(IllegalStateException(message.optString("error", "stream failed")))
+        "error" -> close(IllegalStateException(extractErrorSummary(message, "stream failed")))
       }
     }
 
@@ -119,7 +197,7 @@ class BareQvacBridge(private val context: Context) {
         val success = message.optBoolean("success", false)
         if (!success) {
           continuation.resumeWithException(
-            IllegalStateException(message.optString("error", "health check failed"))
+            IllegalStateException(extractErrorSummary(message, "health check failed"))
           )
           return@sendRequest
         }
@@ -136,7 +214,16 @@ class BareQvacBridge(private val context: Context) {
     handlers[requestId] = { message ->
       val type = message.optString("type")
       handler(message)
-      if (type == "loadModelResult" || type == "unloadModelResult" || type == "done" || type == "error") {
+      if (
+        type == "loadModelResult" ||
+        type == "unloadModelResult" ||
+        type == "done" ||
+        type == "error" ||
+        type == "translationResult" ||
+        type == "transcriptionResult" ||
+        type == "textToSpeechResult" ||
+        type == "healthResult"
+      ) {
         handlers.remove(requestId)
       }
     }
@@ -181,5 +268,20 @@ class BareQvacBridge(private val context: Context) {
         handlers[requestId]?.invoke(message)
       }
     }
+  }
+
+  private fun extractErrorSummary(message: JSONObject, fallback: String): String {
+    val errorMessage = message.optString("error", fallback)
+    val errorCode = message.optString("errorCode", "")
+    val errorName = message.optString("errorName", "")
+    val parts = mutableListOf<String>()
+    if (errorCode.isNotBlank()) {
+      parts += "code=$errorCode"
+    }
+    if (errorName.isNotBlank()) {
+      parts += "name=$errorName"
+    }
+    parts += "message=$errorMessage"
+    return parts.joinToString(" ")
   }
 }

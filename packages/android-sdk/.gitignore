@@ -5,3 +5,4 @@
 *.iml
 .DS_Store
 /java_pid*.hprof
+/.cache/

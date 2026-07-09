@@ -6,7 +6,10 @@ class QvacLlmClient(private val bridge: BareQvacBridge) {
   private var loadedModelId: String? = null
 
   suspend fun loadModel(modelId: String) {
-    loadedModelId = bridge.loadModel(modelId)
+    loadedModelId = bridge.loadModel(
+      modelSrc = modelId,
+      modelType = "llamacpp-completion"
+    )
   }
 
   suspend fun unloadModel() {

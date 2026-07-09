@@ -11,5 +11,5 @@ object GeneratedQvacSdkInfo {
   const val MIN_SDK = 26
   const val TARGET_SDK = 35
   const val COMPILE_SDK = 35
-  const val ABIS = "arm64-v8a, armeabi-v7a, x86, x86_64"
+  const val ABIS = "arm64-v8a"
 }

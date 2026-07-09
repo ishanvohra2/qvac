@@ -76,49 +76,31 @@ tasks.register<Exec>("link") {
   )
 }
 
-tasks.register("copyMissingRuntimeAddons") {
-  val addonOutputDir = file("src/main/addons/arm64-v8a")
-  val addonPackages = listOf(
-    file("../node_modules/rabin-native"),
-    file("../node_modules/@qvac/bare-sdk/node_modules/bare-signals")
+tasks.register("checkBareKitRuntimeBootstrap") {
+  val requiredFiles = listOf(
+    "libs/bare-kit/classes.jar",
+    "libs/bare-kit/jni/arm64-v8a/libbare-kit.so",
+    "libs/bare-kit/jni/arm64-v8a/libc++_shared.so",
+    "libs/bare-kit/.bootstrap-metadata.json"
   )
-
   doLast {
-    addonOutputDir.mkdirs()
-    addonPackages.forEach { packageDir ->
-      val packageJson = packageDir.resolve("package.json")
-      if (!packageJson.exists()) {
-        throw GradleException("Missing runtime addon package.json at ${packageJson.path}")
+    requiredFiles.forEach { relativePath ->
+      val file = file(relativePath)
+      if (!file.exists()) {
+        throw GradleException(
+          "Missing Bare Kit runtime artifact: ${file.path}. Run `bun run sample:bootstrap-runtime` from packages/android-sdk."
+        )
       }
-
-      val packageJsonText = packageJson.readText()
-      val packageName = "\"name\"\\s*:\\s*\"([^\"]+)\"".toRegex()
-        .find(packageJsonText)
-        ?.groupValues
-        ?.get(1)
-        ?: throw GradleException("Unable to read package name from ${packageJson.path}")
-      val packageVersion = "\"version\"\\s*:\\s*\"([^\"]+)\"".toRegex()
-        .find(packageJsonText)
-        ?.groupValues
-        ?.get(1)
-        ?: throw GradleException("Unable to read package version from ${packageJson.path}")
-      val bareBinary = packageDir
-        .resolve("prebuilds/android-arm64")
-        .listFiles()
-        ?.firstOrNull { it.isFile && it.extension == "bare" }
-        ?: throw GradleException("Missing android-arm64 .bare prebuild in ${packageDir.path}")
-
-      val soBaseName = if (packageName.startsWith("@")) {
-        packageName.removePrefix("@").replace("/", "__")
-      } else {
-        packageName
-      }
-      bareBinary.copyTo(
-        addonOutputDir.resolve("lib${soBaseName}.${packageVersion}.so"),
-        overwrite = true
-      )
     }
   }
+}
+
+tasks.register<Exec>("copyMissingRuntimeAddons") {
+  workingDir = file("..")
+  commandLine(
+    "node_modules/.bin/tsx",
+    "scripts/sync-runtime-addons.ts"
+  )
 }
 
 tasks.register<Exec>("pack") {
@@ -134,6 +116,7 @@ tasks.register<Exec>("pack") {
 }
 
 tasks.named("preBuild").configure {
+  dependsOn("checkBareKitRuntimeBootstrap")
   dependsOn("link")
   dependsOn("copyMissingRuntimeAddons")
   dependsOn("pack")

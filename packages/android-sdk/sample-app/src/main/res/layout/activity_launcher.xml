@@ -13,55 +13,47 @@
     <TextView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="@string/llm_title"
+      android:text="@string/launcher_title"
       android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
     <TextView
-      android:id="@+id/loadedModelText"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="8dp"
-      android:text="@string/loaded_model_none"
+      android:text="@string/launcher_subtitle"
       android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
-
-    <TextView
-      android:id="@+id/statusText"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="6dp"
-      android:text="@string/status_idle"
-      android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
-
-    <TextView
-      android:id="@+id/chatTranscriptText"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="12dp"
-      android:minHeight="240dp"
-      android:padding="8dp"
-      android:text="@string/llm_chat_placeholder"
-      android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
-
-    <com.google.android.material.textfield.TextInputLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="12dp"
-      android:hint="@string/llm_message_hint">
-      <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/messageInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:lines="2"
-        android:maxLines="4" />
-    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
-      android:id="@+id/sendButton"
+      android:id="@+id/openLlmButton"
       style="@style/Widget.MaterialComponents.Button"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="10dp"
-      android:text="@string/llm_send_button" />
+      android:layout_marginTop="16dp"
+      android:text="@string/open_llm_activity" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/openTtsButton"
+      style="@style/Widget.MaterialComponents.Button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/open_tts_activity" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/openWhisperButton"
+      style="@style/Widget.MaterialComponents.Button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/open_whisper_activity" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/openTranslateButton"
+      style="@style/Widget.MaterialComponents.Button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/open_translate_activity" />
   </LinearLayout>
 </ScrollView>
+

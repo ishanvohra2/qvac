@@ -1,34 +1,24 @@
 package io.tether.qvac.sample
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import io.tether.qvac.sdk.QvacAndroidSdk
 import io.tether.qvac.sdk.QvacModelCatalog
-import io.tether.qvac.sdk.generated.api.QvacGeneratedApiContract
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
-  private val integrationPrompts = listOf(
-    "Reply with exactly one word: READY",
-    "Name one prime number less than ten.",
-    "Complete this sentence in one short line: Android SDK parity means"
-  )
   private var streamJob: Job? = null
-  private lateinit var modelInput: EditText
-  private lateinit var promptInput: EditText
+  private lateinit var messageInput: EditText
   private lateinit var loadedModelText: TextView
   private lateinit var statusText: TextView
-  private lateinit var bareLogsText: TextView
-  private lateinit var responseText: TextView
+  private lateinit var chatTranscriptText: TextView
   private lateinit var bridge: BareQvacBridge
-  private val bareLogBuffer = StringBuilder()
+  private val transcriptBuffer = StringBuilder()
+  private var isModelLoaded = false
 
   private val llmClient by lazy { QvacLlmClient(bridge) }
 
@@ -36,77 +26,26 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    val sdkInfoView = findViewById<TextView>(R.id.sdkInfo)
-    val apiContractInfoView = findViewById<TextView>(R.id.apiContractInfo)
-    val runtimeHealthInfoView = findViewById<TextView>(R.id.runtimeHealthInfo)
-    modelInput = findViewById(R.id.modelInput)
-    promptInput = findViewById(R.id.promptInput)
+    messageInput = findViewById(R.id.messageInput)
     loadedModelText = findViewById(R.id.loadedModelText)
     statusText = findViewById(R.id.statusText)
-    bareLogsText = findViewById(R.id.bareLogsText)
-    responseText = findViewById(R.id.responseText)
-    val loadModelButton = findViewById<Button>(R.id.loadModelButton)
-    val unloadModelButton = findViewById<Button>(R.id.unloadModelButton)
-    val streamButton = findViewById<Button>(R.id.streamButton)
-    val cancelStreamButton = findViewById<Button>(R.id.cancelStreamButton)
-    val healthCheckButton = findViewById<Button>(R.id.healthCheckButton)
-    val runPromptSetButton = findViewById<Button>(R.id.runPromptSetButton)
+    chatTranscriptText = findViewById(R.id.chatTranscriptText)
+    val sendButton = findViewById<Button>(R.id.sendButton)
+
     bridge = BareQvacBridge(this)
-    bridge.setEventListener { event ->
-      if (event.optString("type") == "log") {
-        appendBareLog(renderBareLog(event))
-      }
-    }
+
     try {
       bridge.start()
-      statusText.text = "Status: worklet started"
-      lifecycleScope.launch {
-        runtimeHealthInfoView.text = renderHealth(bridge.healthCheck())
-      }
+      statusText.text = "Status: loading LLM model..."
+      autoLoadModel(sendButton)
     } catch (error: Exception) {
       statusText.text = "Status: failed to start worklet (${error.message})"
-      runtimeHealthInfoView.text = "Runtime health: failed (${error.message})"
+      sendButton.isEnabled = false
     }
 
-    val details = buildString {
-      appendLine("QVAC Android SDK integration check")
-      appendLine()
-      appendLine("version: ${QvacAndroidSdk.version()}")
-      appendLine("coordinates: ${QvacAndroidSdk.coordinates()}")
-      appendLine("runtime mode: bare-kit worklet + @qvac/bare-sdk")
-      appendLine("assets: ${QvacAndroidSdk.bundledAssetNames().joinToString(", ")}")
-      val llmDefault = QvacModelCatalog.findByName(this@MainActivity, "LLAMA_3_2_1B_INST_Q4_0")
-      if (llmDefault != null) {
-        appendLine("default constant: ${llmDefault.name} -> ${llmDefault.modelId}")
-      }
-    }
-    sdkInfoView.text = details
-    apiContractInfoView.text = buildString {
-      append("Generated API operations (")
-      append(QvacGeneratedApiContract.operations.size)
-      append("): ")
-      append(QvacGeneratedApiContract.operations.joinToString(", "))
-    }
+    sendButton.isEnabled = false
     renderLoadedModel()
-
-    loadModelButton.setOnClickListener {
-      handleLoadModel()
-    }
-    unloadModelButton.setOnClickListener {
-      handleUnloadModel()
-    }
-    streamButton.setOnClickListener {
-      handleStreamResponse()
-    }
-    cancelStreamButton.setOnClickListener {
-      handleCancelStream()
-    }
-    healthCheckButton.setOnClickListener {
-      handleHealthCheck(runtimeHealthInfoView)
-    }
-    runPromptSetButton.setOnClickListener {
-      handlePromptSet()
-    }
+    sendButton.setOnClickListener { handleSend(sendButton) }
   }
 
   override fun onDestroy() {
@@ -115,126 +54,48 @@ class MainActivity : AppCompatActivity() {
     super.onDestroy()
   }
 
-  private fun handleLoadModel() {
-    val modelId = modelInput.text?.toString()?.trim().orEmpty()
-    if (modelId.isEmpty()) {
-      statusText.text = "Status: enter a model id first"
-      return
-    }
-
+  private fun autoLoadModel(sendButton: Button) {
+    val modelName = resolveDefaultLlmModel()
     lifecycleScope.launch {
       try {
-        statusText.text = "Status: loading model..."
-        llmClient.loadModel(modelId)
+        llmClient.loadModel(modelName)
+        isModelLoaded = true
         renderLoadedModel()
-        statusText.text = "Status: model '$modelId' loaded"
+        statusText.text = "Status: model loaded and ready"
+        sendButton.isEnabled = true
       } catch (error: Exception) {
-        Log.i("MainActivity", "handleLoadModel: ${error.message}")
-        statusText.text = "Status: load failed (${error.message})"
+        statusText.text = "Status: model load failed (${error.message})"
+        sendButton.isEnabled = false
       }
     }
   }
 
-  private fun handleUnloadModel() {
-    streamJob?.cancel()
-    lifecycleScope.launch {
-      try {
-        statusText.text = "Status: unloading model..."
-        llmClient.unloadModel()
-        renderLoadedModel()
-        responseText.text = ""
-        statusText.text = "Status: model unloaded"
-      } catch (error: Exception) {
-        statusText.text = "Status: unload failed (${error.message})"
-      }
-    }
-  }
-
-  private fun handleStreamResponse() {
-    if (llmClient.currentLoadedModelId() == null) {
-      statusText.text = "Status: load a model before streaming"
+  private fun handleSend(sendButton: Button) {
+    if (!isModelLoaded) {
+      statusText.text = "Status: wait for model to load"
       return
     }
-    val prompt = promptInput.text?.toString()?.trim().orEmpty()
-    if (prompt.isEmpty()) {
-      statusText.text = "Status: prompt cannot be empty"
-      return
-    }
+    val prompt = messageInput.text?.toString()?.trim().orEmpty()
+    if (prompt.isEmpty()) return
 
     streamJob?.cancel()
-    responseText.text = ""
+    appendChatLine("You: $prompt")
+    appendChatLine("Assistant: ")
+    messageInput.text?.clear()
+    sendButton.isEnabled = false
+
     streamJob = lifecycleScope.launch {
       try {
         statusText.text = "Status: streaming..."
         llmClient.streamCompletion(prompt).collect { token ->
-          responseText.append(token)
+          appendAssistantToken(token)
         }
-        statusText.text = "Status: stream complete"
+        appendChatLine("")
+        statusText.text = "Status: ready"
       } catch (error: Exception) {
         statusText.text = "Status: stream failed (${error.message})"
-      }
-    }
-  }
-
-  private fun handleCancelStream() {
-    streamJob?.cancel()
-    streamJob = null
-    statusText.text = "Status: stream cancelled"
-  }
-
-  private fun handleHealthCheck(runtimeHealthInfoView: TextView) {
-    lifecycleScope.launch {
-      try {
-        runtimeHealthInfoView.text = renderHealth(bridge.healthCheck())
-      } catch (error: Exception) {
-        runtimeHealthInfoView.text = "Runtime health: failed (${error.message})"
-      }
-    }
-  }
-
-  private fun handlePromptSet() {
-    if (llmClient.currentLoadedModelId() == null) {
-      statusText.text = "Status: load a model before running prompt set"
-      return
-    }
-
-    streamJob?.cancel()
-    responseText.text = ""
-    streamJob = lifecycleScope.launch {
-      val report = StringBuilder()
-      try {
-        statusText.text = "Status: running integration prompt set..."
-        integrationPrompts.forEachIndexed { index, prompt ->
-          val response = StringBuilder()
-          llmClient.streamCompletion(prompt).collect { token ->
-            response.append(token)
-            responseText.text = buildString {
-              append(report.toString())
-              append("[")
-              append(index + 1)
-              append("/")
-              append(integrationPrompts.size)
-              append("] ")
-              append(prompt)
-              append("\n")
-              append(response.toString())
-            }
-          }
-
-          report.append("[")
-          report.append(index + 1)
-          report.append("/")
-          report.append(integrationPrompts.size)
-          report.append("] ")
-          report.append(prompt)
-          report.append("\n")
-          report.append(response.toString().trim())
-          report.append("\n\n")
-          responseText.text = report.toString()
-        }
-        statusText.text = "Status: prompt set complete"
-      } catch (error: Exception) {
-        statusText.text = "Status: prompt set failed (${error.message})"
+      } finally {
+        sendButton.isEnabled = isModelLoaded
       }
     }
   }
@@ -248,40 +109,23 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun renderHealth(health: JSONObject): String {
-    val runtime = health.optString("runtime", "unknown")
-    val plugin = health.optString("plugin", "unknown")
-    val loaded = health.optString("loadedModelId", "none").ifBlank { "none" }
-    return "Runtime health: ok (runtime=$runtime, plugin=$plugin, loadedModel=$loaded)"
+  private fun resolveDefaultLlmModel(): String {
+    val model = QvacModelCatalog.findByName(this, "LLAMA_3_2_1B_INST_Q4_0")
+    return model?.name ?: "LLAMA_3_2_1B_INST_Q4_0"
   }
 
-  private fun renderBareLog(event: JSONObject): String {
-    val message = event.optString("message", "log")
-    val requestId = if (event.has("requestId") && !event.isNull("requestId")) {
-      event.optInt("requestId").toString()
-    } else {
-      "-"
+  private fun appendChatLine(line: String) {
+    if (transcriptBuffer.isNotEmpty()) {
+      transcriptBuffer.append('\n')
     }
-    val action = event.optString("action", "").ifBlank { "-" }
-    val error = event.optString("error", "")
-    return if (error.isNotBlank()) {
-      "request=$requestId action=$action $message error=$error"
-    } else {
-      "request=$requestId action=$action $message"
-    }
+    transcriptBuffer.append(line)
+    chatTranscriptText.text = transcriptBuffer.toString()
   }
 
-  private fun appendBareLog(line: String) {
+  private fun appendAssistantToken(token: String) {
     runOnUiThread {
-      if (bareLogBuffer.isNotEmpty()) {
-        bareLogBuffer.append('\n')
-      }
-      bareLogBuffer.append(line)
-      val maxChars = 4000
-      if (bareLogBuffer.length > maxChars) {
-        bareLogBuffer.delete(0, bareLogBuffer.length - maxChars)
-      }
-      bareLogsText.text = bareLogBuffer.toString()
+      transcriptBuffer.append(token)
+      chatTranscriptText.text = transcriptBuffer.toString()
     }
   }
 }

@@ -7,6 +7,9 @@
   "scripts": {
     "android:sync-contract": "tsx ./scripts/sync-contract.ts",
     "android:check-contract": "tsx ./scripts/sync-contract.ts --check",
+    "sample:bootstrap-runtime": "tsx ./scripts/bootstrap-sample-runtime.ts",
+    "sample:check-runtime": "tsx ./scripts/bootstrap-sample-runtime.ts --check",
+    "sample:sync-runtime-addons": "tsx ./scripts/sync-runtime-addons.ts",
     "sample:link": "bare-link --preset android --out sample-app/src/main/addons sample-app/src/main/js/app.js",
     "sample:pack": "bare-pack --preset android --out sample-app/src/main/assets/app.bundle sample-app/src/main/js/app.js"
   },
