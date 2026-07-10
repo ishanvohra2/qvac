@@ -1,7 +1,7 @@
 # QVAC Android SDK Scaffold
 
 `@qvac/android-sdk` adapts the QVAC SDK for native Android with a Bare Kit worklet runtime.
-It solves the parity problem between `@qvac/sdk` and Android by syncing generated API/contracts into Android-native assets and Kotlin sources.
+It solves the parity problem between `@qvac/sdk` and Android by syncing generated Kotlin/Gradle contract files and consuming generated JSON assets directly from `packages/sdk/android/generated`.
 It also solves native runtime packaging pain by bootstrapping pinned Bare Kit artifacts and syncing required addon `.so` files automatically.
 The result is a reproducible Android integration path that tracks SDK releases in lockstep.
 
@@ -24,7 +24,7 @@ Run all commands from `packages/android-sdk`:
 
 Run from `packages/android-sdk`:
 
-- `bun run android:sync-contract` to copy generated files from `packages/sdk`.
+- `bun run android:sync-contract` to copy generated Kotlin/Gradle files from `packages/sdk`.
 - `bun run android:check-contract` to fail when local files are stale.
 
 ## Contract files consumed
@@ -32,17 +32,17 @@ Run from `packages/android-sdk`:
 - `gradle/qvac-sdk.versions.toml`
 - `src/main/java/io/tether/qvac/sdk/generated/GeneratedQvacSdkInfo.kt`
 - `src/main/java/io/tether/qvac/sdk/generated/api/GeneratedQvacApi.kt`
-- `src/main/assets/qvac-sdk-manifest.json`
-- `src/main/assets/capabilities.json`
-- `src/main/assets/models-catalog.json`
-- `src/main/assets/api-contract.json`
-- `src/main/assets/addon-manifest.json`
+- `../sdk/android/generated/qvac-sdk-manifest.json`
+- `../sdk/android/generated/capabilities.json`
+- `../sdk/android/generated/models-catalog.json`
+- `../sdk/android/generated/api-contract.json`
+- `../sdk/android/generated/addon-manifest.json`
 
 This keeps Android dependency metadata and capability policy lockstep with `@qvac/sdk`.
 
 ## Android build integration
 
-- The library module reads `src/main/assets/qvac-sdk-manifest.json` for:
+- The library module reads `../sdk/android/generated/qvac-sdk-manifest.json` for:
   - `group`
   - `version`
   - `namespace`
@@ -68,6 +68,7 @@ A local Android app module is included at `sample-app/` to smoke-test SDK wiring
   - `sample-app/src/main/java/io/tether/qvac/sample/WhisperActivity.kt` (Whisper)
   - `sample-app/src/main/java/io/tether/qvac/sample/TranslateActivity.kt` (Translation)
 - ABI support: `arm64-v8a` only (current addon prebuild coverage is Android ARM64)
+- x86/x86_64 emulators are not currently supported by this POC
 
 Build sample debug APK:
 
@@ -85,6 +86,11 @@ The sample app demonstrates the Android integration pattern used by host apps:
    - Translation: `nmtcpp-translation`
 3. Invoke task-specific operations (`completion`, `textToSpeech`, `transcribe`, `translate`).
 4. Unload the active model and stop the bridge when the Activity is destroyed.
+
+### Generated API contract status
+
+`GeneratedQvacApi.kt` is schema-derived contract metadata and typed wrappers.
+The sample app IPC bridge (`BareQvacBridge.kt` + `app.js`) currently uses its own ad-hoc action protocol (`loadModel`, `completionStream`, `textToSpeech`, etc.) and is not yet wired to the generated interface end-to-end.
 
 ### Kotlin usage pattern
 
@@ -118,3 +124,11 @@ The worklet entry file (`sample-app/src/main/js/app.js`) registers plugins with
 When adding support for another model family, register the plugin in `app.js`,
 add a corresponding action handler, and expose a typed bridge method in
 `BareQvacBridge.kt`.
+
+## Runtime bootstrap security and platform notes
+
+- `sample:bootstrap-runtime` pins Bare Kit by tag (`v2.3.0`) and verifies `prebuilds.zip` SHA-256 before extraction.
+- Extraction is cross-platform:
+  - macOS/Linux: `unzip`
+  - Windows: PowerShell `Expand-Archive`
+- The sample build assumes `bun install` has already been run in `packages/android-sdk`; Gradle now fails fast with a clear `node_modules` error when dependencies are missing.

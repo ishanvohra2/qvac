@@ -1,6 +1,8 @@
 import fs from 'fs/promises'
+import { createReadStream } from 'fs'
 import path from 'path'
 import { spawn } from 'child_process'
+import { createHash } from 'crypto'
 import { fileURLToPath } from 'url'
 
 type BootstrapMetadata = {
@@ -8,11 +10,13 @@ type BootstrapMetadata = {
   tag: string
   assetName: string
   assetUrl: string
+  assetSha256: string
 }
 
 const BARE_KIT_REPO = 'holepunchto/bare-kit'
 const BARE_KIT_TAG = 'v2.3.0'
 const BARE_KIT_ASSET = 'prebuilds.zip'
+const BARE_KIT_ASSET_SHA256 = 'a386063fa405b0bb4967490e84745075f007f95359c9871c5b7a45c18c2f49e2'
 const BARE_KIT_ASSET_URL = `https://github.com/${BARE_KIT_REPO}/releases/download/${BARE_KIT_TAG}/${BARE_KIT_ASSET}`
 
 const scriptDir = fileURLToPath(new URL('.', import.meta.url))
@@ -59,6 +63,39 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
   })
 }
 
+function normalizeDigest(value: string): string {
+  return value.replace(/^sha256:/i, '').toLowerCase()
+}
+
+function toPowerShellLiteral(value: string): string {
+  return `'${value.replace(/'/g, "''")}'`
+}
+
+async function computeSha256(filePath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const hash = createHash('sha256')
+    const stream = createReadStream(filePath)
+    stream.on('error', reject)
+    stream.on('data', (chunk: Buffer) => {
+      hash.update(chunk)
+    })
+    stream.on('end', () => {
+      resolve(hash.digest('hex'))
+    })
+  })
+}
+
+async function verifyArchiveChecksum(archivePath: string): Promise<void> {
+  const actual = await computeSha256(archivePath)
+  const expected = normalizeDigest(BARE_KIT_ASSET_SHA256)
+  if (actual !== expected) {
+    throw new Error(
+      `Checksum mismatch for ${archivePath}: expected sha256:${expected}, got sha256:${actual}`
+    )
+  }
+  console.log(`Verified sha256:${actual} for ${path.basename(archivePath)}`)
+}
+
 async function getArchivePath(): Promise<string> {
   if (await fileExists(localArchivePath)) {
     console.log(`Using local ${BARE_KIT_ASSET}: ${localArchivePath}`)
@@ -85,7 +122,14 @@ async function getArchivePath(): Promise<string> {
 async function extractArchive(archivePath: string): Promise<string> {
   await fs.rm(extractDir, { recursive: true, force: true })
   await fs.mkdir(extractDir, { recursive: true })
-  await runCommand('unzip', ['-oq', archivePath, '-d', extractDir], packageDir)
+  if (process.platform === 'win32') {
+    const command =
+      `Expand-Archive -LiteralPath ${toPowerShellLiteral(archivePath)} ` +
+      `-DestinationPath ${toPowerShellLiteral(extractDir)} -Force`
+    await runCommand('powershell', ['-NoProfile', '-Command', command], packageDir)
+  } else {
+    await runCommand('unzip', ['-oq', archivePath, '-d', extractDir], packageDir)
+  }
 
   const extractedBareKitDir = path.join(extractDir, 'android', 'bare-kit')
   if (!(await fileExists(extractedBareKitDir))) {
@@ -99,7 +143,8 @@ async function writeMetadata(): Promise<void> {
     repo: BARE_KIT_REPO,
     tag: BARE_KIT_TAG,
     assetName: BARE_KIT_ASSET,
-    assetUrl: BARE_KIT_ASSET_URL
+    assetUrl: BARE_KIT_ASSET_URL,
+    assetSha256: normalizeDigest(BARE_KIT_ASSET_SHA256)
   }
   await fs.writeFile(targetMetadataPath, `${JSON.stringify(metadata, null, 2)}\n`)
 }
@@ -122,15 +167,21 @@ async function validateBootstrapState(): Promise<void> {
 
   const metadataRaw = await fs.readFile(targetMetadataPath, 'utf8')
   const metadata = JSON.parse(metadataRaw) as BootstrapMetadata
-  if (metadata.repo !== BARE_KIT_REPO || metadata.tag !== BARE_KIT_TAG) {
+  const expectedDigest = normalizeDigest(BARE_KIT_ASSET_SHA256)
+  if (
+    metadata.repo !== BARE_KIT_REPO ||
+    metadata.tag !== BARE_KIT_TAG ||
+    normalizeDigest(metadata.assetSha256 ?? '') !== expectedDigest
+  ) {
     throw new Error(
-      `Bare Kit runtime was bootstrapped with ${metadata.repo}@${metadata.tag}, expected ${BARE_KIT_REPO}@${BARE_KIT_TAG}`
+      `Bare Kit runtime metadata mismatch. Expected ${BARE_KIT_REPO}@${BARE_KIT_TAG} sha256:${expectedDigest}`
     )
   }
 }
 
 async function bootstrapRuntime(): Promise<void> {
   const archivePath = await getArchivePath()
+  await verifyArchiveChecksum(archivePath)
   const extractedBareKitDir = await extractArchive(archivePath)
 
   await fs.rm(targetBareKitDir, { recursive: true, force: true })

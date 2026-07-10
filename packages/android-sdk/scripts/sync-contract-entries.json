@@ -1,0 +1,14 @@
+[
+  {
+    "sourceRelativePath": "libs.versions.toml",
+    "destinationRelativePath": "gradle/qvac-sdk.versions.toml"
+  },
+  {
+    "sourceRelativePath": "GeneratedQvacSdkInfo.kt",
+    "destinationRelativePath": "src/main/java/io/tether/qvac/sdk/generated/GeneratedQvacSdkInfo.kt"
+  },
+  {
+    "sourceRelativePath": "GeneratedQvacApi.kt",
+    "destinationRelativePath": "src/main/java/io/tether/qvac/sdk/generated/api/GeneratedQvacApi.kt"
+  }
+]

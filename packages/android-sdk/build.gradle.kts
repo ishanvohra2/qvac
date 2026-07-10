@@ -45,7 +45,9 @@ fun readUtf8(file: File): String {
   return file.readText(Charsets.UTF_8)
 }
 
-val qvacManifestFile = file("src/main/assets/qvac-sdk-manifest.json")
+val sdkGeneratedDir = file("../sdk/android/generated")
+val syncEntriesFile = file("scripts/sync-contract-entries.json")
+val qvacManifestFile = File(sdkGeneratedDir, "qvac-sdk-manifest.json")
 val qvacManifest = readJsonObject(qvacManifestFile)
 @Suppress("UNCHECKED_CAST")
 val androidConfig = qvacManifest["android"] as? JsonObject
@@ -78,7 +80,7 @@ android {
 
   sourceSets {
     getByName("main") {
-      assets.srcDir("src/main/assets")
+      assets.srcDir(sdkGeneratedDir)
     }
   }
 }
@@ -91,17 +93,17 @@ tasks.register("checkContractSync") {
   group = "verification"
   description = "Checks whether Android SDK contract files are synced from packages/sdk"
   doLast {
-    val sdkGeneratedDir = file("../sdk/android/generated")
-    val syncPairs = listOf(
-      "libs.versions.toml" to "gradle/qvac-sdk.versions.toml",
-      "GeneratedQvacSdkInfo.kt" to "src/main/java/io/tether/qvac/sdk/generated/GeneratedQvacSdkInfo.kt",
-      "GeneratedQvacApi.kt" to "src/main/java/io/tether/qvac/sdk/generated/api/GeneratedQvacApi.kt",
-      "qvac-sdk-manifest.json" to "src/main/assets/qvac-sdk-manifest.json",
-      "capabilities.json" to "src/main/assets/capabilities.json",
-      "models-catalog.json" to "src/main/assets/models-catalog.json",
-      "api-contract.json" to "src/main/assets/api-contract.json",
-      "addon-manifest.json" to "src/main/assets/addon-manifest.json"
-    )
+    if (!syncEntriesFile.exists()) {
+      throw GradleException("Missing sync entries file: ${syncEntriesFile.path}")
+    }
+    @Suppress("UNCHECKED_CAST")
+    val syncPairs = (JsonSlurper().parse(syncEntriesFile) as List<Map<String, String>>).map { entry ->
+      val sourceRelative = entry["sourceRelativePath"]
+        ?: throw GradleException("sync-contract entry missing sourceRelativePath")
+      val destinationRelative = entry["destinationRelativePath"]
+        ?: throw GradleException("sync-contract entry missing destinationRelativePath")
+      sourceRelative to destinationRelative
+    }
 
     val driftedFiles = mutableListOf<String>()
     for ((sourceRelative, destinationRelative) in syncPairs) {
@@ -146,8 +148,8 @@ tasks.register("validateAddonPolicy") {
   description = "Validates addon manifest and capabilities consistency"
 
   doLast {
-    val capabilities = readJsonArray(file("src/main/assets/capabilities.json"))
-    val addonManifest = readJsonObject(file("src/main/assets/addon-manifest.json"))
+    val capabilities = readJsonArray(File(sdkGeneratedDir, "capabilities.json"))
+    val addonManifest = readJsonObject(File(sdkGeneratedDir, "addon-manifest.json"))
     @Suppress("UNCHECKED_CAST")
     val addonEntries = addonManifest["addons"] as? List<JsonObject>
       ?: throw GradleException("Missing 'addons' array in addon-manifest.json")

@@ -29,6 +29,7 @@ class BareQvacBridge(private val context: Context) {
   private val messageBuffer = StringBuilder()
   private val handlers = ConcurrentHashMap<Int, (JSONObject) -> Unit>()
   private var eventListener: ((JSONObject) -> Unit)? = null
+  private var ttsSampleRateHintHz: Int? = null
 
   fun start() {
     if (worklet != null) return
@@ -59,6 +60,7 @@ class BareQvacBridge(private val context: Context) {
   fun stop() {
     handlers.clear()
     eventListener = null
+    ttsSampleRateHintHz = null
     ipc = null
     worklet?.terminate()
     worklet = null
@@ -88,6 +90,12 @@ class BareQvacBridge(private val context: Context) {
         }
         continuation.resume(message.getString("modelId"))
       }
+      if (modelType == "tts-ggml") {
+        val configuredRateHz = modelConfig.optInt("outputSampleRate", 0)
+        ttsSampleRateHintHz = if (configuredRateHz > 0) configuredRateHz else null
+      } else {
+        ttsSampleRateHintHz = null
+      }
       continuation.invokeOnCancellation {
         handlers.remove(requestId)
       }
@@ -96,7 +104,12 @@ class BareQvacBridge(private val context: Context) {
 
   suspend fun textToSpeech(text: String): TtsAudioResult {
     return suspendCancellableCoroutine { continuation ->
-      val requestId = sendRequest("textToSpeech", JSONObject().put("text", text)) { message ->
+      val payload = JSONObject().put("text", text)
+      val sampleRateHintHz = ttsSampleRateHintHz
+      if (sampleRateHintHz != null) {
+        payload.put("sampleRate", sampleRateHintHz)
+      }
+      val requestId = sendRequest("textToSpeech", payload) { message ->
         val type = message.optString("type")
         if (type == "error") {
           continuation.resumeWithException(
@@ -104,10 +117,23 @@ class BareQvacBridge(private val context: Context) {
           )
           return@sendRequest
         }
+        val sampleRateHz = when {
+          message.has("sampleRate") -> message.optInt("sampleRate", 0)
+          ttsSampleRateHintHz != null -> ttsSampleRateHintHz ?: 0
+          else -> 0
+        }
+        if (sampleRateHz <= 0) {
+          continuation.resumeWithException(
+            IllegalStateException(
+              "text to speech response missing sampleRate; set outputSampleRate in modelConfig"
+            )
+          )
+          return@sendRequest
+        }
         continuation.resume(
           TtsAudioResult(
             sampleCount = message.optInt("sampleCount", 0),
-            sampleRate = message.optInt("sampleRate", 44100),
+            sampleRate = sampleRateHz,
             pcmBase64 = message.optString("pcmBase64", "")
           )
         )
@@ -168,6 +194,7 @@ class BareQvacBridge(private val context: Context) {
           )
           return@sendRequest
         }
+        ttsSampleRateHintHz = null
         continuation.resume(Unit)
       }
       continuation.invokeOnCancellation {

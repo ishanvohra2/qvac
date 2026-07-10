@@ -16,7 +16,11 @@ data class QvacModelConstant(
 )
 
 object QvacModelCatalog {
-  fun load(context: Context): List<QvacModelConstant> {
+  @Volatile
+  private var cachedModels: List<QvacModelConstant>? = null
+  private val cacheLock = Any()
+
+  private fun parseModels(context: Context): List<QvacModelConstant> {
     val raw = context.assets.open("models-catalog.json").bufferedReader().use { it.readText() }
     val array = JSONArray(raw)
     val constants = mutableListOf<QvacModelConstant>()
@@ -37,6 +41,22 @@ object QvacModelCatalog {
       )
     }
     return constants
+  }
+
+  fun load(context: Context): List<QvacModelConstant> {
+    val existing = cachedModels
+    if (existing != null) {
+      return existing
+    }
+    synchronized(cacheLock) {
+      val synchronizedExisting = cachedModels
+      if (synchronizedExisting != null) {
+        return synchronizedExisting
+      }
+      val parsed = parseModels(context.applicationContext)
+      cachedModels = parsed
+      return parsed
+    }
   }
 
   fun findByName(context: Context, constantName: String): QvacModelConstant? {

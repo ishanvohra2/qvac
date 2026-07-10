@@ -7,8 +7,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.tether.qvac.sdk.QvacModelCatalog
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
   private var streamJob: Job? = null
@@ -55,9 +57,9 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun autoLoadModel(sendButton: Button) {
-    val modelName = resolveDefaultLlmModel()
     lifecycleScope.launch {
       try {
+        val modelName = withContext(Dispatchers.IO) { resolveDefaultLlmModel() }
         llmClient.loadModel(modelName)
         isModelLoaded = true
         renderLoadedModel()
@@ -110,7 +112,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun resolveDefaultLlmModel(): String {
-    val model = QvacModelCatalog.findByName(this, "LLAMA_3_2_1B_INST_Q4_0")
+    val model = QvacModelCatalog.findByName(applicationContext, "LLAMA_3_2_1B_INST_Q4_0")
     return model?.name ?: "LLAMA_3_2_1B_INST_Q4_0"
   }
 

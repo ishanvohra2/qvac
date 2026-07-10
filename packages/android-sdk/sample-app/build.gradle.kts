@@ -64,10 +64,38 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }
 
+val qvacAndroidSdkPackageDir = file("..")
+val qvacAndroidSdkNodeModulesDir = file("../node_modules")
+
+fun resolveNodeModulesBin(binName: String): String {
+  val unixBinary = File(qvacAndroidSdkNodeModulesDir, ".bin/$binName")
+  if (unixBinary.exists()) {
+    return unixBinary.absolutePath
+  }
+  val windowsBinary = File(qvacAndroidSdkNodeModulesDir, ".bin/$binName.cmd")
+  if (windowsBinary.exists()) {
+    return windowsBinary.absolutePath
+  }
+  throw GradleException(
+    "Missing required tool '$binName' in ${qvacAndroidSdkNodeModulesDir.path}/.bin. " +
+      "Run `bun install` from packages/android-sdk."
+  )
+}
+
+tasks.register("checkNodeModulesInstalled") {
+  doLast {
+    if (!qvacAndroidSdkNodeModulesDir.exists()) {
+      throw GradleException(
+        "Missing node_modules at ${qvacAndroidSdkNodeModulesDir.path}. Run `bun install` from packages/android-sdk."
+      )
+    }
+  }
+}
+
 tasks.register<Exec>("link") {
-  workingDir = file("..")
+  workingDir = qvacAndroidSdkPackageDir
   commandLine(
-    "node_modules/.bin/bare-link",
+    resolveNodeModulesBin("bare-link"),
     "--preset",
     "android",
     "--out",
@@ -96,17 +124,17 @@ tasks.register("checkBareKitRuntimeBootstrap") {
 }
 
 tasks.register<Exec>("copyMissingRuntimeAddons") {
-  workingDir = file("..")
+  workingDir = qvacAndroidSdkPackageDir
   commandLine(
-    "node_modules/.bin/tsx",
+    resolveNodeModulesBin("tsx"),
     "scripts/sync-runtime-addons.ts"
   )
 }
 
 tasks.register<Exec>("pack") {
-  workingDir = file("..")
+  workingDir = qvacAndroidSdkPackageDir
   commandLine(
-    "node_modules/.bin/bare-pack",
+    resolveNodeModulesBin("bare-pack"),
     "--preset",
     "android",
     "--out",
@@ -116,6 +144,7 @@ tasks.register<Exec>("pack") {
 }
 
 tasks.named("preBuild").configure {
+  dependsOn("checkNodeModulesInstalled")
   dependsOn("checkBareKitRuntimeBootstrap")
   dependsOn("link")
   dependsOn("copyMissingRuntimeAddons")

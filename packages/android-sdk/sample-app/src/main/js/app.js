@@ -14,6 +14,7 @@ registerPlugin(nmtPlugin)
 const { IPC } = BareKit
 let loadedModelId = null
 let activeStreamId = null
+let activeTtsSampleRate = null
 
 function send(message) {
   IPC.write(Buffer.from(`${JSON.stringify(message)}\n`))
@@ -67,11 +68,25 @@ function resolveDefaultModelConfig(modelType) {
   return {}
 }
 
+function resolveTtsSampleRate(config) {
+  if (!config || typeof config !== 'object') return null
+  const outputSampleRate = config.outputSampleRate
+  if (typeof outputSampleRate === 'number' && Number.isFinite(outputSampleRate) && outputSampleRate > 0) {
+    return Math.round(outputSampleRate)
+  }
+  return null
+}
+
 async function handleLoadModel(msg) {
   const modelType = msg.modelType ?? 'llamacpp-completion'
   sendLog('loadModel:start', { requestId: msg.id, modelSrc: msg.modelSrc ?? null, modelType })
   const modelSrc = resolveModelSource(msg.modelSrc)
   const modelConfig = msg.modelConfig ?? resolveDefaultModelConfig(modelType)
+  if (modelType === 'tts-ggml') {
+    activeTtsSampleRate = resolveTtsSampleRate(modelConfig)
+  } else {
+    activeTtsSampleRate = null
+  }
   const modelId = await loadModel({
     modelSrc,
     modelType,
@@ -96,6 +111,7 @@ async function handleUnloadModel(msg) {
     await unloadModel({ modelId: loadedModelId, autoClose: false })
   }
   loadedModelId = null
+  activeTtsSampleRate = null
   sendLog('unloadModel:success', { requestId: msg.id })
   send({ id: msg.id, type: 'unloadModelResult', success: true })
 }
@@ -140,11 +156,16 @@ async function handleTextToSpeech(msg) {
   const audioBuffer = await result.buffer
   const audioBytes = Buffer.from(audioBuffer.buffer, audioBuffer.byteOffset, audioBuffer.byteLength)
   const pcmBase64 = audioBytes.toString('base64')
+  const requestedSampleRate =
+    typeof msg.sampleRate === 'number' && Number.isFinite(msg.sampleRate) && msg.sampleRate > 0
+      ? Math.round(msg.sampleRate)
+      : null
+  const sampleRate = requestedSampleRate ?? activeTtsSampleRate
   send({
     id: msg.id,
     type: 'textToSpeechResult',
     sampleCount: audioBuffer.length,
-    sampleRate: 44100,
+    ...(sampleRate !== null ? { sampleRate } : {}),
     pcmBase64,
     previewSamples: Array.from(audioBuffer.slice(0, 16))
   })

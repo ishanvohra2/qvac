@@ -88,6 +88,9 @@ function collectDependencies(
 }
 
 function collectCapabilities(source: AndroidManifestSource): GeneratedAddonCapability[] {
+  type AddonPolicyMap = AndroidManifestSource['addonPolicy']
+  type AddonPolicyKey = Extract<keyof AddonPolicyMap, string>
+
   const engineSetByAddon = new Map<string, Set<string>>()
   const countByAddon = new Map<string, number>()
 
@@ -102,9 +105,12 @@ function collectCapabilities(source: AndroidManifestSource): GeneratedAddonCapab
   }
 
   const capabilities: GeneratedAddonCapability[] = []
-  const addonKeys = Object.keys(source.addonPolicy).sort((a, b) => a.localeCompare(b))
+  const addonKeys = (Object.keys(source.addonPolicy) as AddonPolicyKey[]).sort((a, b) =>
+    a.localeCompare(b)
+  )
   for (const addon of addonKeys) {
     const policy = source.addonPolicy[addon]
+    if (!policy) continue
     const engines = Array.from(engineSetByAddon.get(addon) ?? []).sort((a, b) => a.localeCompare(b))
     capabilities.push({
       addon,
@@ -179,33 +185,58 @@ async function collectApiOperations(): Promise<GeneratedApiOperation[]> {
   const fileNames = (await fs.readdir(schemasDir)).filter((name) => name.endsWith('.ts')).sort()
   const requestByOperation = new Map<
     string,
-    { requestSchema: string; sourceFile: string; streaming: boolean }
+    { requestSchema: string; sourceFile: string }
   >()
   const responseByOperation = new Map<string, string>()
+  const requestSchemaPattern = /export const (\w+RequestSchema)\b/g
+  const responseSchemaPattern = /export const (\w+ResponseSchema)\b/g
 
-  const requestRegex =
-    /export const (\w*RequestSchema)\s*=\s*z\.object\(\{[\s\S]*?type:\s*z\.literal\('([^']+)'\)/g
-  const responseRegex =
-    /export const (\w*ResponseSchema)\s*=\s*z\.object\(\{[\s\S]*?type:\s*z\.literal\('([^']+)'\)/g
+  function collectSchemaNames(content: string, pattern: RegExp): string[] {
+    const names: string[] = []
+    pattern.lastIndex = 0
+    let match: RegExpExecArray | null
+    while ((match = pattern.exec(content)) !== null) {
+      names.push(match[1]!)
+    }
+    return names
+  }
+
+  function readDeclarationBlock(content: string, schemaName: string): string | null {
+    const escapedSchemaName = schemaName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const declarationRegex = new RegExp(
+      `export const ${escapedSchemaName}\\s*=([\\s\\S]*?)(?=\\nexport const\\s+\\w+\\s*=|\\nexport type\\s+\\w+\\s*=|\\n$|$)`
+    )
+    const match = declarationRegex.exec(content)
+    if (!match) return null
+    return match[1] ?? null
+  }
+
+  function readOperationLiteral(schemaBlock: string): string | null {
+    const typeLiteralRegex = /type\s*:\s*z\.literal\((['"])([^'"]+)\1\)/
+    const match = typeLiteralRegex.exec(schemaBlock)
+    if (!match) return null
+    return match[2] ?? null
+  }
 
   for (const fileName of fileNames) {
     const sourceFile = path.join(schemasDir, fileName)
     const content = await fs.readFile(sourceFile, 'utf8')
+    const requestSchemaNames = collectSchemaNames(content, requestSchemaPattern)
+    const responseSchemaNames = collectSchemaNames(content, responseSchemaPattern)
 
-    requestRegex.lastIndex = 0
-    let requestMatch: RegExpExecArray | null
-    while ((requestMatch = requestRegex.exec(content)) !== null) {
-      const requestSchema = requestMatch[1]!
-      const operation = requestMatch[2]!
-      const streaming = operation.toLowerCase().includes('stream')
-      requestByOperation.set(operation, { requestSchema, sourceFile: fileName, streaming })
+    for (const requestSchema of requestSchemaNames) {
+      const declarationBlock = readDeclarationBlock(content, requestSchema)
+      if (declarationBlock === null) continue
+      const operation = readOperationLiteral(declarationBlock)
+      if (operation === null) continue
+      requestByOperation.set(operation, { requestSchema, sourceFile: fileName })
     }
 
-    responseRegex.lastIndex = 0
-    let responseMatch: RegExpExecArray | null
-    while ((responseMatch = responseRegex.exec(content)) !== null) {
-      const responseSchema = responseMatch[1]!
-      const operation = responseMatch[2]!
+    for (const responseSchema of responseSchemaNames) {
+      const declarationBlock = readDeclarationBlock(content, responseSchema)
+      if (declarationBlock === null) continue
+      const operation = readOperationLiteral(declarationBlock)
+      if (operation === null) continue
       responseByOperation.set(operation, responseSchema)
     }
   }
@@ -213,13 +244,17 @@ async function collectApiOperations(): Promise<GeneratedApiOperation[]> {
   const operations: GeneratedApiOperation[] = []
   for (const [operation, requestInfo] of requestByOperation.entries()) {
     const baseName = toPascalCase(operation)
+    const responseSchema = responseByOperation.get(operation) ?? null
+    const streaming =
+      requestInfo.requestSchema.endsWith('StreamRequestSchema') ||
+      (responseSchema?.endsWith('StreamResponseSchema') ?? false)
     const parsed = generatedApiOperationSchema.parse({
       operation,
       requestSchema: requestInfo.requestSchema,
-      responseSchema: responseByOperation.get(operation) ?? null,
+      responseSchema,
       requestTypeName: `${baseName}Request`,
-      responseTypeName: `${baseName}${requestInfo.streaming ? 'StreamEvent' : 'Response'}`,
-      streaming: requestInfo.streaming,
+      responseTypeName: `${baseName}${streaming ? 'StreamEvent' : 'Response'}`,
+      streaming,
       sourceFile: requestInfo.sourceFile
     })
     operations.push(parsed)
@@ -230,6 +265,23 @@ async function collectApiOperations(): Promise<GeneratedApiOperation[]> {
 }
 
 function toKotlinApi(operations: GeneratedApiOperation[]): string {
+  const kotlinReservedNames = new Set([
+    'as', 'break', 'class', 'continue', 'do', 'else', 'false', 'for', 'fun', 'if', 'in',
+    'interface', 'is', 'null', 'object', 'package', 'return', 'super', 'this', 'throw',
+    'true', 'try', 'typealias', 'typeof', 'val', 'var', 'when', 'while', 'by', 'catch',
+    'constructor', 'delegate', 'dynamic', 'field', 'file', 'finally', 'get', 'import',
+    'init', 'param', 'property', 'receiver', 'set', 'setparam', 'where', 'actual',
+    'abstract', 'annotation', 'companion', 'const', 'crossinline', 'data', 'enum',
+    'expect', 'external', 'final', 'infix', 'inline', 'inner', 'internal', 'lateinit',
+    'noinline', 'open', 'operator', 'out', 'override', 'private', 'protected', 'public',
+    'reified', 'sealed', 'suspend', 'tailrec', 'vararg', 'yield'
+  ])
+  function toKotlinFunctionName(operation: string): string {
+    const candidate = toCamelCase(operation)
+    if (!kotlinReservedNames.has(candidate)) return candidate
+    return `${candidate}Operation`
+  }
+
   const lines: string[] = []
   lines.push('// AUTO-GENERATED BY scripts/android/generate.ts')
   lines.push('// DO NOT MODIFY MANUALLY')
@@ -243,16 +295,18 @@ function toKotlinApi(operations: GeneratedApiOperation[]): string {
   for (const operation of operations) {
     lines.push(`data class ${operation.requestTypeName}(val payload: JSONObject = JSONObject())`)
     if (operation.streaming) {
-      lines.push(`data class ${operation.responseTypeName}(val token: String)`)
+      lines.push(`data class ${operation.responseTypeName}(val payload: JSONObject = JSONObject())`)
     } else {
       lines.push(`data class ${operation.responseTypeName}(val payload: JSONObject = JSONObject())`)
     }
     lines.push('')
   }
 
+  lines.push('// NOTE: These are generated schema wrappers only.')
+  lines.push('// The sample app still uses a separate ad-hoc IPC protocol.')
   lines.push('interface QvacGeneratedApiClient {')
   for (const operation of operations) {
-    const functionName = toCamelCase(operation.operation)
+    const functionName = toKotlinFunctionName(operation.operation)
     if (operation.streaming) {
       lines.push(
         `  fun ${functionName}(request: ${operation.requestTypeName}): Flow<${operation.responseTypeName}>`

@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class TtsActivity : AppCompatActivity() {
+  private val defaultSupertonicOutputSampleRateHz = 24000
   private lateinit var textInput: EditText
   private lateinit var languageSpinner: Spinner
   private lateinit var statusText: TextView
@@ -86,6 +87,7 @@ class TtsActivity : AppCompatActivity() {
             .put("voice", "F1")
             .put("ttsSpeed", 1.05)
             .put("ttsNumInferenceSteps", 5)
+            .put("outputSampleRate", defaultSupertonicOutputSampleRateHz)
         )
         renderLoadedModel()
         speakButton.isEnabled = true

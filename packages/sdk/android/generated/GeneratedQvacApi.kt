@@ -22,7 +22,7 @@ data class PluginInvokeRequest(val payload: JSONObject = JSONObject())
 data class PluginInvokeResponse(val payload: JSONObject = JSONObject())
 
 data class PluginInvokeStreamRequest(val payload: JSONObject = JSONObject())
-data class PluginInvokeStreamStreamEvent(val token: String)
+data class PluginInvokeStreamStreamEvent(val payload: JSONObject = JSONObject())
 
 data class ResumeRequest(val payload: JSONObject = JSONObject())
 data class ResumeResponse(val payload: JSONObject = JSONObject())
@@ -37,7 +37,7 @@ data class UnloadModelRequest(val payload: JSONObject = JSONObject())
 data class UnloadModelResponse(val payload: JSONObject = JSONObject())
 
 data class UpscaleStreamRequest(val payload: JSONObject = JSONObject())
-data class UpscaleStreamStreamEvent(val token: String)
+data class UpscaleStreamStreamEvent(val payload: JSONObject = JSONObject())
 
 data class VlaHparamsRequest(val payload: JSONObject = JSONObject())
 data class VlaHparamsResponse(val payload: JSONObject = JSONObject())
@@ -45,6 +45,8 @@ data class VlaHparamsResponse(val payload: JSONObject = JSONObject())
 data class VlaRunRequest(val payload: JSONObject = JSONObject())
 data class VlaRunResponse(val payload: JSONObject = JSONObject())
 
+// NOTE: These are generated schema wrappers only.
+// The sample app still uses a separate ad-hoc IPC protocol.
 interface QvacGeneratedApiClient {
   suspend fun heartbeat(request: HeartbeatRequest): HeartbeatResponse
   suspend fun modelRegistryGetModel(request: ModelRegistryGetModelRequest): ModelRegistryGetModelResponse
@@ -54,7 +56,7 @@ interface QvacGeneratedApiClient {
   fun pluginInvokeStream(request: PluginInvokeStreamRequest): Flow<PluginInvokeStreamStreamEvent>
   suspend fun resume(request: ResumeRequest): ResumeResponse
   suspend fun state(request: StateRequest): StateResponse
-  suspend fun suspend(request: SuspendRequest): SuspendResponse
+  suspend fun suspendOperation(request: SuspendRequest): SuspendResponse
   suspend fun unloadModel(request: UnloadModelRequest): UnloadModelResponse
   fun upscaleStream(request: UpscaleStreamRequest): Flow<UpscaleStreamStreamEvent>
   suspend fun vlaHparams(request: VlaHparamsRequest): VlaHparamsResponse

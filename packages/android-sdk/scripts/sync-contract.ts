@@ -22,43 +22,7 @@ const packageDir = path.resolve(scriptDir, '..')
 const sdkGeneratedDir = path.resolve(packageDir, '../sdk/android/generated')
 const packageJsonPath = path.join(packageDir, 'package.json')
 const sdkManifestPath = path.join(sdkGeneratedDir, 'qvac-sdk-manifest.json')
-
-const syncEntries: SyncEntry[] = [
-  {
-    sourceRelativePath: 'libs.versions.toml',
-    destinationRelativePath: 'gradle/qvac-sdk.versions.toml'
-  },
-  {
-    sourceRelativePath: 'GeneratedQvacSdkInfo.kt',
-    destinationRelativePath:
-      'src/main/java/io/tether/qvac/sdk/generated/GeneratedQvacSdkInfo.kt'
-  },
-  {
-    sourceRelativePath: 'GeneratedQvacApi.kt',
-    destinationRelativePath:
-      'src/main/java/io/tether/qvac/sdk/generated/api/GeneratedQvacApi.kt'
-  },
-  {
-    sourceRelativePath: 'qvac-sdk-manifest.json',
-    destinationRelativePath: 'src/main/assets/qvac-sdk-manifest.json'
-  },
-  {
-    sourceRelativePath: 'capabilities.json',
-    destinationRelativePath: 'src/main/assets/capabilities.json'
-  },
-  {
-    sourceRelativePath: 'models-catalog.json',
-    destinationRelativePath: 'src/main/assets/models-catalog.json'
-  },
-  {
-    sourceRelativePath: 'api-contract.json',
-    destinationRelativePath: 'src/main/assets/api-contract.json'
-  },
-  {
-    sourceRelativePath: 'addon-manifest.json',
-    destinationRelativePath: 'src/main/assets/addon-manifest.json'
-  }
-]
+const syncEntriesPath = path.join(packageDir, 'scripts', 'sync-contract-entries.json')
 
 async function readFileSafe(filePath: string): Promise<string | null> {
   try {
@@ -132,6 +96,11 @@ async function syncPackageVersion(checkOnly: boolean): Promise<boolean> {
 async function main(): Promise<void> {
   const checkOnly = process.argv.includes('--check')
   let changedCount = 0
+  const syncEntriesRaw = await readFileSafe(syncEntriesPath)
+  if (syncEntriesRaw === null) {
+    throw new Error(`Missing sync entries file: ${syncEntriesPath}`)
+  }
+  const syncEntries = JSON.parse(syncEntriesRaw) as SyncEntry[]
 
   for (const entry of syncEntries) {
     const changed = await syncEntry(entry, checkOnly)
