@@ -9,7 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.tether.qvac.sdk.QvacModelCatalog
 import java.io.File
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class WhisperActivity : AppCompatActivity() {
@@ -54,9 +56,9 @@ class WhisperActivity : AppCompatActivity() {
   }
 
   private fun autoLoadWhisperModel() {
-    val modelSrc = resolveWhisperModel()
     lifecycleScope.launch {
       try {
+        val modelSrc = withContext(Dispatchers.IO) { resolveWhisperModel() }
         statusText.text = "Status: loading Whisper model..."
         loadedModelId = bridge.loadModel(
           modelSrc = modelSrc,
@@ -109,11 +111,11 @@ class WhisperActivity : AppCompatActivity() {
   }
 
   private fun resolveWhisperModel(): String {
-    val model = QvacModelCatalog.findByName(this, "WHISPER_TINY")
+    val model = QvacModelCatalog.findByName(applicationContext, "WHISPER_TINY")
     if (model != null) {
       return model.name
     }
-    return QvacModelCatalog.findByEngine(this, "whispercpp-transcription").firstOrNull()?.name
+    return QvacModelCatalog.findByEngine(applicationContext, "whispercpp-transcription").firstOrNull()?.name
       ?: "WHISPER_TINY"
   }
 

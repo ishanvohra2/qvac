@@ -9,7 +9,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.tether.qvac.sdk.QvacModelCatalog
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class TranslateActivity : AppCompatActivity() {
@@ -59,13 +61,13 @@ class TranslateActivity : AppCompatActivity() {
 
   private fun handleLoadModel() {
     val outputLanguage = outputLanguageSpinner.selectedItem?.toString() ?: "fr"
-    val modelSrc = resolveTranslationModel(outputLanguage)
-    if (modelSrc == null) {
-      statusText.text = "Status: no English->$outputLanguage Bergamot model in catalog"
-      return
-    }
     lifecycleScope.launch {
       try {
+        val modelSrc = withContext(Dispatchers.IO) { resolveTranslationModel(outputLanguage) }
+        if (modelSrc == null) {
+          statusText.text = "Status: no English->$outputLanguage Bergamot model in catalog"
+          return@launch
+        }
         translateButton.isEnabled = false
         statusText.text = "Status: loading translation model..."
         loadedModelId = bridge.loadModel(
@@ -118,7 +120,7 @@ class TranslateActivity : AppCompatActivity() {
 
   private fun resolveTranslationModel(outputLanguage: String): String? {
     val constant = "BERGAMOT_EN_${outputLanguage.uppercase()}"
-    val model = QvacModelCatalog.findByName(this, constant)
+    val model = QvacModelCatalog.findByName(applicationContext, constant)
     if (model != null) {
       return model.name
     }

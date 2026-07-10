@@ -15,7 +15,9 @@ import androidx.lifecycle.lifecycleScope
 import io.tether.qvac.sdk.QvacModelCatalog
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class TtsActivity : AppCompatActivity() {
@@ -73,9 +75,9 @@ class TtsActivity : AppCompatActivity() {
 
   private fun handleLoadModel() {
     val language = languageSpinner.selectedItem?.toString() ?: "en"
-    val modelSrc = resolveSupertonicModel()
     lifecycleScope.launch {
       try {
+        val modelSrc = withContext(Dispatchers.IO) { resolveSupertonicModel() }
         speakButton.isEnabled = false
         statusText.text = "Status: loading Supertonic model..."
         loadedModelId = bridge.loadModel(
@@ -86,8 +88,8 @@ class TtsActivity : AppCompatActivity() {
             .put("language", language)
             .put("voice", "F1")
             .put("ttsSpeed", 1.05)
-            .put("ttsNumInferenceSteps", 5)
-            .put("outputSampleRate", defaultSupertonicOutputSampleRateHz)
+            .put("ttsNumInferenceSteps", 5),
+          ttsSampleRateHintHz = defaultSupertonicOutputSampleRateHz
         )
         renderLoadedModel()
         speakButton.isEnabled = true
@@ -163,7 +165,7 @@ class TtsActivity : AppCompatActivity() {
   }
 
   private fun resolveSupertonicModel(): String {
-    val model = QvacModelCatalog.findByName(this, "TTS_MULTILINGUAL_SUPERTONIC3_Q8_0")
+    val model = QvacModelCatalog.findByName(applicationContext, "TTS_MULTILINGUAL_SUPERTONIC3_Q8_0")
     if (model != null) {
       return model.name
     }

@@ -73,7 +73,8 @@ class BareQvacBridge(private val context: Context) {
   suspend fun loadModel(
     modelSrc: String,
     modelType: String = "llamacpp-completion",
-    modelConfig: JSONObject = JSONObject()
+    modelConfig: JSONObject = JSONObject(),
+    ttsSampleRateHintHz: Int? = null
   ): String {
     return suspendCancellableCoroutine { continuation ->
       val payload = JSONObject()
@@ -91,10 +92,15 @@ class BareQvacBridge(private val context: Context) {
         continuation.resume(message.getString("modelId"))
       }
       if (modelType == "tts-ggml") {
-        val configuredRateHz = modelConfig.optInt("outputSampleRate", 0)
-        ttsSampleRateHintHz = if (configuredRateHz > 0) configuredRateHz else null
+        this.ttsSampleRateHintHz = when {
+          ttsSampleRateHintHz != null && ttsSampleRateHintHz > 0 -> ttsSampleRateHintHz
+          else -> {
+            val configuredRateHz = modelConfig.optInt("outputSampleRate", 0)
+            if (configuredRateHz > 0) configuredRateHz else null
+          }
+        }
       } else {
-        ttsSampleRateHintHz = null
+        this.ttsSampleRateHintHz = null
       }
       continuation.invokeOnCancellation {
         handlers.remove(requestId)
