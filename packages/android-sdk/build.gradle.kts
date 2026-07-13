@@ -38,6 +38,15 @@ fun intValue(map: JsonObject, key: String): Int {
   }
 }
 
+fun stringListValue(map: JsonObject, key: String): List<String> {
+  val value = map[key] ?: throw GradleException("Missing key '$key' in JSON object")
+  @Suppress("UNCHECKED_CAST")
+  return (value as? List<Any?>)
+    ?.map { item -> item?.toString() ?: throw GradleException("Null value in '$key' list") }
+    ?.filter { it.isNotBlank() }
+    ?: throw GradleException("Expected list key '$key', got ${value::class}")
+}
+
 fun readUtf8(file: File): String {
   if (!file.exists()) {
     throw GradleException("Required file not found: ${file.path}")
@@ -52,6 +61,7 @@ val qvacManifest = readJsonObject(qvacManifestFile)
 @Suppress("UNCHECKED_CAST")
 val androidConfig = qvacManifest["android"] as? JsonObject
   ?: throw GradleException("Missing 'android' object in ${qvacManifestFile.path}")
+val androidAbis = stringListValue(androidConfig, "abis")
 @Suppress("UNCHECKED_CAST")
 val sdkConfig = qvacManifest["sdk"] as? JsonObject
   ?: throw GradleException("Missing 'sdk' object in ${qvacManifestFile.path}")
@@ -67,6 +77,9 @@ android {
     minSdk = intValue(androidConfig, "minSdk")
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
+    ndk {
+      abiFilters += androidAbis
+    }
   }
 
   compileOptions {
