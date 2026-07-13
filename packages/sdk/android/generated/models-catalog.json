@@ -6589,6 +6589,17 @@
     "params": "500M"
   },
   {
+    "name": "TTS_CANGJIE_ZH_CHATTERBOX",
+    "src": "registry://s3/qvac_models_compiled/ggml/chatterbox/2026-07-03/Cangjie5_TC.tsv",
+    "modelId": "Cangjie5_TC.tsv",
+    "registryPath": "qvac_models_compiled/ggml/chatterbox/2026-07-03/Cangjie5_TC.tsv",
+    "registrySource": "s3",
+    "addon": "tts",
+    "engine": "tts-ggml",
+    "quantization": "",
+    "params": ""
+  },
+  {
     "name": "TTS_CONDITIONAL_DECODER_EN_CHATTERBOX_FP16",
     "src": "registry://hf/ResembleAI/chatterbox-turbo-ONNX/resolve/d21799bd0354adb85e348b8a0442a8405110a2cf/onnx/conditional_decoder_fp16.onnx",
     "modelId": "conditional_decoder_fp16.onnx",

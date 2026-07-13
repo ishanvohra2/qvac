@@ -83,7 +83,7 @@
     "engines": [
       "tts-ggml"
     ],
-    "modelCount": 143
+    "modelCount": 144
   },
   {
     "addon": "vad",

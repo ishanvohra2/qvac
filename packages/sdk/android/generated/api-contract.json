@@ -1,5 +1,122 @@
 [
   {
+    "operation": "batchCompletionStream",
+    "requestSchema": "batchCompletionStreamRequestSchema",
+    "responseSchema": "batchCompletionStreamResponseSchema",
+    "requestTypeName": "BatchCompletionStreamRequest",
+    "responseTypeName": "BatchCompletionStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "batch-completion-stream.ts"
+  },
+  {
+    "operation": "bciTranscribe",
+    "requestSchema": "bciTranscribeRequestSchema",
+    "responseSchema": "bciTranscribeResponseSchema",
+    "requestTypeName": "BciTranscribeRequest",
+    "responseTypeName": "BciTranscribeResponse",
+    "streaming": false,
+    "sourceFile": "bci.ts"
+  },
+  {
+    "operation": "bciTranscribeStream",
+    "requestSchema": "bciTranscribeStreamRequestSchema",
+    "responseSchema": "bciTranscribeStreamResponseSchema",
+    "requestTypeName": "BciTranscribeStreamRequest",
+    "responseTypeName": "BciTranscribeStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "bci.ts"
+  },
+  {
+    "operation": "cancel",
+    "requestSchema": "cancelRequestSchema",
+    "responseSchema": "cancelResponseSchema",
+    "requestTypeName": "CancelRequest",
+    "responseTypeName": "CancelResponse",
+    "streaming": false,
+    "sourceFile": "handler-registry.ts"
+  },
+  {
+    "operation": "classify",
+    "requestSchema": "classifyRequestSchema",
+    "responseSchema": "classifyResponseSchema",
+    "requestTypeName": "ClassifyRequest",
+    "responseTypeName": "ClassifyResponse",
+    "streaming": false,
+    "sourceFile": "classification.ts"
+  },
+  {
+    "operation": "completionStream",
+    "requestSchema": "completionStreamRequestSchema",
+    "responseSchema": "completionStreamResponseSchema",
+    "requestTypeName": "CompletionStreamRequest",
+    "responseTypeName": "CompletionStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "completion-stream.ts"
+  },
+  {
+    "operation": "deleteCache",
+    "requestSchema": "deleteCacheRequestSchema",
+    "responseSchema": "deleteCacheResponseSchema",
+    "requestTypeName": "DeleteCacheRequest",
+    "responseTypeName": "DeleteCacheResponse",
+    "streaming": false,
+    "sourceFile": "delete-cache.ts"
+  },
+  {
+    "operation": "diffusionStream",
+    "requestSchema": "diffusionStreamRequestSchema",
+    "responseSchema": "diffusionStreamResponseSchema",
+    "requestTypeName": "DiffusionStreamRequest",
+    "responseTypeName": "DiffusionStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "sdcpp-config.ts"
+  },
+  {
+    "operation": "downloadAsset",
+    "requestSchema": "downloadAssetRequestSchema",
+    "responseSchema": "downloadAssetResponseSchema",
+    "requestTypeName": "DownloadAssetRequest",
+    "responseTypeName": "DownloadAssetResponse",
+    "streaming": false,
+    "sourceFile": "download-asset.ts"
+  },
+  {
+    "operation": "embed",
+    "requestSchema": "embedRequestSchema",
+    "responseSchema": "embedResponseSchema",
+    "requestTypeName": "EmbedRequest",
+    "responseTypeName": "EmbedResponse",
+    "streaming": false,
+    "sourceFile": "embed.ts"
+  },
+  {
+    "operation": "finetune",
+    "requestSchema": "finetuneStopRequestSchema",
+    "responseSchema": "finetuneResponseSchema",
+    "requestTypeName": "FinetuneRequest",
+    "responseTypeName": "FinetuneResponse",
+    "streaming": false,
+    "sourceFile": "finetune.ts"
+  },
+  {
+    "operation": "getLoadedModelInfo",
+    "requestSchema": "getLoadedModelInfoRequestSchema",
+    "responseSchema": "getLoadedModelInfoResponseSchema",
+    "requestTypeName": "GetLoadedModelInfoRequest",
+    "responseTypeName": "GetLoadedModelInfoResponse",
+    "streaming": false,
+    "sourceFile": "get-loaded-model-info.ts"
+  },
+  {
+    "operation": "getModelInfo",
+    "requestSchema": "getModelInfoRequestSchema",
+    "responseSchema": "getModelInfoResponseSchema",
+    "requestTypeName": "GetModelInfoRequest",
+    "responseTypeName": "GetModelInfoResponse",
+    "streaming": false,
+    "sourceFile": "get-model-info.ts"
+  },
+  {
     "operation": "heartbeat",
     "requestSchema": "heartbeatRequestSchema",
     "responseSchema": "heartbeatResponseSchema",
@@ -7,6 +124,24 @@
     "responseTypeName": "HeartbeatResponse",
     "streaming": false,
     "sourceFile": "heartbeat.ts"
+  },
+  {
+    "operation": "loadModel",
+    "requestSchema": "reloadConfigOptionsToRequestSchema",
+    "responseSchema": "loadModelResponseSchema",
+    "requestTypeName": "LoadModelRequest",
+    "responseTypeName": "LoadModelResponse",
+    "streaming": false,
+    "sourceFile": "reload-config.ts"
+  },
+  {
+    "operation": "loggingStream",
+    "requestSchema": "loggingStreamRequestSchema",
+    "responseSchema": "loggingStreamResponseSchema",
+    "requestTypeName": "LoggingStreamRequest",
+    "responseTypeName": "LoggingStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "logging-stream.ts"
   },
   {
     "operation": "modelRegistryGetModel",
@@ -36,6 +171,15 @@
     "sourceFile": "registry.ts"
   },
   {
+    "operation": "ocrStream",
+    "requestSchema": "ocrStreamRequestSchema",
+    "responseSchema": "ocrStreamResponseSchema",
+    "requestTypeName": "OcrStreamRequest",
+    "responseTypeName": "OcrStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "ocr.ts"
+  },
+  {
     "operation": "pluginInvoke",
     "requestSchema": "pluginInvokeRequestSchema",
     "responseSchema": "pluginInvokeResponseSchema",
@@ -52,6 +196,24 @@
     "responseTypeName": "PluginInvokeStreamStreamEvent",
     "streaming": true,
     "sourceFile": "plugin.ts"
+  },
+  {
+    "operation": "provide",
+    "requestSchema": "provideRequestSchema",
+    "responseSchema": "provideResponseSchema",
+    "requestTypeName": "ProvideRequest",
+    "responseTypeName": "ProvideResponse",
+    "streaming": false,
+    "sourceFile": "provide.ts"
+  },
+  {
+    "operation": "rag",
+    "requestSchema": "ragRequestSchema",
+    "responseSchema": null,
+    "requestTypeName": "RagRequest",
+    "responseTypeName": "RagResponse",
+    "streaming": false,
+    "sourceFile": "rag.ts"
   },
   {
     "operation": "resume",
@@ -72,6 +234,15 @@
     "sourceFile": "state.ts"
   },
   {
+    "operation": "stopProvide",
+    "requestSchema": "stopProvideRequestSchema",
+    "responseSchema": "stopProvideResponseSchema",
+    "requestTypeName": "StopProvideRequest",
+    "responseTypeName": "StopProvideResponse",
+    "streaming": false,
+    "sourceFile": "stop-provide.ts"
+  },
+  {
     "operation": "suspend",
     "requestSchema": "suspendRequestSchema",
     "responseSchema": "suspendResponseSchema",
@@ -79,6 +250,51 @@
     "responseTypeName": "SuspendResponse",
     "streaming": false,
     "sourceFile": "suspend.ts"
+  },
+  {
+    "operation": "textToSpeech",
+    "requestSchema": "ttsRequestSchema",
+    "responseSchema": "ttsResponseSchema",
+    "requestTypeName": "TextToSpeechRequest",
+    "responseTypeName": "TextToSpeechResponse",
+    "streaming": false,
+    "sourceFile": "text-to-speech.ts"
+  },
+  {
+    "operation": "textToSpeechStream",
+    "requestSchema": "textToSpeechStreamRequestSchema",
+    "responseSchema": "textToSpeechStreamResponseSchema",
+    "requestTypeName": "TextToSpeechStreamRequest",
+    "responseTypeName": "TextToSpeechStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "text-to-speech.ts"
+  },
+  {
+    "operation": "transcribe",
+    "requestSchema": "transcribeRequestSchema",
+    "responseSchema": "transcribeResponseSchema",
+    "requestTypeName": "TranscribeRequest",
+    "responseTypeName": "TranscribeResponse",
+    "streaming": false,
+    "sourceFile": "transcription.ts"
+  },
+  {
+    "operation": "transcribeStream",
+    "requestSchema": "transcribeStreamRequestSchema",
+    "responseSchema": "transcribeStreamResponseSchema",
+    "requestTypeName": "TranscribeStreamRequest",
+    "responseTypeName": "TranscribeStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "transcription.ts"
+  },
+  {
+    "operation": "translate",
+    "requestSchema": "translateRequestSchema",
+    "responseSchema": "translateResponseSchema",
+    "requestTypeName": "TranslateRequest",
+    "responseTypeName": "TranslateResponse",
+    "streaming": false,
+    "sourceFile": "translate.ts"
   },
   {
     "operation": "unloadModel",
@@ -91,7 +307,7 @@
   },
   {
     "operation": "upscaleStream",
-    "requestSchema": "upscaleRequestSchema",
+    "requestSchema": "upscaleStreamRequestSchema",
     "responseSchema": "upscaleStreamResponseSchema",
     "requestTypeName": "UpscaleStreamRequest",
     "responseTypeName": "UpscaleStreamStreamEvent",
@@ -99,9 +315,18 @@
     "sourceFile": "sdcpp-config.ts"
   },
   {
+    "operation": "videoStream",
+    "requestSchema": "videoStreamRequestSchema",
+    "responseSchema": "videoStreamResponseSchema",
+    "requestTypeName": "VideoStreamRequest",
+    "responseTypeName": "VideoStreamStreamEvent",
+    "streaming": true,
+    "sourceFile": "sdcpp-config.ts"
+  },
+  {
     "operation": "vlaHparams",
     "requestSchema": "vlaHparamsRequestSchema",
-    "responseSchema": "vlaRunResponseSchema",
+    "responseSchema": null,
     "requestTypeName": "VlaHparamsRequest",
     "responseTypeName": "VlaHparamsResponse",
     "streaming": false,

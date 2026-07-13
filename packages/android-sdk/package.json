@@ -1,12 +1,14 @@
 {
   "name": "@qvac/android-sdk",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
     "android:sync-contract": "tsx ./scripts/sync-contract.ts",
     "android:check-contract": "tsx ./scripts/sync-contract.ts --check",
+    "android:generate-bindings": "node ./scripts/generate-sample-bindings.mjs",
+    "android:check-bindings": "node ./scripts/generate-sample-bindings.mjs --check",
     "sample:bootstrap-runtime": "tsx ./scripts/bootstrap-sample-runtime.ts",
     "sample:check-runtime": "tsx ./scripts/bootstrap-sample-runtime.ts --check",
     "sample:sync-runtime-addons": "tsx ./scripts/sync-runtime-addons.ts",

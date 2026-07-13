@@ -1,6 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { spawn } from 'child_process'
 
 type SyncEntry = {
   sourceRelativePath: string
@@ -23,6 +24,7 @@ const sdkGeneratedDir = path.resolve(packageDir, '../sdk/android/generated')
 const packageJsonPath = path.join(packageDir, 'package.json')
 const sdkManifestPath = path.join(sdkGeneratedDir, 'qvac-sdk-manifest.json')
 const syncEntriesPath = path.join(packageDir, 'scripts', 'sync-contract-entries.json')
+const generateBindingsScriptPath = path.join(packageDir, 'scripts', 'generate-sample-bindings.mjs')
 
 async function readFileSafe(filePath: string): Promise<string | null> {
   try {
@@ -93,6 +95,26 @@ async function syncPackageVersion(checkOnly: boolean): Promise<boolean> {
   return true
 }
 
+async function runBindingsGenerator(checkOnly: boolean): Promise<number> {
+  const args = [generateBindingsScriptPath]
+  if (checkOnly) {
+    args.push('--check')
+  }
+  return new Promise((resolve, reject) => {
+    const child = spawn('node', args, { cwd: packageDir, stdio: 'inherit' })
+    child.on('error', reject)
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve(0)
+      } else if (code === 1) {
+        resolve(1)
+      } else {
+        reject(new Error(`Bindings generator exited with code ${code ?? 'unknown'}`))
+      }
+    })
+  })
+}
+
 async function main(): Promise<void> {
   const checkOnly = process.argv.includes('--check')
   let changedCount = 0
@@ -110,6 +132,10 @@ async function main(): Promise<void> {
   }
   const versionChanged = await syncPackageVersion(checkOnly)
   if (versionChanged) {
+    changedCount += 1
+  }
+  const bindingsStatus = await runBindingsGenerator(checkOnly)
+  if (bindingsStatus === 1) {
     changedCount += 1
   }
 

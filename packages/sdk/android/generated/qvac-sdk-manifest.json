@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "sourceSchemaVersion": 1,
-  "generatedAt": "sdk-version-0.14.1",
+  "generatedAt": "sdk-version-0.15.0",
   "sdk": {
     "packageName": "@qvac/sdk",
-    "version": "0.14.1"
+    "version": "0.15.0"
   },
   "android": {
     "groupId": "io.tether.qvac",
@@ -25,12 +25,12 @@
   "dependencies": [
     {
       "packageName": "@qvac/bci-whispercpp",
-      "version": "^0.4.0",
+      "version": "^0.4.1",
       "sourceScope": "dependencies"
     },
     {
       "packageName": "@qvac/classification-ggml",
-      "version": "^0.7.1",
+      "version": "^0.10.2",
       "sourceScope": "dependencies"
     },
     {
@@ -40,12 +40,12 @@
     },
     {
       "packageName": "@qvac/diffusion-cpp",
-      "version": "^0.12.1",
+      "version": "^0.13.3",
       "sourceScope": "dependencies"
     },
     {
       "packageName": "@qvac/embed-llamacpp",
-      "version": "^0.23.1",
+      "version": "^0.26.2",
       "sourceScope": "dependencies"
     },
     {
@@ -60,7 +60,7 @@
     },
     {
       "packageName": "@qvac/llm-llamacpp",
-      "version": "^0.31.1",
+      "version": "^0.36.3",
       "sourceScope": "dependencies"
     },
     {
@@ -70,7 +70,7 @@
     },
     {
       "packageName": "@qvac/ocr-ggml",
-      "version": "^0.7.1",
+      "version": "^0.10.2",
       "sourceScope": "dependencies"
     },
     {
@@ -80,27 +80,27 @@
     },
     {
       "packageName": "@qvac/transcription-parakeet",
-      "version": "^0.8.3",
+      "version": "^0.9.1",
       "sourceScope": "dependencies"
     },
     {
       "packageName": "@qvac/transcription-whispercpp",
-      "version": "^0.11.0",
+      "version": "^0.11.1",
       "sourceScope": "dependencies"
     },
     {
       "packageName": "@qvac/translation-nmtcpp",
-      "version": "^6.3.1",
+      "version": "^7.2.2",
       "sourceScope": "dependencies"
     },
     {
       "packageName": "@qvac/tts-ggml",
-      "version": "^0.4.0",
+      "version": "^0.4.2",
       "sourceScope": "dependencies"
     },
     {
       "packageName": "@qvac/vla-ggml",
-      "version": "^0.8.1",
+      "version": "^0.11.2",
       "sourceScope": "dependencies"
     },
     {
@@ -254,7 +254,7 @@
       "engines": [
         "tts-ggml"
       ],
-      "modelCount": 143
+      "modelCount": 144
     },
     {
       "addon": "vad",

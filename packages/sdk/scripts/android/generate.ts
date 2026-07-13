@@ -5,7 +5,8 @@ import { models } from '@/models/registry/models'
 import {
   collectApiOperationsFromSources,
   collectDependencies,
-  toCamelCase
+  toCamelCase,
+  toPascalCase
 } from './generate-utils'
 import {
   androidManifestSourceSchema,
@@ -32,6 +33,7 @@ const sourceManifestPath = path.join(sdkDir, 'android', 'manifest.source.json')
 const packageJsonPath = path.join(sdkDir, 'package.json')
 const generatedDir = path.join(sdkDir, 'android', 'generated')
 const schemasDir = path.join(sdkDir, 'schemas')
+const handlerRegistryPath = path.join(sdkDir, 'server', 'rpc', 'handler-registry.ts')
 
 const outputFiles = {
   manifest: path.join(generatedDir, 'qvac-sdk-manifest.json'),
@@ -140,7 +142,34 @@ async function collectApiOperations(): Promise<GeneratedApiOperation[]> {
     })
   }
 
-  return collectApiOperationsFromSources(sourceFiles)
+  const fromSchemas = collectApiOperationsFromSources(sourceFiles)
+  const byOperation = new Map(fromSchemas.map((entry) => [entry.operation, entry]))
+  const registrySource = await fs.readFile(handlerRegistryPath, 'utf8')
+  const registryOperationPattern = /^\s*([A-Za-z0-9_]+):\s*\{\s*type:\s*'([^']+)'/gm
+  let match: RegExpExecArray | null
+  while ((match = registryOperationPattern.exec(registrySource)) !== null) {
+    const operation = match[1]!
+    const handlerType = match[2]!
+    if (byOperation.has(operation)) continue
+    const streaming = handlerType === 'stream' || handlerType === 'duplex'
+    const baseName = toPascalCase(operation)
+    byOperation.set(
+      operation,
+      {
+        operation,
+        requestSchema: `${toCamelCase(operation)}RequestSchema`,
+        responseSchema: streaming
+          ? `${toCamelCase(operation)}StreamResponseSchema`
+          : `${toCamelCase(operation)}ResponseSchema`,
+        requestTypeName: `${baseName}Request`,
+        responseTypeName: `${baseName}${streaming ? 'StreamEvent' : 'Response'}`,
+        streaming,
+        sourceFile: 'handler-registry.ts'
+      }
+    )
+  }
+  const merged = Array.from(byOperation.values()).sort((a, b) => a.operation.localeCompare(b.operation))
+  return merged
 }
 
 function toKotlinApi(operations: GeneratedApiOperation[]): string {

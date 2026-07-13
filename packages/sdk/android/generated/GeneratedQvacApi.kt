@@ -6,8 +6,53 @@ package io.tether.qvac.sdk.generated.api
 import kotlinx.coroutines.flow.Flow
 import org.json.JSONObject
 
+data class BatchCompletionStreamRequest(val payload: JSONObject = JSONObject())
+data class BatchCompletionStreamStreamEvent(val payload: JSONObject = JSONObject())
+
+data class BciTranscribeRequest(val payload: JSONObject = JSONObject())
+data class BciTranscribeResponse(val payload: JSONObject = JSONObject())
+
+data class BciTranscribeStreamRequest(val payload: JSONObject = JSONObject())
+data class BciTranscribeStreamStreamEvent(val payload: JSONObject = JSONObject())
+
+data class CancelRequest(val payload: JSONObject = JSONObject())
+data class CancelResponse(val payload: JSONObject = JSONObject())
+
+data class ClassifyRequest(val payload: JSONObject = JSONObject())
+data class ClassifyResponse(val payload: JSONObject = JSONObject())
+
+data class CompletionStreamRequest(val payload: JSONObject = JSONObject())
+data class CompletionStreamStreamEvent(val payload: JSONObject = JSONObject())
+
+data class DeleteCacheRequest(val payload: JSONObject = JSONObject())
+data class DeleteCacheResponse(val payload: JSONObject = JSONObject())
+
+data class DiffusionStreamRequest(val payload: JSONObject = JSONObject())
+data class DiffusionStreamStreamEvent(val payload: JSONObject = JSONObject())
+
+data class DownloadAssetRequest(val payload: JSONObject = JSONObject())
+data class DownloadAssetResponse(val payload: JSONObject = JSONObject())
+
+data class EmbedRequest(val payload: JSONObject = JSONObject())
+data class EmbedResponse(val payload: JSONObject = JSONObject())
+
+data class FinetuneRequest(val payload: JSONObject = JSONObject())
+data class FinetuneResponse(val payload: JSONObject = JSONObject())
+
+data class GetLoadedModelInfoRequest(val payload: JSONObject = JSONObject())
+data class GetLoadedModelInfoResponse(val payload: JSONObject = JSONObject())
+
+data class GetModelInfoRequest(val payload: JSONObject = JSONObject())
+data class GetModelInfoResponse(val payload: JSONObject = JSONObject())
+
 data class HeartbeatRequest(val payload: JSONObject = JSONObject())
 data class HeartbeatResponse(val payload: JSONObject = JSONObject())
+
+data class LoadModelRequest(val payload: JSONObject = JSONObject())
+data class LoadModelResponse(val payload: JSONObject = JSONObject())
+
+data class LoggingStreamRequest(val payload: JSONObject = JSONObject())
+data class LoggingStreamStreamEvent(val payload: JSONObject = JSONObject())
 
 data class ModelRegistryGetModelRequest(val payload: JSONObject = JSONObject())
 data class ModelRegistryGetModelResponse(val payload: JSONObject = JSONObject())
@@ -18,11 +63,20 @@ data class ModelRegistryListResponse(val payload: JSONObject = JSONObject())
 data class ModelRegistrySearchRequest(val payload: JSONObject = JSONObject())
 data class ModelRegistrySearchResponse(val payload: JSONObject = JSONObject())
 
+data class OcrStreamRequest(val payload: JSONObject = JSONObject())
+data class OcrStreamStreamEvent(val payload: JSONObject = JSONObject())
+
 data class PluginInvokeRequest(val payload: JSONObject = JSONObject())
 data class PluginInvokeResponse(val payload: JSONObject = JSONObject())
 
 data class PluginInvokeStreamRequest(val payload: JSONObject = JSONObject())
 data class PluginInvokeStreamStreamEvent(val payload: JSONObject = JSONObject())
+
+data class ProvideRequest(val payload: JSONObject = JSONObject())
+data class ProvideResponse(val payload: JSONObject = JSONObject())
+
+data class RagRequest(val payload: JSONObject = JSONObject())
+data class RagResponse(val payload: JSONObject = JSONObject())
 
 data class ResumeRequest(val payload: JSONObject = JSONObject())
 data class ResumeResponse(val payload: JSONObject = JSONObject())
@@ -30,14 +84,35 @@ data class ResumeResponse(val payload: JSONObject = JSONObject())
 data class StateRequest(val payload: JSONObject = JSONObject())
 data class StateResponse(val payload: JSONObject = JSONObject())
 
+data class StopProvideRequest(val payload: JSONObject = JSONObject())
+data class StopProvideResponse(val payload: JSONObject = JSONObject())
+
 data class SuspendRequest(val payload: JSONObject = JSONObject())
 data class SuspendResponse(val payload: JSONObject = JSONObject())
+
+data class TextToSpeechRequest(val payload: JSONObject = JSONObject())
+data class TextToSpeechResponse(val payload: JSONObject = JSONObject())
+
+data class TextToSpeechStreamRequest(val payload: JSONObject = JSONObject())
+data class TextToSpeechStreamStreamEvent(val payload: JSONObject = JSONObject())
+
+data class TranscribeRequest(val payload: JSONObject = JSONObject())
+data class TranscribeResponse(val payload: JSONObject = JSONObject())
+
+data class TranscribeStreamRequest(val payload: JSONObject = JSONObject())
+data class TranscribeStreamStreamEvent(val payload: JSONObject = JSONObject())
+
+data class TranslateRequest(val payload: JSONObject = JSONObject())
+data class TranslateResponse(val payload: JSONObject = JSONObject())
 
 data class UnloadModelRequest(val payload: JSONObject = JSONObject())
 data class UnloadModelResponse(val payload: JSONObject = JSONObject())
 
 data class UpscaleStreamRequest(val payload: JSONObject = JSONObject())
 data class UpscaleStreamStreamEvent(val payload: JSONObject = JSONObject())
+
+data class VideoStreamRequest(val payload: JSONObject = JSONObject())
+data class VideoStreamStreamEvent(val payload: JSONObject = JSONObject())
 
 data class VlaHparamsRequest(val payload: JSONObject = JSONObject())
 data class VlaHparamsResponse(val payload: JSONObject = JSONObject())
@@ -48,34 +123,84 @@ data class VlaRunResponse(val payload: JSONObject = JSONObject())
 // NOTE: These are generated schema wrappers only.
 // The sample app still uses a separate ad-hoc IPC protocol.
 interface QvacGeneratedApiClient {
+  fun batchCompletionStream(request: BatchCompletionStreamRequest): Flow<BatchCompletionStreamStreamEvent>
+  suspend fun bciTranscribe(request: BciTranscribeRequest): BciTranscribeResponse
+  fun bciTranscribeStream(request: BciTranscribeStreamRequest): Flow<BciTranscribeStreamStreamEvent>
+  suspend fun cancel(request: CancelRequest): CancelResponse
+  suspend fun classify(request: ClassifyRequest): ClassifyResponse
+  fun completionStream(request: CompletionStreamRequest): Flow<CompletionStreamStreamEvent>
+  suspend fun deleteCache(request: DeleteCacheRequest): DeleteCacheResponse
+  fun diffusionStream(request: DiffusionStreamRequest): Flow<DiffusionStreamStreamEvent>
+  suspend fun downloadAsset(request: DownloadAssetRequest): DownloadAssetResponse
+  suspend fun embed(request: EmbedRequest): EmbedResponse
+  suspend fun finetune(request: FinetuneRequest): FinetuneResponse
+  suspend fun getLoadedModelInfo(request: GetLoadedModelInfoRequest): GetLoadedModelInfoResponse
+  suspend fun getModelInfo(request: GetModelInfoRequest): GetModelInfoResponse
   suspend fun heartbeat(request: HeartbeatRequest): HeartbeatResponse
+  suspend fun loadModel(request: LoadModelRequest): LoadModelResponse
+  fun loggingStream(request: LoggingStreamRequest): Flow<LoggingStreamStreamEvent>
   suspend fun modelRegistryGetModel(request: ModelRegistryGetModelRequest): ModelRegistryGetModelResponse
   suspend fun modelRegistryList(request: ModelRegistryListRequest): ModelRegistryListResponse
   suspend fun modelRegistrySearch(request: ModelRegistrySearchRequest): ModelRegistrySearchResponse
+  fun ocrStream(request: OcrStreamRequest): Flow<OcrStreamStreamEvent>
   suspend fun pluginInvoke(request: PluginInvokeRequest): PluginInvokeResponse
   fun pluginInvokeStream(request: PluginInvokeStreamRequest): Flow<PluginInvokeStreamStreamEvent>
+  suspend fun provide(request: ProvideRequest): ProvideResponse
+  suspend fun rag(request: RagRequest): RagResponse
   suspend fun resume(request: ResumeRequest): ResumeResponse
   suspend fun state(request: StateRequest): StateResponse
+  suspend fun stopProvide(request: StopProvideRequest): StopProvideResponse
   suspend fun suspendOperation(request: SuspendRequest): SuspendResponse
+  suspend fun textToSpeech(request: TextToSpeechRequest): TextToSpeechResponse
+  fun textToSpeechStream(request: TextToSpeechStreamRequest): Flow<TextToSpeechStreamStreamEvent>
+  suspend fun transcribe(request: TranscribeRequest): TranscribeResponse
+  fun transcribeStream(request: TranscribeStreamRequest): Flow<TranscribeStreamStreamEvent>
+  suspend fun translate(request: TranslateRequest): TranslateResponse
   suspend fun unloadModel(request: UnloadModelRequest): UnloadModelResponse
   fun upscaleStream(request: UpscaleStreamRequest): Flow<UpscaleStreamStreamEvent>
+  fun videoStream(request: VideoStreamRequest): Flow<VideoStreamStreamEvent>
   suspend fun vlaHparams(request: VlaHparamsRequest): VlaHparamsResponse
   suspend fun vlaRun(request: VlaRunRequest): VlaRunResponse
 }
 
 object QvacGeneratedApiContract {
   val operations: List<String> = listOf(
+    "batchCompletionStream",
+    "bciTranscribe",
+    "bciTranscribeStream",
+    "cancel",
+    "classify",
+    "completionStream",
+    "deleteCache",
+    "diffusionStream",
+    "downloadAsset",
+    "embed",
+    "finetune",
+    "getLoadedModelInfo",
+    "getModelInfo",
     "heartbeat",
+    "loadModel",
+    "loggingStream",
     "modelRegistryGetModel",
     "modelRegistryList",
     "modelRegistrySearch",
+    "ocrStream",
     "pluginInvoke",
     "pluginInvokeStream",
+    "provide",
+    "rag",
     "resume",
     "state",
+    "stopProvide",
     "suspend",
+    "textToSpeech",
+    "textToSpeechStream",
+    "transcribe",
+    "transcribeStream",
+    "translate",
     "unloadModel",
     "upscaleStream",
+    "videoStream",
     "vlaHparams",
     "vlaRun",
   )

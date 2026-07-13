@@ -4,7 +4,7 @@
 package io.tether.qvac.sdk.generated
 
 object GeneratedQvacSdkInfo {
-  const val VERSION = "0.14.1"
+  const val VERSION = "0.15.0"
   const val GROUP_ID = "io.tether.qvac"
   const val ARTIFACT_ID = "sdk-bare-android"
   const val NAMESPACE = "io.tether.qvac.sdk"

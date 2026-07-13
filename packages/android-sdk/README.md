@@ -13,6 +13,9 @@ Run all commands from `packages/android-sdk`:
    - `bun install`
 2. Sync generated Android contracts from `packages/sdk`:
    - `bun run android:sync-contract`
+   - This also regenerates:
+     - `sample-app/src/main/js/app.js` contract dispatch sections
+     - `sample-app/src/main/java/io/tether/qvac/sample/BareQvacBridge.kt` generated client methods
 3. Bootstrap pinned Bare Kit runtime artifacts:
    - `bun run sample:bootstrap-runtime`
 4. Verify runtime bootstrap state (optional but recommended):
@@ -26,6 +29,8 @@ Run from `packages/android-sdk`:
 
 - `bun run android:sync-contract` to copy generated Kotlin/Gradle files from `packages/sdk`.
 - `bun run android:check-contract` to fail when local files are stale.
+- `bun run android:generate-bindings` to regenerate sample bridge/worklet contract bindings.
+- `bun run android:check-bindings` to verify generated sample bindings are current.
 
 ## Contract files consumed
 
@@ -90,7 +95,8 @@ The sample app demonstrates the Android integration pattern used by host apps:
 ### Generated API contract status
 
 `GeneratedQvacApi.kt` is schema-derived contract metadata and typed wrappers.
-The sample app IPC bridge (`BareQvacBridge.kt` + `app.js`) currently uses its own ad-hoc action protocol (`loadModel`, `completionStream`, `textToSpeech`, etc.) and is not yet wired to the generated interface end-to-end.
+The sample app IPC bridge (`BareQvacBridge.kt` + `app.js`) now routes inference calls through generated contract operations (`pluginInvoke`, `pluginInvokeStream`, `heartbeat`, lifecycle/model-registry methods).
+`loadModel` remains an explicit bootstrap action because model loading lives outside the currently generated Android API contract.
 
 ### Kotlin usage pattern
 

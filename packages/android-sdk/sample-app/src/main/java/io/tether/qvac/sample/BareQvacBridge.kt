@@ -1,8 +1,10 @@
 package io.tether.qvac.sample
 
 import android.content.Context
+import io.tether.qvac.sdk.generated.api.*
 import java.io.File
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -11,6 +13,8 @@ import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
 import to.holepunch.bare.kit.IPC
@@ -30,6 +34,7 @@ class BareQvacBridge(private val context: Context) {
   private val handlers = ConcurrentHashMap<Int, (JSONObject) -> Unit>()
   private var eventListener: ((JSONObject) -> Unit)? = null
   private var ttsSampleRateHintHz: Int? = null
+  private var activeModelId: String? = null
 
   fun start() {
     if (worklet != null) return
@@ -61,6 +66,7 @@ class BareQvacBridge(private val context: Context) {
     handlers.clear()
     eventListener = null
     ttsSampleRateHintHz = null
+    activeModelId = null
     ipc = null
     worklet?.terminate()
     worklet = null
@@ -89,7 +95,9 @@ class BareQvacBridge(private val context: Context) {
           )
           return@sendRequest
         }
-        continuation.resume(message.getString("modelId"))
+        val modelId = message.getString("modelId")
+        activeModelId = modelId
+        continuation.resume(modelId)
       }
       if (modelType == "tts-ggml") {
         this.ttsSampleRateHintHz = when {
@@ -109,136 +117,392 @@ class BareQvacBridge(private val context: Context) {
   }
 
   suspend fun textToSpeech(text: String): TtsAudioResult {
-    return suspendCancellableCoroutine { continuation ->
-      val payload = JSONObject().put("text", text)
-      val sampleRateHintHz = ttsSampleRateHintHz
-      if (sampleRateHintHz != null) {
-        payload.put("sampleRate", sampleRateHintHz)
-      }
-      val requestId = sendRequest("textToSpeech", payload) { message ->
-        val type = message.optString("type")
-        if (type == "error") {
-          continuation.resumeWithException(
-            IllegalStateException(extractErrorSummary(message, "text to speech failed"))
-          )
-          return@sendRequest
-        }
-        val sampleRateHz = when {
-          message.has("sampleRate") -> message.optInt("sampleRate", 0)
-          ttsSampleRateHintHz != null -> ttsSampleRateHintHz ?: 0
-          else -> 0
-        }
-        if (sampleRateHz <= 0) {
-          continuation.resumeWithException(
-            IllegalStateException(
-              "text to speech response missing sampleRate; set outputSampleRate in modelConfig"
-            )
-          )
-          return@sendRequest
-        }
-        continuation.resume(
-          TtsAudioResult(
-            sampleCount = message.optInt("sampleCount", 0),
-            sampleRate = sampleRateHz,
-            pcmBase64 = message.optString("pcmBase64", "")
-          )
-        )
-      }
-      continuation.invokeOnCancellation {
-        handlers.remove(requestId)
+    val modelId = requireActiveModelId("text to speech")
+    val params = JSONObject()
+      .put("type", "textToSpeech")
+      .put("modelId", modelId)
+      .put("text", text)
+      .put("inputType", "text")
+      .put("stream", true)
+    val chunks = generatedClient.pluginInvokeStream(
+      PluginInvokeStreamRequest(
+        JSONObject()
+          .put("type", "pluginInvokeStream")
+          .put("modelId", modelId)
+          .put("handler", "textToSpeech")
+          .put("params", params)
+      )
+    )
+    val merged = mutableListOf<Int>()
+    var response = JSONObject()
+    chunks.collect { event ->
+      val result = event.payload.optJSONObject("result") ?: return@collect
+      response = result
+      val buffer = result.optJSONArray("buffer") ?: return@collect
+      for (index in 0 until buffer.length()) {
+        merged += buffer.optInt(index)
       }
     }
+    val sampleRateHz = when {
+      response.has("sampleRate") -> response.optInt("sampleRate", 0)
+      ttsSampleRateHintHz != null -> ttsSampleRateHintHz ?: 0
+      else -> 0
+    }
+    if (sampleRateHz <= 0) {
+      throw IllegalStateException(
+        "text to speech response missing sampleRate; set outputSampleRate in modelConfig"
+      )
+    }
+    return TtsAudioResult(
+      sampleCount = if (merged.isEmpty()) response.optInt("sampleCount", 0) else merged.size,
+      sampleRate = sampleRateHz,
+      pcmBase64 = encodePcm16LeBase64(merged)
+    )
   }
 
   suspend fun transcribe(audioPath: String, prompt: String?): String {
-    return suspendCancellableCoroutine { continuation ->
-      val payload = JSONObject().put("audioChunk", audioPath)
-      if (!prompt.isNullOrBlank()) {
-        payload.put("prompt", prompt)
-      }
-      val requestId = sendRequest("transcribe", payload) { message ->
-        val type = message.optString("type")
-        if (type == "error") {
-          continuation.resumeWithException(
-            IllegalStateException(extractErrorSummary(message, "transcription failed"))
-          )
-          return@sendRequest
-        }
-        continuation.resume(message.optString("text", ""))
-      }
-      continuation.invokeOnCancellation {
-        handlers.remove(requestId)
+    val modelId = requireActiveModelId("transcription")
+    val params = JSONObject()
+      .put("type", "transcribe")
+      .put("modelId", modelId)
+      .put(
+        "audioChunk",
+        JSONObject()
+          .put("type", "filePath")
+          .put("value", audioPath)
+      )
+    if (!prompt.isNullOrBlank()) {
+      params.put("prompt", prompt)
+    }
+    val chunks = generatedClient.pluginInvokeStream(
+      PluginInvokeStreamRequest(
+        JSONObject()
+          .put("type", "pluginInvokeStream")
+          .put("modelId", modelId)
+          .put("handler", "transcribe")
+          .put("params", params)
+      )
+    )
+    var text = ""
+    chunks.collect { event ->
+      val result = event.payload.optJSONObject("result") ?: return@collect
+      val partial = result.optString("text", "")
+      if (partial.isNotEmpty()) {
+        text = partial
       }
     }
+    return text
   }
 
   suspend fun translate(text: String): String {
-    return suspendCancellableCoroutine { continuation ->
-      val requestId = sendRequest("translate", JSONObject().put("text", text)) { message ->
-        val type = message.optString("type")
-        if (type == "error") {
-          continuation.resumeWithException(
-            IllegalStateException(extractErrorSummary(message, "translation failed"))
-          )
-          return@sendRequest
-        }
-        continuation.resume(message.optString("text", ""))
-      }
-      continuation.invokeOnCancellation {
-        handlers.remove(requestId)
+    val modelId = requireActiveModelId("translation")
+    val params = JSONObject()
+      .put("type", "translate")
+      .put("modelId", modelId)
+      .put("text", text)
+      .put("modelType", "nmtcpp-translation")
+      .put("stream", true)
+    val chunks = generatedClient.pluginInvokeStream(
+      PluginInvokeStreamRequest(
+        JSONObject()
+          .put("type", "pluginInvokeStream")
+          .put("modelId", modelId)
+          .put("handler", "translate")
+          .put("params", params)
+      )
+    )
+    val textBuilder = StringBuilder()
+    chunks.collect { event ->
+      val result = event.payload.optJSONObject("result") ?: return@collect
+      val token = result.optString("token", "")
+      if (token.isNotEmpty()) {
+        textBuilder.append(token)
       }
     }
+    return textBuilder.toString()
   }
 
   suspend fun unloadModel() {
-    return suspendCancellableCoroutine { continuation ->
-      val requestId = sendRequest("unloadModel", JSONObject()) { message ->
-        val success = message.optBoolean("success", false)
-        if (!success) {
-          continuation.resumeWithException(
-            IllegalStateException(extractErrorSummary(message, "unloadModel failed"))
-          )
-          return@sendRequest
-        }
-        ttsSampleRateHintHz = null
-        continuation.resume(Unit)
-      }
-      continuation.invokeOnCancellation {
-        handlers.remove(requestId)
-      }
+    val modelId = activeModelId ?: return
+    val response = generatedClient.unloadModel(
+      UnloadModelRequest(
+        JSONObject()
+          .put("type", "unloadModel")
+          .put("modelId", modelId)
+          .put("clearStorage", false)
+      )
+    ).payload
+    val success = response.optBoolean("success", false)
+    if (!success) {
+      throw IllegalStateException(extractErrorSummary(response, "unloadModel failed"))
     }
+    ttsSampleRateHintHz = null
+    activeModelId = null
   }
 
   fun streamCompletion(prompt: String): Flow<String> = callbackFlow {
-    val requestId = sendRequest("completionStream", JSONObject().put("prompt", prompt)) { message ->
-      when (message.optString("type")) {
-        "token" -> trySend(message.optString("token", ""))
-        "done" -> close()
-        "error" -> close(IllegalStateException(extractErrorSummary(message, "stream failed")))
+    val modelId = activeModelId
+    if (modelId == null) {
+      close(IllegalStateException("No model loaded"))
+      return@callbackFlow
+    }
+    val requestPayload = JSONObject()
+      .put("type", "pluginInvokeStream")
+      .put("modelId", modelId)
+      .put("handler", "completionStream")
+      .put(
+        "params",
+        JSONObject()
+          .put("type", "completionStream")
+          .put("modelId", modelId)
+          .put(
+            "history",
+            org.json.JSONArray().put(
+              JSONObject()
+                .put("role", "user")
+                .put("content", prompt)
+            )
+          )
+          .put("stream", true)
+      )
+    val requestId = sendRequest("pluginInvokeStream", requestPayload) { message ->
+      val type = message.optString("type")
+      if (type == "error") {
+        handlers.remove(message.optInt("id", -1))
+        close(IllegalStateException(extractErrorSummary(message, "stream failed")))
+        return@sendRequest
+      }
+      if (type != "pluginInvokeStream") return@sendRequest
+      if (message.optBoolean("done", false)) {
+        close()
+        return@sendRequest
+      }
+      val result = message.optJSONObject("result") ?: return@sendRequest
+      val events = result.optJSONArray("events") ?: return@sendRequest
+      for (index in 0 until events.length()) {
+        val event = events.optJSONObject(index) ?: continue
+        if (event.optString("type") == "contentDelta") {
+          trySend(event.optString("text", ""))
+        }
       }
     }
 
     awaitClose {
       handlers.remove(requestId)
-      sendOneWay("cancelStream", requestId, JSONObject())
     }
   }
 
   suspend fun healthCheck(): JSONObject {
+    return generatedClient.heartbeat(HeartbeatRequest(JSONObject().put("type", "heartbeat"))).payload
+  }
+
+  private val generatedClient: QvacGeneratedApiClient = object : QvacGeneratedApiClient {
+    // <generated-contract-client:start>
+    override fun batchCompletionStream(request: BatchCompletionStreamRequest): Flow<BatchCompletionStreamStreamEvent> =
+      invokeContractStream("batchCompletionStream", request.payload).map { payload ->
+        BatchCompletionStreamStreamEvent(payload)
+      }
+
+    override suspend fun bciTranscribe(request: BciTranscribeRequest): BciTranscribeResponse =
+      BciTranscribeResponse(invokeContract("bciTranscribe", request.payload))
+
+    override fun bciTranscribeStream(request: BciTranscribeStreamRequest): Flow<BciTranscribeStreamStreamEvent> =
+      invokeContractStream("bciTranscribeStream", request.payload).map { payload ->
+        BciTranscribeStreamStreamEvent(payload)
+      }
+
+    override suspend fun cancel(request: CancelRequest): CancelResponse =
+      CancelResponse(invokeContract("cancel", request.payload))
+
+    override suspend fun classify(request: ClassifyRequest): ClassifyResponse =
+      ClassifyResponse(invokeContract("classify", request.payload))
+
+    override fun completionStream(request: CompletionStreamRequest): Flow<CompletionStreamStreamEvent> =
+      invokeContractStream("completionStream", request.payload).map { payload ->
+        CompletionStreamStreamEvent(payload)
+      }
+
+    override suspend fun deleteCache(request: DeleteCacheRequest): DeleteCacheResponse =
+      DeleteCacheResponse(invokeContract("deleteCache", request.payload))
+
+    override fun diffusionStream(request: DiffusionStreamRequest): Flow<DiffusionStreamStreamEvent> =
+      invokeContractStream("diffusionStream", request.payload).map { payload ->
+        DiffusionStreamStreamEvent(payload)
+      }
+
+    override suspend fun downloadAsset(request: DownloadAssetRequest): DownloadAssetResponse =
+      DownloadAssetResponse(invokeContract("downloadAsset", request.payload))
+
+    override suspend fun embed(request: EmbedRequest): EmbedResponse =
+      EmbedResponse(invokeContract("embed", request.payload))
+
+    override suspend fun finetune(request: FinetuneRequest): FinetuneResponse =
+      FinetuneResponse(invokeContract("finetune", request.payload))
+
+    override suspend fun getLoadedModelInfo(request: GetLoadedModelInfoRequest): GetLoadedModelInfoResponse =
+      GetLoadedModelInfoResponse(invokeContract("getLoadedModelInfo", request.payload))
+
+    override suspend fun getModelInfo(request: GetModelInfoRequest): GetModelInfoResponse =
+      GetModelInfoResponse(invokeContract("getModelInfo", request.payload))
+
+    override suspend fun heartbeat(request: HeartbeatRequest): HeartbeatResponse =
+      HeartbeatResponse(invokeContract("heartbeat", request.payload))
+
+    override suspend fun loadModel(request: LoadModelRequest): LoadModelResponse =
+      LoadModelResponse(invokeContract("loadModel", request.payload))
+
+    override fun loggingStream(request: LoggingStreamRequest): Flow<LoggingStreamStreamEvent> =
+      invokeContractStream("loggingStream", request.payload).map { payload ->
+        LoggingStreamStreamEvent(payload)
+      }
+
+    override suspend fun modelRegistryGetModel(request: ModelRegistryGetModelRequest): ModelRegistryGetModelResponse =
+      ModelRegistryGetModelResponse(invokeContract("modelRegistryGetModel", request.payload))
+
+    override suspend fun modelRegistryList(request: ModelRegistryListRequest): ModelRegistryListResponse =
+      ModelRegistryListResponse(invokeContract("modelRegistryList", request.payload))
+
+    override suspend fun modelRegistrySearch(request: ModelRegistrySearchRequest): ModelRegistrySearchResponse =
+      ModelRegistrySearchResponse(invokeContract("modelRegistrySearch", request.payload))
+
+    override fun ocrStream(request: OcrStreamRequest): Flow<OcrStreamStreamEvent> =
+      invokeContractStream("ocrStream", request.payload).map { payload ->
+        OcrStreamStreamEvent(payload)
+      }
+
+    override suspend fun pluginInvoke(request: PluginInvokeRequest): PluginInvokeResponse =
+      PluginInvokeResponse(invokeContract("pluginInvoke", request.payload))
+
+    override fun pluginInvokeStream(request: PluginInvokeStreamRequest): Flow<PluginInvokeStreamStreamEvent> =
+      invokeContractStream("pluginInvokeStream", request.payload).map { payload ->
+        PluginInvokeStreamStreamEvent(payload)
+      }
+
+    override suspend fun provide(request: ProvideRequest): ProvideResponse =
+      ProvideResponse(invokeContract("provide", request.payload))
+
+    override suspend fun rag(request: RagRequest): RagResponse =
+      RagResponse(invokeContract("rag", request.payload))
+
+    override suspend fun resume(request: ResumeRequest): ResumeResponse =
+      ResumeResponse(invokeContract("resume", request.payload))
+
+    override suspend fun state(request: StateRequest): StateResponse =
+      StateResponse(invokeContract("state", request.payload))
+
+    override suspend fun stopProvide(request: StopProvideRequest): StopProvideResponse =
+      StopProvideResponse(invokeContract("stopProvide", request.payload))
+
+    override suspend fun suspendOperation(request: SuspendRequest): SuspendResponse =
+      SuspendResponse(invokeContract("suspend", request.payload))
+
+    override suspend fun textToSpeech(request: TextToSpeechRequest): TextToSpeechResponse =
+      TextToSpeechResponse(invokeContract("textToSpeech", request.payload))
+
+    override fun textToSpeechStream(request: TextToSpeechStreamRequest): Flow<TextToSpeechStreamStreamEvent> =
+      invokeContractStream("textToSpeechStream", request.payload).map { payload ->
+        TextToSpeechStreamStreamEvent(payload)
+      }
+
+    override suspend fun transcribe(request: TranscribeRequest): TranscribeResponse =
+      TranscribeResponse(invokeContract("transcribe", request.payload))
+
+    override fun transcribeStream(request: TranscribeStreamRequest): Flow<TranscribeStreamStreamEvent> =
+      invokeContractStream("transcribeStream", request.payload).map { payload ->
+        TranscribeStreamStreamEvent(payload)
+      }
+
+    override suspend fun translate(request: TranslateRequest): TranslateResponse =
+      TranslateResponse(invokeContract("translate", request.payload))
+
+    override suspend fun unloadModel(request: UnloadModelRequest): UnloadModelResponse =
+      UnloadModelResponse(invokeContract("unloadModel", request.payload))
+
+    override fun upscaleStream(request: UpscaleStreamRequest): Flow<UpscaleStreamStreamEvent> =
+      invokeContractStream("upscaleStream", request.payload).map { payload ->
+        UpscaleStreamStreamEvent(payload)
+      }
+
+    override fun videoStream(request: VideoStreamRequest): Flow<VideoStreamStreamEvent> =
+      invokeContractStream("videoStream", request.payload).map { payload ->
+        VideoStreamStreamEvent(payload)
+      }
+
+    override suspend fun vlaHparams(request: VlaHparamsRequest): VlaHparamsResponse =
+      VlaHparamsResponse(invokeContract("vlaHparams", request.payload))
+
+    override suspend fun vlaRun(request: VlaRunRequest): VlaRunResponse =
+      VlaRunResponse(invokeContract("vlaRun", request.payload))
+    // <generated-contract-client:end>
+  }
+
+  private suspend fun invokeContract(operation: String, payload: JSONObject): JSONObject {
     return suspendCancellableCoroutine { continuation ->
-      val requestId = sendRequest("health", JSONObject()) { message ->
-        val success = message.optBoolean("success", false)
-        if (!success) {
+      var requestId = -1
+      requestId = sendRequest(operation, payload) { message ->
+        val type = message.optString("type")
+        if (type == "error") {
+          handlers.remove(requestId)
           continuation.resumeWithException(
-            IllegalStateException(extractErrorSummary(message, "health check failed"))
+            IllegalStateException(extractErrorSummary(message, "$operation failed"))
           )
           return@sendRequest
         }
-        continuation.resume(message)
+        if (type == operation) {
+          handlers.remove(requestId)
+          continuation.resume(extractPayloadObject(message))
+        }
       }
       continuation.invokeOnCancellation {
         handlers.remove(requestId)
       }
+    }
+  }
+
+  private fun invokeContractStream(operation: String, payload: JSONObject): Flow<JSONObject> {
+    return callbackFlow {
+      val requestId = sendRequest(operation, payload) { message ->
+        val type = message.optString("type")
+        if (type == "error") {
+          handlers.remove(message.optInt("id", -1))
+          close(IllegalStateException(extractErrorSummary(message, "$operation failed")))
+          return@sendRequest
+        }
+        if (type != operation) return@sendRequest
+        if (message.optBoolean("done", false)) {
+          close()
+          return@sendRequest
+        }
+        trySend(extractPayloadObject(message))
+      }
+      awaitClose {
+        handlers.remove(requestId)
+      }
+    }
+  }
+
+  private fun requireActiveModelId(action: String): String {
+    return activeModelId ?: throw IllegalStateException("No model loaded for $action")
+  }
+
+  private fun encodePcm16LeBase64(samples: List<Int>): String {
+    val bytes = ByteBuffer
+      .allocate(samples.size * 2)
+      .order(ByteOrder.LITTLE_ENDIAN)
+      .apply {
+        for (sample in samples) {
+          putShort(sample.toShort())
+        }
+      }
+      .array()
+    return android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
+  }
+
+  private fun extractPayloadObject(message: JSONObject): JSONObject {
+    return if (message.has("payload") && !message.isNull("payload")) {
+      message.optJSONObject("payload") ?: JSONObject()
+    } else {
+      message
     }
   }
 
