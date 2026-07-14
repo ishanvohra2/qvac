@@ -87,9 +87,11 @@ class BareQvacBridge(private val context: Context) {
         .put("modelSrc", modelSrc)
         .put("modelType", modelType)
         .put("modelConfig", modelConfig)
-      val requestId = sendRequest("loadModel", payload) { message ->
+      var requestId = -1
+      requestId = sendRequest("loadModel", payload) { message ->
         val success = message.optBoolean("success", false)
         if (!success) {
+          handlers.remove(requestId)
           continuation.resumeWithException(
             IllegalStateException(extractErrorSummary(message, "loadModel failed"))
           )
@@ -97,6 +99,7 @@ class BareQvacBridge(private val context: Context) {
         }
         val modelId = message.getString("modelId")
         activeModelId = modelId
+        handlers.remove(requestId)
         continuation.resume(modelId)
       }
       if (modelType == "tts-ggml") {
@@ -508,22 +511,7 @@ class BareQvacBridge(private val context: Context) {
 
   private fun sendRequest(action: String, payload: JSONObject, handler: (JSONObject) -> Unit): Int {
     val requestId = nextId.getAndIncrement()
-    handlers[requestId] = { message ->
-      val type = message.optString("type")
-      handler(message)
-      if (
-        type == "loadModelResult" ||
-        type == "unloadModelResult" ||
-        type == "done" ||
-        type == "error" ||
-        type == "translationResult" ||
-        type == "transcriptionResult" ||
-        type == "textToSpeechResult" ||
-        type == "healthResult"
-      ) {
-        handlers.remove(requestId)
-      }
-    }
+    handlers[requestId] = handler
     sendOneWay(action, requestId, payload)
     return requestId
   }

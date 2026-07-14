@@ -127,12 +127,12 @@
   },
   {
     "operation": "loadModel",
-    "requestSchema": "reloadConfigOptionsToRequestSchema",
+    "requestSchema": "loadModelOptionsToRequestSchema",
     "responseSchema": "loadModelResponseSchema",
     "requestTypeName": "LoadModelRequest",
     "responseTypeName": "LoadModelResponse",
     "streaming": false,
-    "sourceFile": "reload-config.ts"
+    "sourceFile": "load-model.ts"
   },
   {
     "operation": "loggingStream",

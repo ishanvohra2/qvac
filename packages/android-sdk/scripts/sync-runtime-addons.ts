@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 type AddonPackage = {
   packageDir: string
@@ -54,11 +54,15 @@ async function findPackageJsonFiles(root: string): Promise<string[]> {
   return found
 }
 
-function normalizeSharedObjectBaseName(packageName: string): string {
+export function normalizeSharedObjectBaseName(packageName: string): string {
   if (packageName.startsWith('@')) {
     return packageName.slice(1).replace('/', '__')
   }
   return packageName
+}
+
+export function isBarePrebuild(entry: { isFile(): boolean; name: string }): boolean {
+  return entry.isFile() && entry.name.endsWith('.bare')
 }
 
 async function discoverAddonPackages(): Promise<AddonPackage[]> {
@@ -81,7 +85,7 @@ async function discoverAddonPackages(): Promise<AddonPackage[]> {
     if (!(await pathExists(prebuildDir))) continue
 
     const prebuildEntries = await fs.readdir(prebuildDir, { withFileTypes: true })
-    const bareBinary = prebuildEntries.find((entry) => entry.isFile() && entry.name.endsWith('.bare'))
+    const bareBinary = prebuildEntries.find(isBarePrebuild)
     if (!bareBinary) continue
 
     addons.push({
@@ -118,7 +122,11 @@ async function main(): Promise<void> {
   )
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error))
-  process.exitCode = 1
-})
+const isMainModule = import.meta.url === pathToFileURL(process.argv[1] ?? '').href
+
+if (isMainModule) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error))
+    process.exitCode = 1
+  })
+}

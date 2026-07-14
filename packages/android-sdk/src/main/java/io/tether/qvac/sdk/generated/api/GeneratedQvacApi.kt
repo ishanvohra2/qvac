@@ -120,8 +120,6 @@ data class VlaHparamsResponse(val payload: JSONObject = JSONObject())
 data class VlaRunRequest(val payload: JSONObject = JSONObject())
 data class VlaRunResponse(val payload: JSONObject = JSONObject())
 
-// NOTE: These are generated schema wrappers only.
-// The sample app still uses a separate ad-hoc IPC protocol.
 interface QvacGeneratedApiClient {
   fun batchCompletionStream(request: BatchCompletionStreamRequest): Flow<BatchCompletionStreamStreamEvent>
   suspend fun bciTranscribe(request: BciTranscribeRequest): BciTranscribeResponse

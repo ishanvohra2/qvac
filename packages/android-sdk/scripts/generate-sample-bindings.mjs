@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 const scriptDir = fileURLToPath(new URL('.', import.meta.url))
 const packageDir = path.resolve(scriptDir, '..')
@@ -8,7 +8,7 @@ const apiContractPath = path.join(packageDir, '../sdk/android/generated/api-cont
 const appJsPath = path.join(packageDir, 'sample-app/src/main/js/app.js')
 const bridgePath = path.join(packageDir, 'sample-app/src/main/java/io/tether/qvac/sample/BareQvacBridge.kt')
 
-function toCamelCase(value) {
+export function toCamelCase(value) {
   return value
     .replace(/[^a-zA-Z0-9]+/g, ' ')
     .trim()
@@ -20,7 +20,7 @@ function toCamelCase(value) {
     .join('')
 }
 
-function readMarkerRange(content, startMarker, endMarker) {
+export function readMarkerRange(content, startMarker, endMarker) {
   const start = content.indexOf(startMarker)
   const end = content.indexOf(endMarker)
   if (start === -1 || end === -1 || end <= start) {
@@ -29,14 +29,14 @@ function readMarkerRange(content, startMarker, endMarker) {
   return { start, end }
 }
 
-function replaceMarkerBlock(content, startMarker, endMarker, generatedInner) {
+export function replaceMarkerBlock(content, startMarker, endMarker, generatedInner) {
   const { start, end } = readMarkerRange(content, startMarker, endMarker)
   const before = content.slice(0, start + startMarker.length)
   const after = content.slice(end)
   return `${before}\n${generatedInner}\n${after}`
 }
 
-function renderOperationsBlock(operations) {
+export function renderOperationsBlock(operations) {
   const lines = ['const CONTRACT_OPERATIONS = [']
   for (const operation of operations) {
     lines.push(`  '${operation}',`)
@@ -45,7 +45,7 @@ function renderOperationsBlock(operations) {
   return lines.join('\n')
 }
 
-function renderDispatchBlock(operations) {
+export function renderDispatchBlock(operations) {
   const byOperation = {
     heartbeat: [
       "if (msg.action === 'heartbeat') {",
@@ -152,7 +152,7 @@ function renderDispatchBlock(operations) {
   return lines.map((line) => `    ${line}`).join('\n')
 }
 
-function renderKotlinClientBlock(entries) {
+export function renderKotlinClientBlock(entries) {
   const lines = []
   for (const entry of entries) {
     const methodName = entry.operation === 'suspend' ? 'suspendOperation' : toCamelCase(entry.operation)
@@ -238,7 +238,11 @@ async function main() {
   )
 }
 
-main().catch((error) => {
-  console.error(error)
-  process.exitCode = 1
-})
+const isMainModule = import.meta.url === pathToFileURL(process.argv[1] ?? '').href
+
+if (isMainModule) {
+  main().catch((error) => {
+    console.error(error)
+    process.exitCode = 1
+  })
+}

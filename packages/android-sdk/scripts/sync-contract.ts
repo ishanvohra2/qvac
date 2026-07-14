@@ -95,7 +95,7 @@ async function syncPackageVersion(checkOnly: boolean): Promise<boolean> {
   return true
 }
 
-async function runBindingsGenerator(checkOnly: boolean): Promise<number> {
+async function runBindingsGenerator(checkOnly: boolean): Promise<boolean> {
   const args = [generateBindingsScriptPath]
   if (checkOnly) {
     args.push('--check')
@@ -105,12 +105,17 @@ async function runBindingsGenerator(checkOnly: boolean): Promise<number> {
     child.on('error', reject)
     child.on('close', (code) => {
       if (code === 0) {
-        resolve(0)
-      } else if (code === 1) {
-        resolve(1)
-      } else {
-        reject(new Error(`Bindings generator exited with code ${code ?? 'unknown'}`))
+        resolve(false)
+        return
       }
+      // In --check mode exit code 1 signals drift (files need regenerating), not a
+      // failure. In write mode the generator only exits non-zero on a real error, so
+      // any non-zero code must surface instead of being counted as a synced file.
+      if (checkOnly && code === 1) {
+        resolve(true)
+        return
+      }
+      reject(new Error(`Bindings generator exited with code ${code ?? 'unknown'}`))
     })
   })
 }
@@ -134,8 +139,8 @@ async function main(): Promise<void> {
   if (versionChanged) {
     changedCount += 1
   }
-  const bindingsStatus = await runBindingsGenerator(checkOnly)
-  if (bindingsStatus === 1) {
+  const bindingsChanged = await runBindingsGenerator(checkOnly)
+  if (bindingsChanged) {
     changedCount += 1
   }
 

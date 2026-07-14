@@ -3,21 +3,22 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { models } from '@/models/registry/models'
 import {
+  buildCapabilities,
+  buildModelConstants,
   collectApiOperationsFromSources,
   collectDependencies,
-  toCamelCase,
-  toPascalCase
+  mergeRegistryOperations,
+  toGradleVersionCatalog,
+  toKotlinApi
 } from './generate-utils'
 import {
   androidManifestSourceSchema,
   generatedAndroidManifestSchema,
-  generatedModelConstantSchema,
   type AndroidManifestSource,
   type GeneratedAddonCapability,
   type GeneratedApiOperation,
   type GeneratedAndroidManifest,
-  type GeneratedDependency,
-  type GeneratedModelConstant
+  type GeneratedDependency
 } from './types'
 
 type PackageJson = {
@@ -51,43 +52,6 @@ async function readJsonFile<T>(filePath: string): Promise<T> {
   return JSON.parse(content) as T
 }
 
-function collectCapabilities(source: AndroidManifestSource): GeneratedAddonCapability[] {
-  type AddonPolicyMap = AndroidManifestSource['addonPolicy']
-  type AddonPolicyKey = Extract<keyof AddonPolicyMap, string>
-
-  const engineSetByAddon = new Map<string, Set<string>>()
-  const countByAddon = new Map<string, number>()
-
-  for (const model of models) {
-    const addon = model.addon
-    const engine = model.engine
-    const existingSet = engineSetByAddon.get(addon) ?? new Set<string>()
-    existingSet.add(engine)
-    engineSetByAddon.set(addon, existingSet)
-    const currentCount = countByAddon.get(addon) ?? 0
-    countByAddon.set(addon, currentCount + 1)
-  }
-
-  const capabilities: GeneratedAddonCapability[] = []
-  const addonKeys = (Object.keys(source.addonPolicy) as AddonPolicyKey[]).sort((a, b) =>
-    a.localeCompare(b)
-  )
-  for (const addon of addonKeys) {
-    const policy = source.addonPolicy[addon]
-    if (!policy) continue
-    const engines = Array.from(engineSetByAddon.get(addon) ?? []).sort((a, b) => a.localeCompare(b))
-    capabilities.push({
-      addon,
-      androidSupported: policy.androidSupported,
-      fallbackBehavior: policy.fallbackBehavior,
-      engines,
-      modelCount: countByAddon.get(addon) ?? 0
-    })
-  }
-
-  return capabilities
-}
-
 function createGeneratedManifest(
   packageJson: PackageJson,
   source: AndroidManifestSource,
@@ -109,27 +73,6 @@ function createGeneratedManifest(
   }
 }
 
-function collectModelConstants(): GeneratedModelConstant[] {
-  const constants: GeneratedModelConstant[] = []
-  for (const model of models) {
-    const parsed = generatedModelConstantSchema.parse({
-      name: model.name,
-      src: `registry://${model.registrySource}/${model.registryPath}`,
-      modelId: model.modelId,
-      registryPath: model.registryPath,
-      registrySource: model.registrySource,
-      addon: model.addon,
-      engine: model.engine,
-      quantization: model.quantization,
-      params: model.params
-    })
-    constants.push(parsed)
-  }
-
-  constants.sort((a, b) => a.name.localeCompare(b.name))
-  return constants
-}
-
 async function collectApiOperations(): Promise<GeneratedApiOperation[]> {
   const fileNames = (await fs.readdir(schemasDir)).filter((name) => name.endsWith('.ts')).sort()
   const sourceFiles: Array<{ fileName: string; content: string }> = []
@@ -143,127 +86,8 @@ async function collectApiOperations(): Promise<GeneratedApiOperation[]> {
   }
 
   const fromSchemas = collectApiOperationsFromSources(sourceFiles)
-  const byOperation = new Map(fromSchemas.map((entry) => [entry.operation, entry]))
   const registrySource = await fs.readFile(handlerRegistryPath, 'utf8')
-  const registryOperationPattern = /^\s*([A-Za-z0-9_]+):\s*\{\s*type:\s*'([^']+)'/gm
-  let match: RegExpExecArray | null
-  while ((match = registryOperationPattern.exec(registrySource)) !== null) {
-    const operation = match[1]!
-    const handlerType = match[2]!
-    if (byOperation.has(operation)) continue
-    const streaming = handlerType === 'stream' || handlerType === 'duplex'
-    const baseName = toPascalCase(operation)
-    byOperation.set(
-      operation,
-      {
-        operation,
-        requestSchema: `${toCamelCase(operation)}RequestSchema`,
-        responseSchema: streaming
-          ? `${toCamelCase(operation)}StreamResponseSchema`
-          : `${toCamelCase(operation)}ResponseSchema`,
-        requestTypeName: `${baseName}Request`,
-        responseTypeName: `${baseName}${streaming ? 'StreamEvent' : 'Response'}`,
-        streaming,
-        sourceFile: 'handler-registry.ts'
-      }
-    )
-  }
-  const merged = Array.from(byOperation.values()).sort((a, b) => a.operation.localeCompare(b.operation))
-  return merged
-}
-
-function toKotlinApi(operations: GeneratedApiOperation[]): string {
-  const kotlinReservedNames = new Set([
-    'as', 'break', 'class', 'continue', 'do', 'else', 'false', 'for', 'fun', 'if', 'in',
-    'interface', 'is', 'null', 'object', 'package', 'return', 'super', 'this', 'throw',
-    'true', 'try', 'typealias', 'typeof', 'val', 'var', 'when', 'while', 'by', 'catch',
-    'constructor', 'delegate', 'dynamic', 'field', 'file', 'finally', 'get', 'import',
-    'init', 'param', 'property', 'receiver', 'set', 'setparam', 'where', 'actual',
-    'abstract', 'annotation', 'companion', 'const', 'crossinline', 'data', 'enum',
-    'expect', 'external', 'final', 'infix', 'inline', 'inner', 'internal', 'lateinit',
-    'noinline', 'open', 'operator', 'out', 'override', 'private', 'protected', 'public',
-    'reified', 'sealed', 'suspend', 'tailrec', 'vararg', 'yield'
-  ])
-  function toKotlinFunctionName(operation: string): string {
-    const candidate = toCamelCase(operation)
-    if (!kotlinReservedNames.has(candidate)) return candidate
-    return `${candidate}Operation`
-  }
-
-  const lines: string[] = []
-  lines.push('// AUTO-GENERATED BY scripts/android/generate.ts')
-  lines.push('// DO NOT MODIFY MANUALLY')
-  lines.push('')
-  lines.push('package io.tether.qvac.sdk.generated.api')
-  lines.push('')
-  lines.push('import kotlinx.coroutines.flow.Flow')
-  lines.push('import org.json.JSONObject')
-  lines.push('')
-
-  for (const operation of operations) {
-    lines.push(`data class ${operation.requestTypeName}(val payload: JSONObject = JSONObject())`)
-    if (operation.streaming) {
-      lines.push(`data class ${operation.responseTypeName}(val payload: JSONObject = JSONObject())`)
-    } else {
-      lines.push(`data class ${operation.responseTypeName}(val payload: JSONObject = JSONObject())`)
-    }
-    lines.push('')
-  }
-
-  lines.push('// NOTE: These are generated schema wrappers only.')
-  lines.push('// The sample app still uses a separate ad-hoc IPC protocol.')
-  lines.push('interface QvacGeneratedApiClient {')
-  for (const operation of operations) {
-    const functionName = toKotlinFunctionName(operation.operation)
-    if (operation.streaming) {
-      lines.push(
-        `  fun ${functionName}(request: ${operation.requestTypeName}): Flow<${operation.responseTypeName}>`
-      )
-    } else {
-      lines.push(
-        `  suspend fun ${functionName}(request: ${operation.requestTypeName}): ${operation.responseTypeName}`
-      )
-    }
-  }
-  lines.push('}')
-  lines.push('')
-  lines.push('object QvacGeneratedApiContract {')
-  lines.push('  val operations: List<String> = listOf(')
-  for (const operation of operations) {
-    lines.push(`    "${operation.operation}",`)
-  }
-  lines.push('  )')
-  lines.push('}')
-  lines.push('')
-
-  return `${lines.join('\n')}\n`
-}
-
-function sanitizeTomlKey(value: string): string {
-  return value.replace(/[^a-zA-Z0-9]/g, '_')
-}
-
-function toGradleVersionCatalog(
-  dependencies: GeneratedDependency[],
-  manifest: GeneratedAndroidManifest
-): string {
-  const lines: string[] = []
-  lines.push('# AUTO-GENERATED BY scripts/android/generate.ts')
-  lines.push('# DO NOT MODIFY MANUALLY')
-  lines.push('')
-  lines.push('[versions]')
-  lines.push(`qvac_sdk = "${manifest.sdk.version}"`)
-  for (const dependency of dependencies) {
-    lines.push(`${sanitizeTomlKey(dependency.packageName)} = "${dependency.version}"`)
-  }
-  lines.push('')
-  lines.push('[libraries]')
-  for (const dependency of dependencies) {
-    const key = sanitizeTomlKey(dependency.packageName)
-    lines.push(`${key} = { module = "${dependency.packageName}", version.ref = "${key}" }`)
-  }
-  lines.push('')
-  return `${lines.join('\n')}\n`
+  return mergeRegistryOperations(fromSchemas, registrySource)
 }
 
 function toKotlinInfo(manifest: GeneratedAndroidManifest): string {
@@ -333,11 +157,11 @@ async function main(): Promise<void> {
   }
 
   const dependencies = collectDependencies(packageJson, source)
-  const capabilities = collectCapabilities(source)
+  const capabilities = buildCapabilities(source, models)
   const generatedManifest = generatedAndroidManifestSchema.parse(
     createGeneratedManifest(packageJson, source, dependencies, capabilities)
   )
-  const modelConstants = collectModelConstants()
+  const modelConstants = buildModelConstants(models)
   const apiOperations = await collectApiOperations()
 
   const manifestJson = `${JSON.stringify(generatedManifest, null, 2)}\n`

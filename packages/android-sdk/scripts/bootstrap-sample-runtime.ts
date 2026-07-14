@@ -3,7 +3,7 @@ import { createReadStream } from 'fs'
 import path from 'path'
 import { spawn } from 'child_process'
 import { createHash } from 'crypto'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 type BootstrapMetadata = {
   repo: string
@@ -63,7 +63,7 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
   })
 }
 
-function normalizeDigest(value: string): string {
+export function normalizeDigest(value: string): string {
   return value.replace(/^sha256:/i, '').toLowerCase()
 }
 
@@ -201,7 +201,11 @@ async function main(): Promise<void> {
   await bootstrapRuntime()
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error))
-  process.exitCode = 1
-})
+const isMainModule = import.meta.url === pathToFileURL(process.argv[1] ?? '').href
+
+if (isMainModule) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error))
+    process.exitCode = 1
+  })
+}

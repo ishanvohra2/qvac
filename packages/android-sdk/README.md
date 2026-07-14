@@ -94,8 +94,8 @@ The sample app demonstrates the Android integration pattern used by host apps:
 
 ### Generated API contract status
 
-`GeneratedQvacApi.kt` is schema-derived contract metadata and typed wrappers.
-The sample app IPC bridge (`BareQvacBridge.kt` + `app.js`) now routes inference calls through generated contract operations (`pluginInvoke`, `pluginInvokeStream`, `heartbeat`, lifecycle/model-registry methods).
+`GeneratedQvacApi.kt` contains schema-derived contract metadata and typed wrappers only; it does not define the transport. The sample app still uses a separate ad-hoc JSON IPC protocol to talk to the worklet bundle.
+The sample app IPC bridge (`BareQvacBridge.kt` + `app.js`) routes inference calls through generated contract operations (`pluginInvoke`, `pluginInvokeStream`, `heartbeat`, lifecycle/model-registry methods).
 `loadModel` remains an explicit bootstrap action because model loading lives outside the currently generated Android API contract.
 
 ### Kotlin usage pattern
