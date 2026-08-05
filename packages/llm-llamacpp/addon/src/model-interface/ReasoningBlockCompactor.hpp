@@ -81,13 +81,15 @@ public:
   [[nodiscard]] bool hasOpenSpan() const noexcept {
     return thinkSpan_.has_value();
   }
+  [[nodiscard]] bool hasCapturedCloseSpan() const noexcept {
+    return thinkSpan_.has_value() && thinkSpan_->second >= 0;
+  }
   // Test accessor: true when a span has been opened AND its close
   // position has been committed (i.e. the `requestCloseCapture()` →
-  // `onCloseCommitted()` handshake completed). Unit-test seam for the
-  // close-capture contract; production callers should not key off the
-  // close-position directly — `compact()` is the only consumer.
+  // `onCloseCommitted()` handshake completed). Kept for compatibility
+  // with unit tests; production code should use `hasCapturedCloseSpan()`.
   [[nodiscard]] bool hasCapturedCloseSpanForTesting() const noexcept {
-    return thinkSpan_.has_value() && thinkSpan_->second >= 0;
+    return hasCapturedCloseSpan();
   }
   void clearSpan() noexcept {
     thinkSpan_.reset();
@@ -230,11 +232,10 @@ public:
   // `qvac_errors::StatusError(FailedToDecode, outcome.failureMessage)`
   // (or an equivalent) once the local rollback above has run.
   //
-  // Under the default-on `remove_thinking_from_context` contract,
-  // there is no soft-failure return: any inability to remove the
-  // reasoning span from cache surfaces to the caller as one of the
-  // two `Failed*` outcomes above, and the caller is required to
-  // surface it as an exception.
+  // When `remove_thinking_from_context` is enabled, there is no soft-failure
+  // return: any inability to remove the reasoning span from cache surfaces to
+  // the caller as one of the two `Failed*` outcomes above, and the caller is
+  // required to surface it as an exception.
   struct Outcome {
     enum class Kind {
       // Feature off, no span captured, degenerate span, or the live cursor is
@@ -326,11 +327,9 @@ private:
   llama_pos slideInvalidatedPos_ = 0;
   llama_pos slideInvalidatedDiscarded_ = 0;
 
-  // Default-on: mirrors the owning LlmContext's default. The owner
-  // syncs this via `setRemoveThinkingFromContext` whenever a request
-  // explicitly opts out (or opts back in), so the class-member value
-  // only matters at construction time before the first request.
-  bool removeThinkingFromContext_ = true;
+  // Default-off: mirrors the owning LlmContext's default. The owner syncs
+  // this during initialization and whenever a request overrides it.
+  bool removeThinkingFromContext_ = false;
   bool reasoningEnabled_ = false;
   bool needsRecurrentSnapshot_ = false;
 

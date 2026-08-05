@@ -78,6 +78,7 @@ const IMAGE_CASES = {
   }
 }
 
+// prestage-set: vlm-perf-gemma4
 const GEMMA4_MODEL = {
   perfLabel: 'gemma4-vl',
   llmModel: {
@@ -85,10 +86,14 @@ const GEMMA4_MODEL = {
     downloadUrl:
       'https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/google_gemma-4-E2B-it-Q4_K_M.gguf'
   },
+  // f16 projector, not bf16: the Adreno OpenCL backend has no bf16 kernels, so
+  // the bf16 mmproj aborts in ggml_cl_compute_forward now that the projector
+  // auto-defaults to GPU on Adreno 800+ (QVAC-21867). f16 covers bf16's value
+  // range for these weights and runs on every backend.
   projModel: {
-    modelName: 'mmproj-google_gemma-4-E2B-it-bf16.gguf',
+    modelName: 'mmproj-google_gemma-4-E2B-it-f16.gguf',
     downloadUrl:
-      'https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/mmproj-google_gemma-4-E2B-it-bf16.gguf'
+      'https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/mmproj-google_gemma-4-E2B-it-f16.gguf'
   },
   // ubatch 320 keeps Gemma 4's Metal compute buffer under the iPhone Jetsam
   // ceiling; reasoning-budget 0 suppresses CoT so a one-sentence answer fits.
@@ -96,6 +101,7 @@ const GEMMA4_MODEL = {
   ctxFor: (imageCase) => imageCase.gemmaCtxSize
 }
 
+// prestage-set: vlm-perf-qwen35
 const QWEN35_MODEL = {
   perfLabel: 'qwen3.5-vl',
   llmModel: {
@@ -157,7 +163,9 @@ async function runVlmImagePerf(t, modelDef, imageCase) {
   async function runImageInference(imageBytes) {
     const messages = [
       { role: 'user', type: 'media', content: imageBytes },
-      { role: 'user', content: 'Describe the image briefly in one sentence.' }
+      // Most VLMs answer a generic caption prompt; OCR models (e.g. Unlimited-OCR)
+      // need their own task prompt, so a case can override it.
+      { role: 'user', content: imageCase.prompt || 'Describe the image briefly in one sentence.' }
     ]
     const startTime = Date.now()
     const response = await inference.run(messages)

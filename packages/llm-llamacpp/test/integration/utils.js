@@ -4,6 +4,7 @@ const path = require('bare-path')
 const https = require('bare-https')
 const os = require('bare-os')
 const process = require('bare-process')
+const crypto = require('bare-crypto')
 
 const TRANSIENT_ERROR_CODES = new Set([
   // DNS / name resolution
@@ -245,6 +246,163 @@ async function downloadFileWithRetries(urls, dest, opts = {}) {
   }
 }
 
+const DEFAULT_MANIFEST_PATH = path.resolve(__dirname, 'models.manifest.json')
+let _manifestCache
+
+// Loads and caches the model manifest (single source of truth for model URLs +
+// sha256/bytes integrity). The default manifest is mandatory so packaging or
+// parsing errors cannot silently disable integrity checks.
+//
+// The default path is loaded via a literal require() rather than fs.readFileSync.
+// Mobile builds pack this file into a single bundle via bare-pack, which follows
+// static require()/import calls. A dynamic fs.readFileSync call is invisible to
+// that traversal and drops the manifest from the bundle, so model lookup fails
+// on-device even though the file was present at build time.
+function validateManifest(manifest, source) {
+  if (!manifest || typeof manifest !== 'object' || !manifest.models) {
+    throw new Error(`Required model manifest is invalid (${source}): missing models object`)
+  }
+  return manifest
+}
+
+function loadManifest(manifestPath = DEFAULT_MANIFEST_PATH) {
+  if (manifestPath === DEFAULT_MANIFEST_PATH) {
+    if (_manifestCache !== undefined) return _manifestCache
+    try {
+      _manifestCache = validateManifest(
+        require('./models.manifest.json'),
+        'test/integration/models.manifest.json'
+      )
+    } catch (err) {
+      throw new Error(`Failed to load required model manifest: ${err.message}`)
+    }
+    return _manifestCache
+  }
+  try {
+    return validateManifest(JSON.parse(fs.readFileSync(manifestPath, 'utf8')), manifestPath)
+  } catch (err) {
+    throw new Error(`Failed to load required model manifest "${manifestPath}": ${err.message}`)
+  }
+}
+
+function resolveModelEntry(modelName, { manifest } = {}) {
+  const m = manifest !== undefined ? manifest : loadManifest()
+  validateManifest(m, manifest !== undefined ? 'explicit manifest override' : 'default manifest')
+  const entry = m.models[modelName]
+  if (!entry) {
+    throw new Error(`Model "${modelName}" is missing from required models.manifest.json`)
+  }
+  if (!Array.isArray(entry.urls) || entry.urls.length === 0) {
+    throw new Error(`Model "${modelName}" has no source URL in models.manifest.json`)
+  }
+  if (typeof entry.sha256 !== 'string' || !/^[0-9a-f]{64}$/i.test(entry.sha256)) {
+    throw new Error(`Model "${modelName}" has no valid SHA-256 pin in models.manifest.json`)
+  }
+  if (!Number.isInteger(entry.bytes) || entry.bytes <= 0) {
+    throw new Error(`Model "${modelName}" has no valid byte-size pin in models.manifest.json`)
+  }
+  return entry
+}
+
+// Streaming sha256 via the package's direct bare-crypto dependency.
+async function sha256File(filePath) {
+  return await new Promise((resolve, reject) => {
+    const hash = crypto.createHash('sha256')
+    const stream = fs.createReadStream(filePath)
+    stream.on('data', (chunk) => hash.update(chunk))
+    stream.on('error', reject)
+    stream.on('end', () => resolve(hash.digest('hex').toLowerCase()))
+  })
+}
+
+// Verifies a model file against a manifest entry. Byte-length is checked first
+// (cheap) so a size mismatch fails fast before hashing a multi-GB file.
+// { ok: true } when it passes (or when no integrity value is pinned yet).
+async function verifyModelFile(filePath, entry, hashFile = sha256File) {
+  let stats
+  try {
+    stats = fs.statSync(filePath)
+  } catch (err) {
+    return { ok: false, reason: `stat failed: ${err.message}` }
+  }
+  if (stats.size === 0) return { ok: false, reason: 'zero-byte file' }
+
+  if (entry && Number.isInteger(entry.bytes) && stats.size !== entry.bytes) {
+    return { ok: false, reason: `size ${stats.size} != expected ${entry.bytes}` }
+  }
+
+  const hasSha = entry && typeof entry.sha256 === 'string' && entry.sha256.length === 64
+  if (hasSha) {
+    let got
+    try {
+      got = await hashFile(filePath)
+    } catch (err) {
+      return { ok: false, reason: `sha256 failed: ${err.message}` }
+    }
+    if (typeof got !== 'string' || !/^[0-9a-f]{64}$/i.test(got)) {
+      return { ok: false, reason: 'sha256 failed: no valid digest returned' }
+    }
+    if (got !== entry.sha256.toLowerCase()) {
+      return { ok: false, reason: `sha256 ${got} != expected ${entry.sha256}` }
+    }
+    return { ok: true }
+  }
+
+  return { ok: true, skipped: true }
+}
+
+const _verificationCache = new Map()
+
+function verificationKey(filePath, entry) {
+  const stats = fs.statSync(filePath)
+  const mtimeMs =
+    typeof stats.mtimeMs === 'number'
+      ? stats.mtimeMs
+      : stats.mtime && typeof stats.mtime.getTime === 'function'
+        ? stats.mtime.getTime()
+        : 0
+  return [
+    filePath,
+    stats.dev,
+    stats.ino,
+    stats.size,
+    mtimeMs,
+    entry.sha256.toLowerCase(),
+    entry.bytes
+  ].join(':')
+}
+
+async function verifyModelFileOnce(filePath, entry, hashFile = sha256File) {
+  let key
+  try {
+    key = verificationKey(filePath, entry)
+  } catch (err) {
+    return { ok: false, reason: `stat failed: ${err.message}` }
+  }
+
+  let verification = _verificationCache.get(key)
+  if (!verification) {
+    verification = verifyModelFile(filePath, entry, hashFile)
+    _verificationCache.set(key, verification)
+  }
+  const result = await verification
+  if (!result.ok) _verificationCache.delete(key)
+  return result
+}
+
+function resetVerificationCache() {
+  _verificationCache.clear()
+}
+
+// Counts real download attempts so warm-vs-cold behaviour is unit-testable.
+let _downloadCount = 0
+function getDownloadCount() {
+  return _downloadCount
+}
+function resetDownloadCount() {
+  _downloadCount = 0
+}
+
 // Android Device Farm pre-staging: the device's network to huggingface.co is
 // unreliable (~40% of downloads fail even with retries), but the Device Farm
 // HOST has solid network. The test-spec pre_test phase downloads each model on
@@ -267,17 +425,44 @@ function prestagedModelDir(modelName) {
   return null
 }
 
-async function ensureModel({ modelName, downloadUrl }) {
+async function copyPrestagedModel({ stagedDir, modelName, modelPath, entry }) {
+  fs.copyFileSync(path.join(stagedDir, modelName), modelPath)
+  const res = await verifyModelFileOnce(modelPath, entry)
+  if (!res.ok) {
+    try {
+      fs.unlinkSync(modelPath)
+    } catch (_) {}
+    throw new Error(`[prestage] copied model ${modelName} failed integrity: ${res.reason}`)
+  }
+}
+
+// The standalone default modelDir assignment is patched by the mobile test
+// packager to point at a writable app directory. Keep this shape stable.
+async function ensureModel({ modelName, modelDir: modelDirOverride, manifest, download } = {}) {
   const modelDir = path.resolve(__dirname, '../model')
-  const modelPath = path.join(modelDir, modelName)
+  const dir = modelDirOverride || modelDir
+  const modelPath = path.join(dir, modelName)
+
+  // Model URL + sha256/bytes come exclusively from models.manifest.json (by
+  // modelName). The manifest is also the cache key for
+  // .github/actions/cache-models. `modelDir`, `manifest`, and `download`
+  // overrides exist for unit testing, but still require a fully pinned entry.
+  const entry = resolveModelEntry(modelName, manifest !== undefined ? { manifest } : {})
+  const doDownload = download || downloadFileWithRetries
+  const urls = entry.urls
 
   if (fs.existsSync(modelPath)) {
-    const stat = fs.statSync(modelPath)
-    if (stat.size > 0) {
-      return [modelName, modelDir]
+    const res = await verifyModelFileOnce(modelPath, entry)
+    if (res.ok) {
+      console.log(`[download] ${modelName}: cached copy verified, skipping download`)
+      return [modelName, dir]
     }
-    console.log(`[download] Removing zero-byte cached file: ${modelName}`)
-    fs.unlinkSync(modelPath)
+    console.log(
+      `[download] ${modelName}: cached copy failed integrity (${res.reason}); deleting and re-downloading`
+    )
+    try {
+      fs.unlinkSync(modelPath)
+    } catch (_) {}
   }
 
   // Pre-staged path: copy the host-staged model from the read-only staging dir
@@ -288,30 +473,41 @@ async function ensureModel({ modelName, downloadUrl }) {
   // fail if we returned the read-only /data/local/tmp staging dir directly.
   const staged = prestagedModelDir(modelName)
   if (staged) {
-    fs.mkdirSync(modelDir, { recursive: true })
+    fs.mkdirSync(dir, { recursive: true })
     console.log(`[prestage] Using pre-staged model ${modelName} (copying into writable modelDir)`)
-    fs.copyFileSync(path.join(staged, modelName), modelPath)
-    const stat = fs.statSync(modelPath)
-    if (stat.size === 0) {
-      fs.unlinkSync(modelPath)
-      throw new Error(`[prestage] copied model ${modelName} is empty`)
-    }
-    return [modelName, modelDir]
+    await copyPrestagedModel({ stagedDir: staged, modelName, modelPath, entry })
+    return [modelName, dir]
   }
 
-  fs.mkdirSync(modelDir, { recursive: true })
+  fs.mkdirSync(dir, { recursive: true })
   console.log(`[download] Downloading test model ${modelName}...`)
+  _downloadCount++
 
-  await downloadFileWithRetries(downloadUrl, modelPath)
+  await doDownload(urls, modelPath, { retries: 6 })
+
+  const res = await verifyModelFileOnce(modelPath, entry)
+  if (!res.ok) {
+    try {
+      fs.unlinkSync(modelPath)
+    } catch (_) {}
+    throw new Error(
+      `[download] ${modelName}: freshly downloaded file failed integrity: ${res.reason}`
+    )
+  }
 
   const stat = fs.statSync(modelPath)
   console.log(`[download] Model ready: ${(stat.size / 1024 / 1024).toFixed(1)}MB`)
-  return [modelName, modelDir]
+  return [modelName, dir]
 }
 
-async function ensureModelPath({ modelName, downloadUrl }) {
-  const [downloadedModelName, modelDir] = await ensureModel({ modelName, downloadUrl })
-  return path.join(modelDir, downloadedModelName)
+async function ensureModelPath({ modelName, modelDir, manifest, download } = {}) {
+  const [downloadedModelName, resolvedDir] = await ensureModel({
+    modelName,
+    modelDir,
+    manifest,
+    download
+  })
+  return path.join(resolvedDir, downloadedModelName)
 }
 
 /**
@@ -589,12 +785,20 @@ function setupParams(modelDir, overrides = {}) {
   const { testId = 'pause-resume', datasetSize, ...finetuneOverrides } = overrides
   const trainDatasetPath = path.join(modelDir, `train_${testId}.jsonl`)
   const checkpointDir = path.join(modelDir, `test_${testId}`)
+  // Scope the LoRA-adapter output dir per testId and wipe it up front. It was
+  // previously a single shared `finetune-output/` dir, so back-to-back finetunes
+  // (e.g. the two models in the archs loop, or a prior run on a persistent
+  // runner) wrote to the same path — a finetune that failed to produce an
+  // adapter would leave the previous run's `trained-lora-adapter.gguf` for the
+  // inference phase to load, yielding a spurious pass or a confusing failure.
+  const outputParametersDir = path.resolve(modelDir, `finetune-output_${testId}`)
   createPauseResumeTestDataset(trainDatasetPath, datasetSize)
   cleanupCheckpoints(checkpointDir)
+  cleanupCheckpoints(outputParametersDir)
 
   return {
     trainDatasetDir: trainDatasetPath,
-    outputParametersDir: path.resolve(modelDir, 'finetune-output'),
+    outputParametersDir,
     learningRate: 1e-5,
     lrMin: 1e-8,
     loraModules: 'attn_q,attn_k,attn_v,attn_o',
@@ -720,6 +924,94 @@ async function verifyFinalStatus(t, model, result = null) {
   t.ok(result, 'Result must be provided')
 }
 
+// Assert a finetune stat is a finite number IF present. Only null/undefined
+// counts as "absent" — a NaN value must FAIL. NaN is the exact symptom of a
+// broken backward op (the reason these finetune suites exist), so we must NOT
+// early-return on it as an earlier version did (which hid regressions).
+function assertFiniteMetricIfPresent(t, stats, key, id) {
+  const v = stats?.[key]
+  if (v == null) return
+  t.is(typeof v, 'number', `[${id}] ${key} should be a number when present`)
+  t.ok(Number.isFinite(v), `[${id}] ${key} should be finite (not NaN/Inf), got: ${v}`)
+}
+
+// Resolve once a finetune handle has emitted at least `minSteps` progress
+// events; reject on timeout. Used by suites that pause/resume mid-training.
+function waitForProgress(handle, minSteps = 2, timeoutMs = 600_000) {
+  return new Promise((resolve, reject) => {
+    let count = 0
+    const timer = setTimeout(() => {
+      handle.removeListener('stats', onStats)
+      reject(
+        new Error(
+          `waitForProgress: no progress after ${timeoutMs}ms (received ${count}/${minSteps} steps)`
+        )
+      )
+    }, timeoutMs)
+    const onStats = () => {
+      if (++count >= minSteps) {
+        clearTimeout(timer)
+        handle.removeListener('stats', onStats)
+        resolve()
+      }
+    }
+    handle.on('stats', onStats)
+  })
+}
+
+// Load a base model with a trained LoRA adapter and run a short generation to
+// confirm the adapter is usable. Single source of truth for what were three
+// copy-pasted copies (archs / moe / pause-resume finetune suites). The only real
+// differences between them were `gpuLayers` — MoE uses partial offload, the
+// dense suites use full '999' — and whether inference stats are logged.
+async function runLoraInference(
+  t,
+  { id, modelPath, loraAdapterPath, gpuLayers = '999', forceCpuDevice = false, logStats = false }
+) {
+  // Required lazily so merely importing utils.js (e.g. from a manifest script)
+  // does not eagerly load the native addon — only callers that run inference do.
+  const LlmLlamacpp = require('./../../index.js')
+  // Guard: the adapter must exist before we try to verify it. A soft-failed
+  // COMPLETED assertion does not abort the test (safeTest only catches throws),
+  // so without this a missing/stale adapter would be silently loaded — fail loud.
+  t.ok(
+    fs.existsSync(loraAdapterPath),
+    `[${id}] trained LoRA adapter must exist at ${loraAdapterPath}`
+  )
+  t.comment(`[${id}] Running inference with LoRA adapter: ${loraAdapterPath}`)
+  const inferModel = new LlmLlamacpp({
+    files: { model: [modelPath] },
+    config: {
+      gpu_layers: gpuLayers,
+      ctx_size: '512',
+      device: forceCpuDevice ? 'cpu' : 'gpu',
+      predict: '32',
+      lora: loraAdapterPath
+    },
+    logger: console,
+    opts: { stats: true }
+  })
+  try {
+    await inferModel.load()
+    const response = await inferModel.run([{ role: 'user', content: 'Hello' }])
+    let generated = ''
+    await response
+      .onUpdate((token) => {
+        generated += token
+      })
+      .await()
+    t.ok(generated.length > 0, `[${id}] LoRA inference should produce output`)
+    t.comment(
+      `[${id}] LoRA inference output (${generated.length} chars): ${generated.slice(0, 100)}`
+    )
+    if (logStats) {
+      t.comment(`[${id}] LoRA inference stats: ${JSON.stringify(response.stats)}`)
+    }
+  } finally {
+    await inferModel.unload().catch(() => {})
+  }
+}
+
 const test = require('brittle')
 
 function safeTest(name, opts, fn) {
@@ -737,6 +1029,15 @@ module.exports = {
   cleanupIntegrationCacheFiles,
   ensureModel,
   ensureModelPath,
+  loadManifest,
+  resolveModelEntry,
+  verifyModelFile,
+  verifyModelFileOnce,
+  sha256File,
+  resetVerificationCache,
+  copyPrestagedModel,
+  getDownloadCount,
+  resetDownloadCount,
   getMediaPath,
   makeOutputCollector,
   getDefaultTextModel,
@@ -754,6 +1055,9 @@ module.exports = {
   verifyPauseCheckpoint,
   handleEarlyCompletion,
   verifyFinalStatus,
+  assertFiniteMetricIfPresent,
+  waitForProgress,
+  runLoraInference,
   safeTest,
   downloadFileWithRetries
 }

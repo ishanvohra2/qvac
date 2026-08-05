@@ -30,7 +30,7 @@ import { ModelLoadFailedError } from '@/utils/errors-server'
 import { isMobile } from '@/server/bare/registry/runtime-context-registry'
 import { stripMultiGpuKeys } from '@/server/utils/multi-gpu-mobile'
 import { diffusion } from './ops/diffusion'
-import { markLtxVideoModel, video } from './ops/video'
+import { markLtxVideoModel, markMoeCapableVideoModel, video } from './ops/video'
 import { upscale } from './ops/upscale'
 
 type DiffusionArtifactKey =
@@ -41,6 +41,7 @@ type DiffusionArtifactKey =
   | 'llmModelPath'
   | 'vaeModelPath'
   | 'highNoiseDiffusionModelPath'
+  | 'uncondModelPath'
   | 'audioVaeModelPath'
   | 'embeddingsConnectorsModelPath'
   | 'esrganModelPath'
@@ -96,6 +97,33 @@ export const diffusionPlugin = definePlugin({
     cfg: SdcppConfig,
     ctx: ResolveContext
   ): Promise<ResolveResult<SdcppConfig, DiffusionArtifactKey>> {
+    if (cfg.uncondModelSrc && cfg.mode !== 'diffusion') {
+      throw new ModelLoadFailedError(
+        'modelConfig.uncondModelSrc is Ideogram 4 diffusion only. ' +
+          "Use mode: 'diffusion' or remove uncondModelSrc."
+      )
+    }
+    if (cfg.uncondModelSrc && (!cfg.llmModelSrc || !cfg.vaeModelSrc)) {
+      throw new ModelLoadFailedError(
+        'modelConfig.uncondModelSrc selects the Ideogram 4 layout and requires ' +
+          'modelConfig.llmModelSrc (Qwen3-VL) and modelConfig.vaeModelSrc.'
+      )
+    }
+    // A high-noise expert only has somewhere to go in the Wan 2.2 A14B video
+    // layout: every other mode builds a model with no second-expert slot, and
+    // embeddingsConnectorsModelSrc selects LTX-2 instead. Check it ahead of the
+    // upscale early-return so a wrong layout fails loudly rather than
+    // downloading a multi-gigabyte expert and dropping it in createModel.
+    const isWan22MoeLayout = cfg.mode === 'video' && !cfg.embeddingsConnectorsModelSrc
+    if (cfg.highNoiseDiffusionModelSrc && !isWan22MoeLayout) {
+      throw new ModelLoadFailedError(
+        'modelConfig.highNoiseDiffusionModelSrc selects the Wan 2.2 A14B ' +
+          "mixture-of-experts video layout. It requires mode: 'video' and " +
+          'cannot be combined with modelConfig.embeddingsConnectorsModelSrc ' +
+          '(which selects the LTX-2 layout).'
+      )
+    }
+
     // Standalone-upscaler mode never references auxiliary models: the primary
     // modelSrc IS the ESRGAN file. Skip resolution to avoid downloading
     // unused encoders/VAEs and to keep load fast.
@@ -111,6 +139,7 @@ export const diffusionPlugin = definePlugin({
       llmModelSrc,
       vaeModelSrc,
       highNoiseDiffusionModelSrc,
+      uncondModelSrc,
       audioVaeModelSrc,
       embeddingsConnectorsModelSrc,
       upscaler,
@@ -153,6 +182,7 @@ export const diffusionPlugin = definePlugin({
       llmModelSrc,
       vaeModelSrc,
       highNoiseDiffusionModelSrc,
+      uncondModelSrc,
       audioVaeModelSrc,
       embeddingsConnectorsModelSrc,
       esrganModelSrc
@@ -172,6 +202,7 @@ export const diffusionPlugin = definePlugin({
       llmModelPath,
       vaeModelPath,
       highNoiseDiffusionModelPath,
+      uncondModelPath,
       audioVaeModelPath,
       embeddingsConnectorsModelPath,
       esrganModelPath
@@ -183,6 +214,7 @@ export const diffusionPlugin = definePlugin({
       llmModelSrc ? resolve(llmModelSrc) : undefined,
       vaeModelSrc ? resolve(vaeModelSrc) : undefined,
       highNoiseDiffusionModelSrc ? resolve(highNoiseDiffusionModelSrc) : undefined,
+      uncondModelSrc ? resolve(uncondModelSrc) : undefined,
       audioVaeModelSrc ? resolve(audioVaeModelSrc) : undefined,
       embeddingsConnectorsModelSrc ? resolve(embeddingsConnectorsModelSrc) : undefined,
       esrganModelSrc ? resolve(esrganModelSrc) : undefined
@@ -198,6 +230,7 @@ export const diffusionPlugin = definePlugin({
         ...(llmModelPath && { llmModelPath }),
         ...(vaeModelPath && { vaeModelPath }),
         ...(highNoiseDiffusionModelPath && { highNoiseDiffusionModelPath }),
+        ...(uncondModelPath && { uncondModelPath }),
         ...(audioVaeModelPath && { audioVaeModelPath }),
         ...(embeddingsConnectorsModelPath && { embeddingsConnectorsModelPath }),
         ...(esrganModelPath && { esrganModelPath })
@@ -314,6 +347,7 @@ export const diffusionPlugin = definePlugin({
         llmModelSrc,
         vaeModelSrc,
         highNoiseDiffusionModelSrc,
+        uncondModelSrc,
         audioVaeModelSrc,
         embeddingsConnectorsModelSrc,
         upscaler,
@@ -329,6 +363,7 @@ export const diffusionPlugin = definePlugin({
         opts: { stats: true }
       })
       if (embeddingsConnectorsModelPath) markLtxVideoModel(model)
+      if (files.highNoiseDiffusionModel) markMoeCapableVideoModel(model)
       return { model }
     }
 
@@ -339,6 +374,9 @@ export const diffusionPlugin = definePlugin({
       ...(artifacts?.['t5XxlModelPath'] && { t5Xxl: artifacts['t5XxlModelPath'] }),
       ...(artifacts?.['llmModelPath'] && { llm: artifacts['llmModelPath'] }),
       ...(artifacts?.['vaeModelPath'] && { vae: artifacts['vaeModelPath'] }),
+      ...(artifacts?.['uncondModelPath'] && {
+        uncondModel: artifacts['uncondModelPath']
+      }),
       ...(artifacts?.['esrganModelPath'] && { esrgan: artifacts['esrganModelPath'] })
     }
 

@@ -50,21 +50,26 @@ async function loadChatterboxTTS(params = {}) {
     config.useGPU = params.useGPU
   } else if (proc.env && proc.env.NO_GPU === 'true') {
     // Honour the workflow matrix's `no_gpu: 'true'` flag (which sets the
-    // NO_GPU env var on the job).  Defensive override -- as of tts-ggml
-    // 0.1.2 the addon's `index.js::_validateConfig` defaults Chatterbox
-    // to `useGPU = false`, so an unset value already lands on CPU, but
-    // pinning it here makes the no-GPU matrix entries' contract
-    // explicit at the test layer and survives any future flip back to
-    // an opt-out GPU default.
+    // NO_GPU env var on the job).  Defensive override -- the addon already
+    // defaults Chatterbox to `useGPU = false` when unset, so an unset value
+    // lands on CPU, but pinning it here makes the no-GPU matrix entries'
+    // contract explicit at the test layer and survives any future flip back
+    // to an opt-out GPU default.
     config.useGPU = false
   }
 
+  const files = {
+    modelDir,
+    t3Model: t3ModelPath,
+    s3genModel: s3genModelPath
+  }
+  // The enhancer / denoiser paths are the "on" switches for the LavaSR stages;
+  // only set them when a path was resolved so an unset value leaves the stage off.
+  if (params.lavasrEnhancerPath) files.lavasrEnhancer = params.lavasrEnhancerPath
+  if (params.lavasrDenoiserPath) files.lavasrDenoiser = params.lavasrDenoiserPath
+
   const model = new TTSGgml({
-    files: {
-      modelDir,
-      t3Model: t3ModelPath,
-      s3genModel: s3genModelPath
-    },
+    files,
     referenceAudio: refWavPath,
     voiceDir: params.voiceDir,
     seed: params.seed,

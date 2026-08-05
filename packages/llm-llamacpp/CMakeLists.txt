@@ -39,7 +39,7 @@ find_package(OpenSSL)
 find_package(llama CONFIG REQUIRED)
 # Required to call llama.cpp's `json_schema_to_grammar()` for per-request
 # JSON-Schema → GBNF conversion. The function signature lives in libcommon
-# (linked via `llama::common`) but takes a `nlohmann::ordered_json`, so we
+# (linked via `llama::llama-common`) but takes a `nlohmann::ordered_json`, so we
 # need the full nlohmann headers, not just the forward decl shipped with
 # `llama/common/json-schema-to-grammar.h`.
 find_package(nlohmann_json CONFIG REQUIRED)
@@ -75,6 +75,10 @@ endif()
   )
 
   list(APPEND ADDON_SOURCES
+    ${PROJECT_SOURCE_DIR}/addon/src/handlers/LlmParsers.cpp
+    ${PROJECT_SOURCE_DIR}/addon/src/handlers/GenerationParamHandlers.cpp
+    ${PROJECT_SOURCE_DIR}/addon/src/handlers/FinetuneParamHandlers.cpp
+    ${PROJECT_SOURCE_DIR}/addon/src/handlers/LoadConfigHandlers.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/AsyncWeightsLoader.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/CacheManager.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/ContextSlider.cpp
@@ -118,7 +122,7 @@ endif()
     ${inference-addon-llama}
     PRIVATE
       llama::llama
-      llama::common
+      llama::llama-common
       llama::mtmd
       nlohmann_json::nlohmann_json
       unofficial::concurrentqueue::concurrentqueue
@@ -134,6 +138,8 @@ if(BUILD_CLI)
   # Cache management integration test with automatic model download
   add_executable(cli_tool
     ${PROJECT_SOURCE_DIR}/addon/src/cli/cli_tool.cc
+    ${PROJECT_SOURCE_DIR}/addon/src/handlers/LlmParsers.cpp
+    ${PROJECT_SOURCE_DIR}/addon/src/handlers/LoadConfigHandlers.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/AsyncWeightsLoader.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/CacheManager.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/ContextSlider.cpp
@@ -142,6 +148,7 @@ if(BUILD_CLI)
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/LlamaLazyInitializeBackend.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/LlamaModel.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/LlamaFinetuner.cpp
+    ${PROJECT_SOURCE_DIR}/addon/src/model-interface/LlamaFinetuningHelpers.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/MediaLoadOrder.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/MtmdLlmContext.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/MultiRequestBatcher.cpp
@@ -173,7 +180,7 @@ if(BUILD_CLI)
     cli_tool
           PRIVATE
           llama::llama
-          llama::common
+          llama::llama-common
           llama::mtmd
           nlohmann_json::nlohmann_json
           unofficial::concurrentqueue::concurrentqueue

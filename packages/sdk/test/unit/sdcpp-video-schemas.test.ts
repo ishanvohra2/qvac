@@ -2,6 +2,7 @@ import test from 'brittle'
 import {
   ltxVideoRequestSchema,
   sdcppConfigSchema,
+  singleExpertVideoRequestSchema,
   videoRequestSchema,
   videoStatsSchema,
   videoStreamRequestSchema,
@@ -52,6 +53,11 @@ test('videoStatsSchema: accepts video runtime stats fields', (t: BrittleT) => {
   const result = videoStatsSchema.safeParse({
     modelLoadMs: 500,
     generationMs: 1234,
+    conditionerMs: 100,
+    denoiseMs: 800,
+    vaeMs: 200,
+    postProcessMs: 134,
+    stepsPerSecond: 25,
     totalGenerationMs: 1234,
     totalWallMs: 1734,
     totalSteps: 20,
@@ -127,6 +133,71 @@ test('ltxVideoRequestSchema: enforces LTX-2 dimensions and frame counts', (t: Br
   t.is(ltxVideoRequestSchema.safeParse({ ...base, height: 496 }).success, false)
   t.is(ltxVideoRequestSchema.safeParse({ ...base, video_frames: 13 }).success, false)
   t.is(ltxVideoRequestSchema.safeParse({ ...base, video_frames: 265 }).success, false)
+})
+
+test('sdcppConfigSchema: accepts the Wan 2.2 TI2V-5B three-file layout', (t: BrittleT) => {
+  const result = sdcppConfigSchema.safeParse({
+    mode: 'video',
+    t5XxlModelSrc: 'umt5_xxl_fp16.safetensors',
+    vaeModelSrc: 'wan2.2_vae.safetensors',
+    diffusion_fa: true,
+    vae_tiling: true
+  })
+  t.is(result.success, true)
+})
+
+test('singleExpertVideoRequestSchema: rejects MoE fields without a high-noise expert', (t: BrittleT) => {
+  // The Wan 2.2 TI2V-5B Turbo shape: 32-pixel grid, (4*k + 1) frames.
+  const base = {
+    modelId: 'model-1',
+    mode: 'txt2vid' as const,
+    prompt: 'steam curling from an espresso cup',
+    width: 1280,
+    height: 704,
+    video_frames: 121,
+    fps: 24,
+    steps: 4,
+    cfg_scale: 1.0,
+    flow_shift: 5.0
+  }
+
+  t.is(singleExpertVideoRequestSchema.safeParse(base).success, true)
+  t.is(singleExpertVideoRequestSchema.safeParse({ ...base, high_noise_steps: 8 }).success, false)
+  t.is(
+    singleExpertVideoRequestSchema.safeParse({ ...base, high_noise_sampler: 'euler' }).success,
+    false
+  )
+  t.is(
+    singleExpertVideoRequestSchema.safeParse({ ...base, high_noise_scheduler: 'simple' }).success,
+    false
+  )
+  t.is(
+    singleExpertVideoRequestSchema.safeParse({ ...base, high_noise_cfg_scale: 6.0 }).success,
+    false
+  )
+  t.is(
+    singleExpertVideoRequestSchema.safeParse({ ...base, high_noise_flow_shift: 5.0 }).success,
+    false
+  )
+  t.is(singleExpertVideoRequestSchema.safeParse({ ...base, moe_boundary: 0.875 }).success, false)
+
+  // The A14B path keeps every MoE field: only the single-expert refinement
+  // rejects them.
+  t.is(videoRequestSchema.safeParse({ ...base, high_noise_steps: 8 }).success, true)
+})
+
+test('singleExpertVideoRequestSchema: reports every offending MoE field at its own path', (t: BrittleT) => {
+  const result = singleExpertVideoRequestSchema.safeParse({
+    modelId: 'model-1',
+    mode: 'txt2vid',
+    prompt: 'a fox',
+    high_noise_steps: 8,
+    moe_boundary: 0.875
+  })
+
+  t.is(result.success, false)
+  const paths = result.success ? [] : result.error.issues.map((issue) => issue.path.join('.'))
+  t.alike(paths.sort(), ['high_noise_steps', 'moe_boundary'])
 })
 
 test('videoRequestSchema: accepts optional requestId', (t: BrittleT) => {
@@ -280,6 +351,11 @@ test('videoStreamResponseSchema: accepts progress, output, and final stats chunk
       done: true,
       stats: {
         generationMs: 1234,
+        conditionerMs: 100,
+        denoiseMs: 800,
+        vaeMs: 200,
+        postProcessMs: 134,
+        stepsPerSecond: 25,
         totalVideos: 1,
         totalVideoFrames: 5,
         videoFrames: 5,
