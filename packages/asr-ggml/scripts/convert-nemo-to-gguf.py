@@ -227,6 +227,46 @@ def vocab_piece_list(cfg: dict):
     return None
 
 
+def emit_ctc_language_ranges(writer, cfg: dict, multilingual_tok: dict):
+    """Emit per-language CTC vocab slices for aggregate multilingual tokenizers.
+
+    IndicConformer-style checkpoints concatenate 22 language SentencePiece
+    models into one CTC head. NeMo / HF decode applies a language mask so
+    greedy CTC only sees that language's token range (+ blank). Without these
+    keys the engine keeps full-vocab greedy (Parakeet monolingual CTC).
+    """
+    tok_cfg = cfg.get("tokenizer") or {}
+    langs = tok_cfg.get("langs")
+    if not isinstance(langs, dict) or not langs:
+        return
+
+    import sentencepiece as spm
+
+    lang_ids = []
+    starts = []
+    ends = []
+    offset = 0
+    for lang, _lcfg in langs.items():
+        n_pieces = 0
+        data = multilingual_tok.get(lang) if multilingual_tok else None
+        if data:
+            sp = spm.SentencePieceProcessor()
+            sp.load_from_serialized_proto(data)
+            n_pieces = sp.get_piece_size()
+        else:
+            n_pieces = 256
+        lang_ids.append(str(lang))
+        starts.append(int(offset))
+        ends.append(int(offset + n_pieces))
+        offset += n_pieces
+
+    writer.add_array("parakeet.ctc.lang_ids", lang_ids)
+    writer.add_array("parakeet.ctc.lang_token_start", starts)
+    writer.add_array("parakeet.ctc.lang_token_end", ends)
+    print(f"[convert] ctc language ranges: {len(lang_ids)} langs, "
+          f"covered_tokens={offset}", file=sys.stderr)
+
+
 def emit_tokenizer_metadata(writer, tok_bytes: bytes, multilingual_tok: dict, cfg: dict):
     """Write tokenizer.ggml.* keys the engine uses for BPE detokenize.
 
@@ -493,6 +533,7 @@ def write_gguf(out: Path, ckpt: Path, cfg: dict, sd: dict, tok_bytes: bytes,
         blank_id   = vocab_size - 1
         writer.add_uint32("parakeet.ctc.vocab_size", vocab_size)
         writer.add_uint32("parakeet.ctc.blank_id",   blank_id)
+        emit_ctc_language_ranges(writer, cfg, multilingual_tok)
     elif model_type == "eou":
         pred_hidden       = int(dec["prednet"]["pred_hidden"])
         pred_rnn_layers   = int(dec["prednet"]["pred_rnn_layers"])
