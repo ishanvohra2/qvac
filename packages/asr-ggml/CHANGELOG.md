@@ -12,6 +12,18 @@ restarts at `0.1.0`; the two pre-merge histories are preserved verbatim as
 [`docs/WHISPER-CHANGELOG.md`](docs/WHISPER-CHANGELOG.md) and
 [`docs/PARAKEET-CHANGELOG.md`](docs/PARAKEET-CHANGELOG.md).
 
+## [Unreleased]
+
+### Changed
+
+- Temporary package-local `parakeet-cpp` vcpkg overlay pinned to
+  `tetherto/qvac-ext-lib-whisper.cpp` `558b290e` (IndicConformer CTC language
+  masking, [qvac-ext-lib-whisper.cpp#133](https://github.com/tetherto/qvac-ext-lib-whisper.cpp/pull/133))
+  for CI/prototype builds (QVAC-23279). Lives under `vcpkg-overlays/parakeet-cpp`
+  (`vcpkg/ports/` is gitignored). Remove once the matching
+  `qvac-registry-vcpkg` port bump lands and re-pin `version>=` from the
+  registry.
+
 ## [0.2.0] - 2026-08-06
 
 ### Changed
