@@ -14,6 +14,12 @@ restarts at `0.1.0`; the two pre-merge histories are preserved verbatim as
 
 ## [Unreleased]
 
+### Added
+
+- **Choosing a model guide.** README documents which specific Whisper `.bin` or
+  Parakeet `.gguf` to pick per use case (default TDT, EOU, CTC, Sortformer
+  offline vs streaming, Whisper turbo/small for language breadth / translation).
+
 ### Changed
 
 - Temporary package-local `parakeet-cpp` vcpkg overlay pinned to
