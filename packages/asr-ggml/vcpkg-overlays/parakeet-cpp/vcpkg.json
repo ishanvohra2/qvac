@@ -1,7 +1,7 @@
 {
   "name": "parakeet-cpp",
   "version-date": "2026-08-07",
-  "description": "TEMPORARY overlay (QVAC-23279): Parakeet FastConformer ASR + Sortformer diarization in C++/ggml, pinned to tetherto/qvac-ext-lib-whisper.cpp 558b290e (feat/parakeet-ctc-language-mask, PR #133) for IndicConformer multilingual CTC language masking (EngineOptions::language / CLI --language + converter lang range metadata). Consumes ggml-speech. Remove this overlay and consume the registry port once #133 and the matching qvac-registry-vcpkg bump land. Installable artifacts remain under the qvac-parakeet namespace (find_package(qvac-parakeet CONFIG) + qvac::parakeet).",
+  "description": "TEMPORARY overlay (QVAC-23279): Parakeet FastConformer ASR + Sortformer diarization in C++/ggml, pinned to tetherto/qvac-ext-lib-whisper.cpp 079cddd7 (feat/parakeet-ctc-language-mask, PR #133, post-review) for IndicConformer multilingual CTC language masking (EngineOptions::language / CLI --language + converter lang range metadata). Consumes ggml-speech. Remove this overlay and consume the registry port once #133 and the matching qvac-registry-vcpkg bump land. Installable artifacts remain under the qvac-parakeet namespace (find_package(qvac-parakeet CONFIG) + qvac::parakeet).",
   "homepage": "https://github.com/tetherto/qvac-ext-lib-whisper.cpp/tree/master/engines/parakeet",
   "license": "MIT",
   "dependencies": [

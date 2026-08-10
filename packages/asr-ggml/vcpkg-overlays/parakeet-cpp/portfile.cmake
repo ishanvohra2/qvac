@@ -33,7 +33,7 @@
 # port's own name are unchanged; only file ownership moved.
 #
 # TEMPORARY package-local overlay (QVAC-23279): pin engines/parakeet to
-# feat/parakeet-ctc-language-mask tip 558b290e (PR tetherto/qvac-ext-lib-whisper.cpp#133)
+# feat/parakeet-ctc-language-mask tip 079cddd7 (PR tetherto/qvac-ext-lib-whisper.cpp#133)
 # for IndicConformer multilingual CTC language masking. Replace with a
 # registry port bump + remove this overlay once #133 is merged and
 # qvac-registry-vcpkg publishes the new parakeet-cpp version.
@@ -44,8 +44,8 @@ set(VCPKG_BUILD_TYPE release)
 vcpkg_from_github(
     OUT_SOURCE_PATH WHISPER_CPP_SRC
     REPO tetherto/qvac-ext-lib-whisper.cpp
-    REF 558b290eb3f32228acdf435f560310b3b5bcfc78
-    SHA512 a37713ffb90e242767d01d3f000ac2b851e6b903376011fc120f7a6701f82a356d5a8ef2454f0e171ca6747926bb11ebfdb000f1e99b61813738188292d44cf0
+    REF 079cddd7141971e34c8fa82ad2c22a4511efacd9
+    SHA512 00a8ec0f8bf8f25866a9af9a31ec0775fae781dd12083c355c4642d8e92f5156cd582fdc7c99164bdc28ad2b525b9c11bf1e43783d18d3afff3d14ccf11656cd
     HEAD_REF feat/parakeet-ctc-language-mask
 )
 
