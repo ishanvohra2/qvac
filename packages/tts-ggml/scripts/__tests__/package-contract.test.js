@@ -186,11 +186,7 @@ test('production tarball install includes promoted runtime modules', () => {
       cwd: consumerRoot,
       encoding: 'utf8'
     })
-    assert.notEqual(
-      asrProbe.status,
-      0,
-      'production install must not include @qvac/asr-ggml'
-    )
+    assert.notEqual(asrProbe.status, 0, 'production install must not include @qvac/asr-ggml')
   } finally {
     fs.rmSync(temporaryRoot, { recursive: true, force: true })
   }
