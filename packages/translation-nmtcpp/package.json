@@ -103,7 +103,7 @@
     "bare-os": "^3.9.3",
     "bare-path": "^3.0.0",
     "bare-process": "^4.2.2",
-    "bare-url": "^2.1.6" 
+    "bare-url": "^2.1.6"
   },
   "peerDependencies": {
     "bare-fetch": "^3.0.1"
