@@ -9056,7 +9056,7 @@
     "link": "https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b"
   },
   {
-    "source": "s3:///qvac_models_compiled/ggml/openmoss/2026-09-30/audio8-codec-decoder.mlmodelc/analytics/coremldata.bin",
+    "source": "s3:///qvac_models_compiled/ggml/audio8/2026-09-30/audio8-codec-decoder.mlmodelc/analytics/coremldata.bin",
     "engine": "@qvac/tts-ggml",
     "description": "Audio8 codec decoder Core ML sidecar: analytics/coremldata.bin",
     "quantization": "",
@@ -9067,7 +9067,7 @@
     "link": "https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b"
   },
   {
-    "source": "s3:///qvac_models_compiled/ggml/openmoss/2026-09-30/audio8-codec-decoder.mlmodelc/coremldata.bin",
+    "source": "s3:///qvac_models_compiled/ggml/audio8/2026-09-30/audio8-codec-decoder.mlmodelc/coremldata.bin",
     "engine": "@qvac/tts-ggml",
     "description": "Audio8 codec decoder Core ML sidecar: coremldata.bin",
     "quantization": "",
@@ -9078,7 +9078,7 @@
     "link": "https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b"
   },
   {
-    "source": "s3:///qvac_models_compiled/ggml/openmoss/2026-09-30/audio8-codec-decoder.mlmodelc/metadata.json",
+    "source": "s3:///qvac_models_compiled/ggml/audio8/2026-09-30/audio8-codec-decoder.mlmodelc/metadata.json",
     "engine": "@qvac/tts-ggml",
     "description": "Audio8 codec decoder Core ML sidecar: metadata.json",
     "quantization": "",
@@ -9089,7 +9089,7 @@
     "link": "https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b"
   },
   {
-    "source": "s3:///qvac_models_compiled/ggml/openmoss/2026-09-30/audio8-codec-decoder.mlmodelc/model.mil",
+    "source": "s3:///qvac_models_compiled/ggml/audio8/2026-09-30/audio8-codec-decoder.mlmodelc/model.mil",
     "engine": "@qvac/tts-ggml",
     "description": "Audio8 codec decoder Core ML sidecar: model.mil",
     "quantization": "",
@@ -9100,7 +9100,7 @@
     "link": "https://huggingface.co/Audio8/Audio8-TTS-Preview-0.6b"
   },
   {
-    "source": "s3:///qvac_models_compiled/ggml/openmoss/2026-09-30/audio8-codec-decoder.mlmodelc/weights/weight.bin",
+    "source": "s3:///qvac_models_compiled/ggml/audio8/2026-09-30/audio8-codec-decoder.mlmodelc/weights/weight.bin",
     "engine": "@qvac/tts-ggml",
     "description": "Audio8 codec decoder Core ML sidecar: weights/weight.bin",
     "quantization": "",
